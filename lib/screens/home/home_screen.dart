@@ -26,54 +26,55 @@ class HomeScreen extends StatelessWidget {
           ),
         ],
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(24),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            const Spacer(),
-            Icon(
-              Icons.speed,
-              size: 80,
-              color: theme.colorScheme.primary,
-            ),
-            const SizedBox(height: 16),
-            Text(
-              'Car Acceleration\nMeasurement',
-              textAlign: TextAlign.center,
-              style: theme.textTheme.headlineMedium?.copyWith(
-                fontWeight: FontWeight.bold,
+      body: SafeArea(
+        top: false,
+        child: Padding(
+          padding: const EdgeInsets.all(24),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              const Spacer(),
+              Icon(Icons.speed, size: 80, color: theme.colorScheme.primary),
+              const SizedBox(height: 16),
+              Text(
+                'Car Acceleration\nMeasurement',
+                textAlign: TextAlign.center,
+                style: theme.textTheme.headlineMedium?.copyWith(
+                  fontWeight: FontWeight.bold,
+                ),
               ),
-            ),
-            const SizedBox(height: 8),
-            Text(
-              'Mount your phone anywhere in the car.\nThe app auto-calibrates for any orientation.',
-              textAlign: TextAlign.center,
-              style: theme.textTheme.bodyMedium?.copyWith(
-                color: theme.colorScheme.onSurfaceVariant,
+              const SizedBox(height: 8),
+              Text(
+                'Mount your phone anywhere in the car.\nThe app auto-calibrates for any orientation.',
+                textAlign: TextAlign.center,
+                style: theme.textTheme.bodyMedium?.copyWith(
+                  color: theme.colorScheme.onSurfaceVariant,
+                ),
               ),
-            ),
-            const Spacer(),
-            FilledButton.icon(
-              onPressed: () => _startRecording(context),
-              icon: const Icon(Icons.fiber_manual_record),
-              label: const Text('Start Recording'),
-            ),
-            const SizedBox(height: 12),
-            OutlinedButton.icon(
-              onPressed: () => Navigator.push(
-                context,
-                MaterialPageRoute(builder: (_) => const RecordingsScreen()),
+              const Spacer(),
+              FilledButton.icon(
+                onPressed: () => _startRecording(context),
+                icon: const Icon(Icons.fiber_manual_record),
+                label: const Text('Start Recording'),
               ),
-              icon: const Icon(Icons.list),
-              label: const Text('View Recordings'),
-              style: OutlinedButton.styleFrom(
-                minimumSize: const Size(double.infinity, 56),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+              const SizedBox(height: 12),
+              OutlinedButton.icon(
+                onPressed: () => Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (_) => const RecordingsScreen()),
+                ),
+                icon: const Icon(Icons.list),
+                label: const Text('View Recordings'),
+                style: OutlinedButton.styleFrom(
+                  minimumSize: const Size(double.infinity, 56),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                ),
               ),
-            ),
-            const SizedBox(height: 32),
-          ],
+              const SizedBox(height: 32),
+            ],
+          ),
         ),
       ),
     );

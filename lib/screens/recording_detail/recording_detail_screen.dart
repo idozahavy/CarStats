@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
 import '../../core/chart_utils.dart';
 import '../../data/database/database.dart';
+import '../../services/export_service.dart';
 
 class RecordingDetailScreen extends StatefulWidget {
   final int recordingId;
@@ -33,6 +34,28 @@ class _RecordingDetailScreenState extends State<RecordingDetailScreen> {
     });
   }
 
+  Future<void> _export(BuildContext context, ExportFormat format) async {
+    try {
+      final file = await ExportService.exportRecording(
+        _recording!,
+        _samples,
+        format,
+      );
+      if (file == null) return;
+      if (context.mounted) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Saved to ${file.path}')));
+      }
+    } catch (e) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Export failed: $e')));
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -40,48 +63,75 @@ class _RecordingDetailScreenState extends State<RecordingDetailScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text(_recording?.name ?? 'Recording'),
+        actions: [
+          if (_recording != null && _samples.isNotEmpty)
+            PopupMenuButton<ExportFormat>(
+              icon: const Icon(Icons.file_download),
+              tooltip: 'Export',
+              onSelected: (format) => _export(context, format),
+              itemBuilder: (_) => const [
+                PopupMenuItem(
+                  value: ExportFormat.csv,
+                  child: Text('Export as CSV'),
+                ),
+                PopupMenuItem(
+                  value: ExportFormat.json,
+                  child: Text('Export as JSON'),
+                ),
+              ],
+            ),
+        ],
       ),
-      body: _loading
-          ? const Center(child: CircularProgressIndicator())
-          : _samples.isEmpty
-              ? Center(
-                  child: Text(
-                    'No data recorded',
-                    style: theme.textTheme.bodyLarge?.copyWith(
-                      color: theme.colorScheme.onSurfaceVariant,
-                    ),
-                  ),
-                )
-              : SingleChildScrollView(
-                  padding: const EdgeInsets.all(16),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      _SummaryCards(recording: _recording!, samples: _samples),
-                      const SizedBox(height: 24),
-                      Text('Speed vs Acceleration', style: theme.textTheme.titleMedium),
-                      const SizedBox(height: 8),
-                      SizedBox(
-                        height: 300,
-                        child: _SpeedAccelChart(samples: _samples),
-                      ),
-                      const SizedBox(height: 24),
-                      Text('Acceleration over Time', style: theme.textTheme.titleMedium),
-                      const SizedBox(height: 8),
-                      SizedBox(
-                        height: 300,
-                        child: _AccelTimeChart(samples: _samples),
-                      ),
-                      const SizedBox(height: 24),
-                      Text('Speed over Time', style: theme.textTheme.titleMedium),
-                      const SizedBox(height: 8),
-                      SizedBox(
-                        height: 300,
-                        child: _SpeedTimeChart(samples: _samples),
-                      ),
-                    ],
+      body: SafeArea(
+        top: false,
+        child: _loading
+            ? const Center(child: CircularProgressIndicator())
+            : _samples.isEmpty
+            ? Center(
+                child: Text(
+                  'No data recorded',
+                  style: theme.textTheme.bodyLarge?.copyWith(
+                    color: theme.colorScheme.onSurfaceVariant,
                   ),
                 ),
+              )
+            : SingleChildScrollView(
+                padding: const EdgeInsets.all(16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    _SummaryCards(recording: _recording!, samples: _samples),
+                    const SizedBox(height: 24),
+                    Text(
+                      'Speed vs Acceleration',
+                      style: theme.textTheme.titleMedium,
+                    ),
+                    const SizedBox(height: 8),
+                    SizedBox(
+                      height: 300,
+                      child: _SpeedAccelChart(samples: _samples),
+                    ),
+                    const SizedBox(height: 24),
+                    Text(
+                      'Acceleration over Time',
+                      style: theme.textTheme.titleMedium,
+                    ),
+                    const SizedBox(height: 8),
+                    SizedBox(
+                      height: 300,
+                      child: _AccelTimeChart(samples: _samples),
+                    ),
+                    const SizedBox(height: 24),
+                    Text('Speed over Time', style: theme.textTheme.titleMedium),
+                    const SizedBox(height: 8),
+                    SizedBox(
+                      height: 300,
+                      child: _SpeedTimeChart(samples: _samples),
+                    ),
+                  ],
+                ),
+              ),
+      ),
     );
   }
 }
@@ -108,14 +158,32 @@ class _SummaryCards extends StatelessWidget {
     }
 
     final duration = Duration(milliseconds: recording.durationMs);
-    final durationStr = '${duration.inMinutes}:${(duration.inSeconds % 60).toString().padLeft(2, '0')}';
+    final durationStr =
+        '${duration.inMinutes}:${(duration.inSeconds % 60).toString().padLeft(2, '0')}';
 
     return Row(
       children: [
-        Expanded(child: _MiniCard(label: 'Duration', value: durationStr)),
-        Expanded(child: _MiniCard(label: 'Max Speed', value: '${maxSpeed.toStringAsFixed(1)} km/h')),
-        Expanded(child: _MiniCard(label: 'Max Accel', value: '${maxAccel.toStringAsFixed(2)} g')),
-        Expanded(child: _MiniCard(label: 'Max Brake', value: '${minAccel.toStringAsFixed(2)} g')),
+        Expanded(
+          child: _MiniCard(label: 'Duration', value: durationStr),
+        ),
+        Expanded(
+          child: _MiniCard(
+            label: 'Max Speed',
+            value: '${maxSpeed.toStringAsFixed(1)} km/h',
+          ),
+        ),
+        Expanded(
+          child: _MiniCard(
+            label: 'Max Accel',
+            value: '${maxAccel.toStringAsFixed(2)} g',
+          ),
+        ),
+        Expanded(
+          child: _MiniCard(
+            label: 'Max Brake',
+            value: '${minAccel.toStringAsFixed(2)} g',
+          ),
+        ),
       ],
     );
   }
@@ -134,11 +202,17 @@ class _MiniCard extends StatelessWidget {
         padding: const EdgeInsets.all(8),
         child: Column(
           children: [
-            Text(label, style: theme.textTheme.labelSmall, textAlign: TextAlign.center),
+            Text(
+              label,
+              style: theme.textTheme.labelSmall,
+              textAlign: TextAlign.center,
+            ),
             const SizedBox(height: 4),
             Text(
               value,
-              style: theme.textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.bold),
+              style: theme.textTheme.bodyMedium?.copyWith(
+                fontWeight: FontWeight.bold,
+              ),
               textAlign: TextAlign.center,
             ),
           ],
@@ -169,15 +243,25 @@ class _SpeedAccelChart extends StatelessWidget {
         gridData: const FlGridData(show: true),
         titlesData: FlTitlesData(
           bottomTitles: AxisTitles(
-            axisNameWidget: const Text('Speed (km/h)', style: TextStyle(fontSize: 12)),
+            axisNameWidget: const Text(
+              'Speed (km/h)',
+              style: TextStyle(fontSize: 12),
+            ),
             sideTitles: SideTitles(showTitles: true, reservedSize: 30),
           ),
           leftTitles: AxisTitles(
-            axisNameWidget: const Text('Accel (g)', style: TextStyle(fontSize: 12)),
+            axisNameWidget: const Text(
+              'Accel (g)',
+              style: TextStyle(fontSize: 12),
+            ),
             sideTitles: SideTitles(showTitles: true, reservedSize: 40),
           ),
-          topTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
-          rightTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+          topTitles: const AxisTitles(
+            sideTitles: SideTitles(showTitles: false),
+          ),
+          rightTitles: const AxisTitles(
+            sideTitles: SideTitles(showTitles: false),
+          ),
         ),
         borderData: FlBorderData(show: true),
         lineBarsData: [
@@ -210,20 +294,45 @@ class _AccelTimeChart extends StatelessWidget {
     if (spots.isEmpty) return const Center(child: Text('No acceleration data'));
 
     final displaySpots = downsample(spots);
+    final maxTime = spots.last.x;
+    final interval = _timeInterval(maxTime);
     return LineChart(
       LineChartData(
         gridData: const FlGridData(show: true),
         titlesData: FlTitlesData(
           bottomTitles: AxisTitles(
-            axisNameWidget: const Text('Time (s)', style: TextStyle(fontSize: 12)),
-            sideTitles: SideTitles(showTitles: true, reservedSize: 30),
+            axisNameWidget: const Text(
+              'Time (s)',
+              style: TextStyle(fontSize: 12),
+            ),
+            sideTitles: SideTitles(
+              showTitles: true,
+              reservedSize: 30,
+              interval: interval,
+              getTitlesWidget: (value, meta) {
+                if (value == meta.min || value == meta.max) {
+                  return const SizedBox.shrink();
+                }
+                return Text(
+                  value.toInt().toString(),
+                  style: const TextStyle(fontSize: 10),
+                );
+              },
+            ),
           ),
           leftTitles: AxisTitles(
-            axisNameWidget: const Text('Accel (g)', style: TextStyle(fontSize: 12)),
+            axisNameWidget: const Text(
+              'Accel (g)',
+              style: TextStyle(fontSize: 12),
+            ),
             sideTitles: SideTitles(showTitles: true, reservedSize: 40),
           ),
-          topTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
-          rightTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+          topTitles: const AxisTitles(
+            sideTitles: SideTitles(showTitles: false),
+          ),
+          rightTitles: const AxisTitles(
+            sideTitles: SideTitles(showTitles: false),
+          ),
         ),
         borderData: FlBorderData(show: true),
         lineBarsData: [
@@ -256,20 +365,42 @@ class _SpeedTimeChart extends StatelessWidget {
     if (spots.isEmpty) return const Center(child: Text('No GPS speed data'));
 
     final displaySpots = downsample(spots);
+    final maxTime = spots.last.x;
+    final interval = _timeInterval(maxTime);
     return LineChart(
       LineChartData(
         gridData: const FlGridData(show: true),
         titlesData: FlTitlesData(
           bottomTitles: AxisTitles(
-            axisNameWidget: const Text('Time (s)', style: TextStyle(fontSize: 12)),
-            sideTitles: SideTitles(showTitles: true, reservedSize: 30),
+            axisNameWidget: const Text(
+              'Time (s)',
+              style: TextStyle(fontSize: 12),
+            ),
+            sideTitles: SideTitles(
+              showTitles: true,
+              reservedSize: 30,
+              interval: interval,
+              getTitlesWidget: (value, meta) {
+                if (value == meta.min || value == meta.max) {
+                  return const SizedBox.shrink();
+                }
+                return Text(
+                  value.toInt().toString(),
+                  style: const TextStyle(fontSize: 10),
+                );
+              },
+            ),
           ),
           leftTitles: AxisTitles(
             axisNameWidget: const Text('km/h', style: TextStyle(fontSize: 12)),
             sideTitles: SideTitles(showTitles: true, reservedSize: 40),
           ),
-          topTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
-          rightTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+          topTitles: const AxisTitles(
+            sideTitles: SideTitles(showTitles: false),
+          ),
+          rightTitles: const AxisTitles(
+            sideTitles: SideTitles(showTitles: false),
+          ),
         ),
         borderData: FlBorderData(show: true),
         lineBarsData: [
@@ -284,4 +415,12 @@ class _SpeedTimeChart extends StatelessWidget {
       ),
     );
   }
+}
+
+double _timeInterval(double maxSeconds) {
+  if (maxSeconds <= 30) return 5;
+  if (maxSeconds <= 60) return 10;
+  if (maxSeconds <= 180) return 30;
+  if (maxSeconds <= 600) return 60;
+  return 120;
 }

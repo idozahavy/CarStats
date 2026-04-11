@@ -13,19 +13,33 @@ enum RecordingState { idle, calibrating, recording, stopped }
 class RecordingSnapshot {
   final double? gpsSpeedKmh;
   final double? forwardAccelG;
+  final double? lateralAccelG;
   final double? linearAccelMagnitude;
+  final double? pitchDeg;
+  final double? rollDeg;
+  final bool headingCalibrated;
   final int elapsedMs;
+  final double peakForwardG;
+  final double peakBrakeG;
+  final double peakLateralG;
 
   RecordingSnapshot({
     this.gpsSpeedKmh,
     this.forwardAccelG,
+    this.lateralAccelG,
     this.linearAccelMagnitude,
+    this.pitchDeg,
+    this.rollDeg,
+    this.headingCalibrated = false,
     required this.elapsedMs,
+    this.peakForwardG = 0,
+    this.peakBrakeG = 0,
+    this.peakLateralG = 0,
   });
 }
 
 class RecordingEngine extends ChangeNotifier {
-  final AppDatabase _db;
+  final RecordingStore _db;
   final SensorService _sensorService;
   final GpsService _gpsService;
 
@@ -57,6 +71,7 @@ class RecordingEngine extends ChangeNotifier {
   StreamSubscription? _linearAccelSub;
   StreamSubscription? _gyroSub;
   StreamSubscription? _gpsSub;
+  StreamSubscription? _barometerSub;
   Timer? _calibrationTimer;
 
   // Latest raw values (for assembling combined samples)
@@ -64,9 +79,19 @@ class RecordingEngine extends ChangeNotifier {
   LinearAccelerometerReading? _lastLinearAccel;
   GyroscopeReading? _lastGyro;
   GpsReading? _lastGps;
+  double? _lastBaroPressure;
+  double? _gpsBearing;
 
-  // Dev mode
-  bool devMode;
+  // Last gyro timestamp for dt calculation
+  DateTime? _lastGyroTime;
+
+  // Peak G tracking
+  double _peakForwardG = 0;
+  double _peakBrakeG = 0;
+  double _peakLateralG = 0;
+
+  String? _pendingRecordingName;
+  bool _pendingIsDev = false;
 
   // Data points for live chart (capped for memory)
   static const int _maxSnapshots = 3000;
@@ -77,27 +102,40 @@ class RecordingEngine extends ChangeNotifier {
   static const _notifyInterval = Duration(milliseconds: 100);
 
   RecordingEngine({
-    required AppDatabase db,
+    required RecordingStore db,
     required SensorService sensorService,
     required GpsService gpsService,
-    this.devMode = false,
-  })  : _db = db,
-        _sensorService = sensorService,
-        _gpsService = gpsService;
+  }) : _db = db,
+       _sensorService = sensorService,
+       _gpsService = gpsService;
 
   /// Start the calibration countdown, then transition to recording.
-  Future<void> startRecording({required String name, required bool isDev}) async {
+  Future<void> startRecording({
+    required String name,
+    required bool isDev,
+  }) async {
     if (_state != RecordingState.idle) return;
 
     // Set state immediately to prevent double-start from rapid taps
     _state = RecordingState.calibrating;
 
-    // Create DB record
-    _currentRecordingId = await _db.insertRecording(RecordingsCompanion(
-      name: Value(name),
-      startedAt: Value(DateTime.now()),
-      isDevRecording: Value(isDev),
-    ));
+    _pendingRecordingName = name;
+    _pendingIsDev = isDev;
+    _currentRecordingId = null;
+    _recordingStartTime = null;
+    _latestSnapshot = null;
+    _lastAccel = null;
+    _lastLinearAccel = null;
+    _lastGyro = null;
+    _lastGps = null;
+    _lastBaroPressure = null;
+    _gpsBearing = null;
+    _lastGyroTime = null;
+    _peakForwardG = 0;
+    _peakBrakeG = 0;
+    _peakLateralG = 0;
+    _lastNotify = DateTime(0);
+    _sampleBuffer.clear();
 
     _calibrationService.reset();
     _calibrationCountdown = SensorConstants.calibrationDurationSeconds;
@@ -120,7 +158,7 @@ class RecordingEngine extends ChangeNotifier {
       notifyListeners();
       if (_calibrationCountdown <= 0) {
         timer.cancel();
-        _finishCalibration();
+        unawaited(_finishCalibration());
       }
     });
   }
@@ -129,15 +167,50 @@ class RecordingEngine extends ChangeNotifier {
     _calibrationService.addSample(reading);
   }
 
-  void _finishCalibration() {
-    _accelSub?.cancel();
+  @visibleForTesting
+  Future<void> finishCalibrationNow() => _finishCalibration();
+
+  Future<void> _finishCalibration() async {
+    if (_state != RecordingState.calibrating) return;
+
+    _calibrationTimer?.cancel();
+    _calibrationTimer = null;
+
+    await _accelSub?.cancel();
+    _accelSub = null;
 
     _calibration = _calibrationService.compute();
     if (_calibration != null) {
       _decomposer = AccelerationDecomposer(_calibration!);
+    } else {
+      _decomposer = null;
     }
 
-    _recordingStartTime = DateTime.now();
+    final recordingName = _pendingRecordingName;
+    if (recordingName == null) {
+      _state = RecordingState.idle;
+      notifyListeners();
+      return;
+    }
+
+    final startTime = DateTime.now();
+    final recordingId = await _db.insertRecording(
+      RecordingsCompanion(
+        name: Value(recordingName),
+        startedAt: Value(startTime),
+        isDevRecording: Value(_pendingIsDev),
+      ),
+    );
+
+    if (_state != RecordingState.calibrating) {
+      await _db.deleteRecording(recordingId);
+      return;
+    }
+
+    _currentRecordingId = recordingId;
+    _recordingStartTime = startTime;
+    _pendingRecordingName = null;
+    _pendingIsDev = false;
     _state = RecordingState.recording;
     notifyListeners();
 
@@ -158,13 +231,22 @@ class RecordingEngine extends ChangeNotifier {
       _onRecordingGps,
       onError: (_) {}, // GPS dropout is expected (tunnels, etc.)
     );
+    _barometerSub = _sensorService.barometerStream.listen(
+      _onRecordingBarometer,
+      onError: (_) {},
+    );
 
     // Flush buffer periodically
-    _flushTimer = Timer.periodic(const Duration(seconds: 2), (_) => _flushBuffer());
+    _flushTimer = Timer.periodic(
+      const Duration(seconds: 2),
+      (_) => _flushBuffer(),
+    );
   }
 
   void _onRecordingAccel(AccelerometerReading r) {
     _lastAccel = r;
+    // Complementary filter: gently correct gravity axis when accel ≈ 9.81.
+    _decomposer?.correctWithAccel(r.x, r.y, r.z);
     _assembleSample();
   }
 
@@ -174,46 +256,157 @@ class RecordingEngine extends ChangeNotifier {
 
   void _onRecordingGyro(GyroscopeReading r) {
     _lastGyro = r;
+    if (_decomposer != null && _lastGyroTime != null) {
+      final dt = r.timestamp.difference(_lastGyroTime!).inMicroseconds / 1e6;
+      if (dt > 0 && dt < 0.5) {
+        _decomposer!.updateWithGyro(r.x, r.y, r.z, dt);
+      }
+    }
+    _lastGyroTime = r.timestamp;
   }
 
   void _onRecordingGps(GpsReading r) {
+    final prevSpeed = _lastGps?.speed;
+
+    // Compute bearing between consecutive GPS points
+    if (_lastGps != null) {
+      _gpsBearing = _computeBearing(
+        _lastGps!.latitude,
+        _lastGps!.longitude,
+        r.latitude,
+        r.longitude,
+      );
+    }
+
     _lastGps = r;
 
     // Update heading for decomposer if speed is sufficient
-    if (_decomposer != null && r.speed >= SensorConstants.gpsMinSpeedForHeading) {
-      _decomposer!.gpsHeadingRad = r.heading * (pi / 180.0);
+    if (_decomposer != null &&
+        r.speed >= SensorConstants.gpsMinSpeedForHeading) {
+      final headingRad = r.heading * (pi / 180.0);
+      _decomposer!.gpsHeadingRad = headingRad;
+
+      // Feed speed delta to heading auto-calibrator
+      if (prevSpeed != null) {
+        _decomposer!.onGpsUpdate(headingRad, r.speed - prevSpeed);
+      }
     }
   }
 
-  void _assembleSample() {
-    if (_recordingStartTime == null || _currentRecordingId == null) return;
-    final now = DateTime.now();
-    final elapsedUs = now.difference(_recordingStartTime!).inMicroseconds;
+  void _onRecordingBarometer(BarometerReading r) {
+    _lastBaroPressure = r.pressure;
+  }
 
-    // Compute forward acceleration
+  /// Compute initial bearing between two lat/lon points (Haversine forward azimuth).
+  static double _computeBearing(
+    double lat1Deg,
+    double lon1Deg,
+    double lat2Deg,
+    double lon2Deg,
+  ) {
+    final lat1 = lat1Deg * (pi / 180.0);
+    final lat2 = lat2Deg * (pi / 180.0);
+    final dLon = (lon2Deg - lon1Deg) * (pi / 180.0);
+    final y = sin(dLon) * cos(lat2);
+    final x = cos(lat1) * sin(lat2) - sin(lat1) * cos(lat2) * cos(dLon);
+    final bearing = atan2(y, x) * (180.0 / pi);
+    return (bearing + 360.0) % 360.0;
+  }
+
+  void _assembleSample() {
+    final sampleTime = _lastAccel?.timestamp;
+    if (_recordingStartTime == null ||
+        _currentRecordingId == null ||
+        sampleTime == null) {
+      return;
+    }
+
+    final now = DateTime.now();
+    final elapsedUs = sampleTime
+        .difference(_recordingStartTime!)
+        .inMicroseconds;
+    if (elapsedUs < 0) return;
+
+    // Compute forward and lateral acceleration
     double? forwardAccel;
+    double? lateralAccel;
+    final headingCalibrated = _decomposer?.isHeadingCalibrated ?? false;
     if (_decomposer != null && _lastAccel != null) {
       final decomposed = _decomposer!.decompose(
         _lastAccel!.x,
         _lastAccel!.y,
         _lastAccel!.z,
       );
-      forwardAccel = decomposed[0];
+      if (headingCalibrated) {
+        forwardAccel = decomposed[0];
+        lateralAccel = decomposed[1];
+      }
     }
 
     final gpsSpeedMps = _lastGps?.speed;
-    final gpsSpeedKmh = gpsSpeedMps != null ? gpsSpeedMps * 3.6 : null;
+    // Snap speed to 0 when below stationary threshold
+    final effectiveSpeedMps =
+        (gpsSpeedMps != null &&
+            gpsSpeedMps < SensorConstants.gpsStationarySpeed)
+        ? 0.0
+        : gpsSpeedMps;
+    final gpsSpeedKmh = effectiveSpeedMps != null
+        ? effectiveSpeedMps * 3.6
+        : null;
+
+    // When stationary, clamp small accel to 0 (sensor noise)
+    double? displayAccelG = forwardAccel != null ? forwardAccel / 9.81 : null;
+    double? displayLateralG = lateralAccel != null ? lateralAccel / 9.81 : null;
+    if (effectiveSpeedMps == 0.0) {
+      if (displayAccelG != null &&
+          displayAccelG.abs() < SensorConstants.accelNoiseFloor) {
+        displayAccelG = 0.0;
+      }
+      if (displayLateralG != null &&
+          displayLateralG.abs() < SensorConstants.accelNoiseFloor) {
+        displayLateralG = 0.0;
+      }
+    }
+
+    // Update peak G values
+    if (displayAccelG != null) {
+      if (displayAccelG > _peakForwardG) _peakForwardG = displayAccelG;
+      if (displayAccelG < _peakBrakeG) _peakBrakeG = displayAccelG;
+    }
+    if (displayLateralG != null) {
+      if (displayLateralG.abs() > _peakLateralG) {
+        _peakLateralG = displayLateralG.abs();
+      }
+    }
+
+    // Get phone orientation from decomposer
+    double? pitchDeg;
+    double? rollDeg;
+    if (_decomposer != null) {
+      final orient = _decomposer!.orientationDegrees;
+      pitchDeg = orient[0];
+      rollDeg = orient[1];
+    }
 
     // Build snapshot for live display
     final snapshot = RecordingSnapshot(
       gpsSpeedKmh: gpsSpeedKmh,
-      forwardAccelG: forwardAccel != null ? forwardAccel / 9.81 : null,
+      forwardAccelG: displayAccelG,
+      lateralAccelG: displayLateralG,
+      peakForwardG: _peakForwardG,
+      peakBrakeG: _peakBrakeG,
+      peakLateralG: _peakLateralG,
       linearAccelMagnitude: _lastLinearAccel != null
-          ? sqrt(_lastLinearAccel!.x * _lastLinearAccel!.x +
-                _lastLinearAccel!.y * _lastLinearAccel!.y +
-                _lastLinearAccel!.z * _lastLinearAccel!.z) /
-              9.81
+          ? sqrt(
+                  _lastLinearAccel!.x * _lastLinearAccel!.x +
+                      _lastLinearAccel!.y * _lastLinearAccel!.y +
+                      _lastLinearAccel!.z * _lastLinearAccel!.z,
+                ) /
+                9.81
           : null,
+      pitchDeg: pitchDeg,
+      rollDeg: rollDeg,
+      headingCalibrated: headingCalibrated,
       elapsedMs: elapsedUs ~/ 1000,
     );
     _latestSnapshot = snapshot;
@@ -225,6 +418,7 @@ class RecordingEngine extends ChangeNotifier {
     }
 
     // Build DB entry
+    final gravVec = _decomposer?.gravityVector;
     final sample = SensorSamplesCompanion(
       recordingId: Value(_currentRecordingId!),
       timestampUs: Value(elapsedUs),
@@ -238,12 +432,17 @@ class RecordingEngine extends ChangeNotifier {
       gyroY: Value(_lastGyro?.y),
       gyroZ: Value(_lastGyro?.z),
       forwardAccel: Value(forwardAccel),
-      gpsSpeed: Value(gpsSpeedMps),
+      gpsSpeed: Value(effectiveSpeedMps),
       gpsLat: Value(_lastGps?.latitude),
       gpsLon: Value(_lastGps?.longitude),
       gpsHeading: Value(_lastGps?.heading),
       gpsAltitude: Value(_lastGps?.altitude),
       gpsAccuracy: Value(_lastGps?.accuracy),
+      gpsBearing: Value(_gpsBearing),
+      gravX: Value(gravVec?[0]),
+      gravY: Value(gravVec?[1]),
+      gravZ: Value(gravVec?[2]),
+      pressure: Value(_lastBaroPressure),
     );
     _sampleBuffer.add(sample);
 
@@ -262,13 +461,19 @@ class RecordingEngine extends ChangeNotifier {
   }
 
   Future<void> stopRecording() async {
-    if (_state != RecordingState.recording && _state != RecordingState.calibrating) return;
+    if (_state != RecordingState.recording &&
+        _state != RecordingState.calibrating)
+      return;
+
+    final hadRecording =
+        _currentRecordingId != null && _recordingStartTime != null;
 
     _calibrationTimer?.cancel();
     _accelSub?.cancel();
     _linearAccelSub?.cancel();
     _gyroSub?.cancel();
     _gpsSub?.cancel();
+    _barometerSub?.cancel();
     _flushTimer?.cancel();
 
     _sensorService.stopListening();
@@ -278,16 +483,23 @@ class RecordingEngine extends ChangeNotifier {
     await _flushBuffer();
 
     // Update recording end time
-    if (_currentRecordingId != null && _recordingStartTime != null) {
+    if (hadRecording) {
       final now = DateTime.now();
-      await _db.updateRecording(RecordingsCompanion(
-        id: Value(_currentRecordingId!),
-        endedAt: Value(now),
-        durationMs: Value(now.difference(_recordingStartTime!).inMilliseconds),
-      ));
+      await _db.updateRecording(
+        RecordingsCompanion(
+          id: Value(_currentRecordingId!),
+          endedAt: Value(now),
+          durationMs: Value(
+            now.difference(_recordingStartTime!).inMilliseconds,
+          ),
+        ),
+      );
+      _state = RecordingState.stopped;
+    } else {
+      _pendingRecordingName = null;
+      _pendingIsDev = false;
+      _state = RecordingState.idle;
     }
-
-    _state = RecordingState.stopped;
     notifyListeners();
   }
 
@@ -302,6 +514,15 @@ class RecordingEngine extends ChangeNotifier {
     _lastLinearAccel = null;
     _lastGyro = null;
     _lastGps = null;
+    _lastBaroPressure = null;
+    _gpsBearing = null;
+    _lastGyroTime = null;
+    _peakForwardG = 0;
+    _peakBrakeG = 0;
+    _peakLateralG = 0;
+    _pendingRecordingName = null;
+    _pendingIsDev = false;
+    _lastNotify = DateTime(0);
     snapshots.clear();
     _sampleBuffer.clear();
     notifyListeners();

@@ -12,25 +12,28 @@ class SettingsScreen extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(title: const Text('Settings')),
-      body: ListView(
-        children: [
-          const _SectionHeader(title: 'Appearance'),
-          ListTile(
-            leading: const Icon(Icons.brightness_6),
-            title: const Text('Theme'),
-            subtitle: Text(_themeName(themeProvider.themeMode)),
-            onTap: () => _showThemePicker(context, themeProvider),
-          ),
-          const Divider(),
-          const _SectionHeader(title: 'Developer'),
-          SwitchListTile(
-            secondary: const Icon(Icons.developer_mode),
-            title: const Text('Dev Mode'),
-            subtitle: const Text('Show raw sensor data during recording'),
-            value: settingsProvider.devMode,
-            onChanged: (value) => settingsProvider.setDevMode(value),
-          ),
-        ],
+      body: SafeArea(
+        top: false,
+        child: ListView(
+          children: [
+            const _SectionHeader(title: 'Appearance'),
+            ListTile(
+              leading: const Icon(Icons.brightness_6),
+              title: const Text('Theme'),
+              subtitle: Text(_themeName(themeProvider.themeMode)),
+              onTap: () => _showThemePicker(context, themeProvider),
+            ),
+            const Divider(),
+            const _SectionHeader(title: 'Developer'),
+            SwitchListTile(
+              secondary: const Icon(Icons.developer_mode),
+              title: const Text('Dev Mode'),
+              subtitle: const Text('Show raw sensor data during recording'),
+              value: settingsProvider.devMode,
+              onChanged: (value) => settingsProvider.setDevMode(value),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -56,8 +59,12 @@ class SettingsScreen extends StatelessWidget {
           return ListTile(
             title: Text(_themeName(mode)),
             leading: Icon(
-              selected ? Icons.radio_button_checked : Icons.radio_button_unchecked,
-              color: selected ? Theme.of(dialogContext).colorScheme.primary : null,
+              selected
+                  ? Icons.radio_button_checked
+                  : Icons.radio_button_unchecked,
+              color: selected
+                  ? Theme.of(dialogContext).colorScheme.primary
+                  : null,
             ),
             onTap: () {
               provider.setThemeMode(mode);

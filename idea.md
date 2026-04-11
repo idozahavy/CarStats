@@ -137,15 +137,9 @@ Users can select two recordings and overlay them on the same graph:
 
 ### Not Yet Implemented
 
-- [ ] Continuous rotation tracking (gyroscope integration mid-recording)
 - [ ] Magnetometer integration
-- [ ] Barometric pressure sensor
 - [ ] Session metadata (car profile, fuel, tires, weather, etc.)
 - [ ] Car profile management (vehicle database lookup + free text)
 - [ ] Benchmark view (0–100, quarter mile, max accel at speed, sudden accel)
 - [ ] Overlay comparison (two recordings on same graph)
-- [ ] JSON export
-- [ ] GPS-derived direction (bearing between consecutive points)
 - [ ] Computed phone orientation storage (quaternion / rotation matrix per sample)
-- [ ] Gravity vector storage per sample
-- [ ] Separate dev vs user recording types in UI

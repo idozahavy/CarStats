@@ -666,6 +666,55 @@ class $SensorSamplesTable extends SensorSamples
     type: DriftSqlType.double,
     requiredDuringInsert: false,
   );
+  static const VerificationMeta _gpsBearingMeta = const VerificationMeta(
+    'gpsBearing',
+  );
+  @override
+  late final GeneratedColumn<double> gpsBearing = GeneratedColumn<double>(
+    'gps_bearing',
+    aliasedName,
+    true,
+    type: DriftSqlType.double,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _gravXMeta = const VerificationMeta('gravX');
+  @override
+  late final GeneratedColumn<double> gravX = GeneratedColumn<double>(
+    'grav_x',
+    aliasedName,
+    true,
+    type: DriftSqlType.double,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _gravYMeta = const VerificationMeta('gravY');
+  @override
+  late final GeneratedColumn<double> gravY = GeneratedColumn<double>(
+    'grav_y',
+    aliasedName,
+    true,
+    type: DriftSqlType.double,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _gravZMeta = const VerificationMeta('gravZ');
+  @override
+  late final GeneratedColumn<double> gravZ = GeneratedColumn<double>(
+    'grav_z',
+    aliasedName,
+    true,
+    type: DriftSqlType.double,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _pressureMeta = const VerificationMeta(
+    'pressure',
+  );
+  @override
+  late final GeneratedColumn<double> pressure = GeneratedColumn<double>(
+    'pressure',
+    aliasedName,
+    true,
+    type: DriftSqlType.double,
+    requiredDuringInsert: false,
+  );
   @override
   List<GeneratedColumn> get $columns => [
     id,
@@ -687,6 +736,11 @@ class $SensorSamplesTable extends SensorSamples
     gpsHeading,
     gpsAltitude,
     gpsAccuracy,
+    gpsBearing,
+    gravX,
+    gravY,
+    gravZ,
+    pressure,
   ];
   @override
   String get aliasedName => _alias ?? actualTableName;
@@ -839,6 +893,36 @@ class $SensorSamplesTable extends SensorSamples
         ),
       );
     }
+    if (data.containsKey('gps_bearing')) {
+      context.handle(
+        _gpsBearingMeta,
+        gpsBearing.isAcceptableOrUnknown(data['gps_bearing']!, _gpsBearingMeta),
+      );
+    }
+    if (data.containsKey('grav_x')) {
+      context.handle(
+        _gravXMeta,
+        gravX.isAcceptableOrUnknown(data['grav_x']!, _gravXMeta),
+      );
+    }
+    if (data.containsKey('grav_y')) {
+      context.handle(
+        _gravYMeta,
+        gravY.isAcceptableOrUnknown(data['grav_y']!, _gravYMeta),
+      );
+    }
+    if (data.containsKey('grav_z')) {
+      context.handle(
+        _gravZMeta,
+        gravZ.isAcceptableOrUnknown(data['grav_z']!, _gravZMeta),
+      );
+    }
+    if (data.containsKey('pressure')) {
+      context.handle(
+        _pressureMeta,
+        pressure.isAcceptableOrUnknown(data['pressure']!, _pressureMeta),
+      );
+    }
     return context;
   }
 
@@ -924,6 +1008,26 @@ class $SensorSamplesTable extends SensorSamples
         DriftSqlType.double,
         data['${effectivePrefix}gps_accuracy'],
       ),
+      gpsBearing: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}gps_bearing'],
+      ),
+      gravX: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}grav_x'],
+      ),
+      gravY: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}grav_y'],
+      ),
+      gravZ: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}grav_z'],
+      ),
+      pressure: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}pressure'],
+      ),
     );
   }
 
@@ -953,6 +1057,11 @@ class SensorSample extends DataClass implements Insertable<SensorSample> {
   final double? gpsHeading;
   final double? gpsAltitude;
   final double? gpsAccuracy;
+  final double? gpsBearing;
+  final double? gravX;
+  final double? gravY;
+  final double? gravZ;
+  final double? pressure;
   const SensorSample({
     required this.id,
     required this.recordingId,
@@ -973,6 +1082,11 @@ class SensorSample extends DataClass implements Insertable<SensorSample> {
     this.gpsHeading,
     this.gpsAltitude,
     this.gpsAccuracy,
+    this.gpsBearing,
+    this.gravX,
+    this.gravY,
+    this.gravZ,
+    this.pressure,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -1027,6 +1141,21 @@ class SensorSample extends DataClass implements Insertable<SensorSample> {
     }
     if (!nullToAbsent || gpsAccuracy != null) {
       map['gps_accuracy'] = Variable<double>(gpsAccuracy);
+    }
+    if (!nullToAbsent || gpsBearing != null) {
+      map['gps_bearing'] = Variable<double>(gpsBearing);
+    }
+    if (!nullToAbsent || gravX != null) {
+      map['grav_x'] = Variable<double>(gravX);
+    }
+    if (!nullToAbsent || gravY != null) {
+      map['grav_y'] = Variable<double>(gravY);
+    }
+    if (!nullToAbsent || gravZ != null) {
+      map['grav_z'] = Variable<double>(gravZ);
+    }
+    if (!nullToAbsent || pressure != null) {
+      map['pressure'] = Variable<double>(pressure);
     }
     return map;
   }
@@ -1084,6 +1213,21 @@ class SensorSample extends DataClass implements Insertable<SensorSample> {
       gpsAccuracy: gpsAccuracy == null && nullToAbsent
           ? const Value.absent()
           : Value(gpsAccuracy),
+      gpsBearing: gpsBearing == null && nullToAbsent
+          ? const Value.absent()
+          : Value(gpsBearing),
+      gravX: gravX == null && nullToAbsent
+          ? const Value.absent()
+          : Value(gravX),
+      gravY: gravY == null && nullToAbsent
+          ? const Value.absent()
+          : Value(gravY),
+      gravZ: gravZ == null && nullToAbsent
+          ? const Value.absent()
+          : Value(gravZ),
+      pressure: pressure == null && nullToAbsent
+          ? const Value.absent()
+          : Value(pressure),
     );
   }
 
@@ -1112,6 +1256,11 @@ class SensorSample extends DataClass implements Insertable<SensorSample> {
       gpsHeading: serializer.fromJson<double?>(json['gpsHeading']),
       gpsAltitude: serializer.fromJson<double?>(json['gpsAltitude']),
       gpsAccuracy: serializer.fromJson<double?>(json['gpsAccuracy']),
+      gpsBearing: serializer.fromJson<double?>(json['gpsBearing']),
+      gravX: serializer.fromJson<double?>(json['gravX']),
+      gravY: serializer.fromJson<double?>(json['gravY']),
+      gravZ: serializer.fromJson<double?>(json['gravZ']),
+      pressure: serializer.fromJson<double?>(json['pressure']),
     );
   }
   @override
@@ -1137,6 +1286,11 @@ class SensorSample extends DataClass implements Insertable<SensorSample> {
       'gpsHeading': serializer.toJson<double?>(gpsHeading),
       'gpsAltitude': serializer.toJson<double?>(gpsAltitude),
       'gpsAccuracy': serializer.toJson<double?>(gpsAccuracy),
+      'gpsBearing': serializer.toJson<double?>(gpsBearing),
+      'gravX': serializer.toJson<double?>(gravX),
+      'gravY': serializer.toJson<double?>(gravY),
+      'gravZ': serializer.toJson<double?>(gravZ),
+      'pressure': serializer.toJson<double?>(pressure),
     };
   }
 
@@ -1160,6 +1314,11 @@ class SensorSample extends DataClass implements Insertable<SensorSample> {
     Value<double?> gpsHeading = const Value.absent(),
     Value<double?> gpsAltitude = const Value.absent(),
     Value<double?> gpsAccuracy = const Value.absent(),
+    Value<double?> gpsBearing = const Value.absent(),
+    Value<double?> gravX = const Value.absent(),
+    Value<double?> gravY = const Value.absent(),
+    Value<double?> gravZ = const Value.absent(),
+    Value<double?> pressure = const Value.absent(),
   }) => SensorSample(
     id: id ?? this.id,
     recordingId: recordingId ?? this.recordingId,
@@ -1180,6 +1339,11 @@ class SensorSample extends DataClass implements Insertable<SensorSample> {
     gpsHeading: gpsHeading.present ? gpsHeading.value : this.gpsHeading,
     gpsAltitude: gpsAltitude.present ? gpsAltitude.value : this.gpsAltitude,
     gpsAccuracy: gpsAccuracy.present ? gpsAccuracy.value : this.gpsAccuracy,
+    gpsBearing: gpsBearing.present ? gpsBearing.value : this.gpsBearing,
+    gravX: gravX.present ? gravX.value : this.gravX,
+    gravY: gravY.present ? gravY.value : this.gravY,
+    gravZ: gravZ.present ? gravZ.value : this.gravZ,
+    pressure: pressure.present ? pressure.value : this.pressure,
   );
   SensorSample copyWithCompanion(SensorSamplesCompanion data) {
     return SensorSample(
@@ -1220,6 +1384,13 @@ class SensorSample extends DataClass implements Insertable<SensorSample> {
       gpsAccuracy: data.gpsAccuracy.present
           ? data.gpsAccuracy.value
           : this.gpsAccuracy,
+      gpsBearing: data.gpsBearing.present
+          ? data.gpsBearing.value
+          : this.gpsBearing,
+      gravX: data.gravX.present ? data.gravX.value : this.gravX,
+      gravY: data.gravY.present ? data.gravY.value : this.gravY,
+      gravZ: data.gravZ.present ? data.gravZ.value : this.gravZ,
+      pressure: data.pressure.present ? data.pressure.value : this.pressure,
     );
   }
 
@@ -1244,13 +1415,18 @@ class SensorSample extends DataClass implements Insertable<SensorSample> {
           ..write('gpsLon: $gpsLon, ')
           ..write('gpsHeading: $gpsHeading, ')
           ..write('gpsAltitude: $gpsAltitude, ')
-          ..write('gpsAccuracy: $gpsAccuracy')
+          ..write('gpsAccuracy: $gpsAccuracy, ')
+          ..write('gpsBearing: $gpsBearing, ')
+          ..write('gravX: $gravX, ')
+          ..write('gravY: $gravY, ')
+          ..write('gravZ: $gravZ, ')
+          ..write('pressure: $pressure')
           ..write(')'))
         .toString();
   }
 
   @override
-  int get hashCode => Object.hash(
+  int get hashCode => Object.hashAll([
     id,
     recordingId,
     timestampUs,
@@ -1270,7 +1446,12 @@ class SensorSample extends DataClass implements Insertable<SensorSample> {
     gpsHeading,
     gpsAltitude,
     gpsAccuracy,
-  );
+    gpsBearing,
+    gravX,
+    gravY,
+    gravZ,
+    pressure,
+  ]);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -1293,7 +1474,12 @@ class SensorSample extends DataClass implements Insertable<SensorSample> {
           other.gpsLon == this.gpsLon &&
           other.gpsHeading == this.gpsHeading &&
           other.gpsAltitude == this.gpsAltitude &&
-          other.gpsAccuracy == this.gpsAccuracy);
+          other.gpsAccuracy == this.gpsAccuracy &&
+          other.gpsBearing == this.gpsBearing &&
+          other.gravX == this.gravX &&
+          other.gravY == this.gravY &&
+          other.gravZ == this.gravZ &&
+          other.pressure == this.pressure);
 }
 
 class SensorSamplesCompanion extends UpdateCompanion<SensorSample> {
@@ -1316,6 +1502,11 @@ class SensorSamplesCompanion extends UpdateCompanion<SensorSample> {
   final Value<double?> gpsHeading;
   final Value<double?> gpsAltitude;
   final Value<double?> gpsAccuracy;
+  final Value<double?> gpsBearing;
+  final Value<double?> gravX;
+  final Value<double?> gravY;
+  final Value<double?> gravZ;
+  final Value<double?> pressure;
   const SensorSamplesCompanion({
     this.id = const Value.absent(),
     this.recordingId = const Value.absent(),
@@ -1336,6 +1527,11 @@ class SensorSamplesCompanion extends UpdateCompanion<SensorSample> {
     this.gpsHeading = const Value.absent(),
     this.gpsAltitude = const Value.absent(),
     this.gpsAccuracy = const Value.absent(),
+    this.gpsBearing = const Value.absent(),
+    this.gravX = const Value.absent(),
+    this.gravY = const Value.absent(),
+    this.gravZ = const Value.absent(),
+    this.pressure = const Value.absent(),
   });
   SensorSamplesCompanion.insert({
     this.id = const Value.absent(),
@@ -1357,6 +1553,11 @@ class SensorSamplesCompanion extends UpdateCompanion<SensorSample> {
     this.gpsHeading = const Value.absent(),
     this.gpsAltitude = const Value.absent(),
     this.gpsAccuracy = const Value.absent(),
+    this.gpsBearing = const Value.absent(),
+    this.gravX = const Value.absent(),
+    this.gravY = const Value.absent(),
+    this.gravZ = const Value.absent(),
+    this.pressure = const Value.absent(),
   }) : recordingId = Value(recordingId),
        timestampUs = Value(timestampUs);
   static Insertable<SensorSample> custom({
@@ -1379,6 +1580,11 @@ class SensorSamplesCompanion extends UpdateCompanion<SensorSample> {
     Expression<double>? gpsHeading,
     Expression<double>? gpsAltitude,
     Expression<double>? gpsAccuracy,
+    Expression<double>? gpsBearing,
+    Expression<double>? gravX,
+    Expression<double>? gravY,
+    Expression<double>? gravZ,
+    Expression<double>? pressure,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
@@ -1400,6 +1606,11 @@ class SensorSamplesCompanion extends UpdateCompanion<SensorSample> {
       if (gpsHeading != null) 'gps_heading': gpsHeading,
       if (gpsAltitude != null) 'gps_altitude': gpsAltitude,
       if (gpsAccuracy != null) 'gps_accuracy': gpsAccuracy,
+      if (gpsBearing != null) 'gps_bearing': gpsBearing,
+      if (gravX != null) 'grav_x': gravX,
+      if (gravY != null) 'grav_y': gravY,
+      if (gravZ != null) 'grav_z': gravZ,
+      if (pressure != null) 'pressure': pressure,
     });
   }
 
@@ -1423,6 +1634,11 @@ class SensorSamplesCompanion extends UpdateCompanion<SensorSample> {
     Value<double?>? gpsHeading,
     Value<double?>? gpsAltitude,
     Value<double?>? gpsAccuracy,
+    Value<double?>? gpsBearing,
+    Value<double?>? gravX,
+    Value<double?>? gravY,
+    Value<double?>? gravZ,
+    Value<double?>? pressure,
   }) {
     return SensorSamplesCompanion(
       id: id ?? this.id,
@@ -1444,6 +1660,11 @@ class SensorSamplesCompanion extends UpdateCompanion<SensorSample> {
       gpsHeading: gpsHeading ?? this.gpsHeading,
       gpsAltitude: gpsAltitude ?? this.gpsAltitude,
       gpsAccuracy: gpsAccuracy ?? this.gpsAccuracy,
+      gpsBearing: gpsBearing ?? this.gpsBearing,
+      gravX: gravX ?? this.gravX,
+      gravY: gravY ?? this.gravY,
+      gravZ: gravZ ?? this.gravZ,
+      pressure: pressure ?? this.pressure,
     );
   }
 
@@ -1507,6 +1728,21 @@ class SensorSamplesCompanion extends UpdateCompanion<SensorSample> {
     if (gpsAccuracy.present) {
       map['gps_accuracy'] = Variable<double>(gpsAccuracy.value);
     }
+    if (gpsBearing.present) {
+      map['gps_bearing'] = Variable<double>(gpsBearing.value);
+    }
+    if (gravX.present) {
+      map['grav_x'] = Variable<double>(gravX.value);
+    }
+    if (gravY.present) {
+      map['grav_y'] = Variable<double>(gravY.value);
+    }
+    if (gravZ.present) {
+      map['grav_z'] = Variable<double>(gravZ.value);
+    }
+    if (pressure.present) {
+      map['pressure'] = Variable<double>(pressure.value);
+    }
     return map;
   }
 
@@ -1531,7 +1767,12 @@ class SensorSamplesCompanion extends UpdateCompanion<SensorSample> {
           ..write('gpsLon: $gpsLon, ')
           ..write('gpsHeading: $gpsHeading, ')
           ..write('gpsAltitude: $gpsAltitude, ')
-          ..write('gpsAccuracy: $gpsAccuracy')
+          ..write('gpsAccuracy: $gpsAccuracy, ')
+          ..write('gpsBearing: $gpsBearing, ')
+          ..write('gravX: $gravX, ')
+          ..write('gravY: $gravY, ')
+          ..write('gravZ: $gravZ, ')
+          ..write('pressure: $pressure')
           ..write(')'))
         .toString();
   }
@@ -1917,6 +2158,11 @@ typedef $$SensorSamplesTableCreateCompanionBuilder =
       Value<double?> gpsHeading,
       Value<double?> gpsAltitude,
       Value<double?> gpsAccuracy,
+      Value<double?> gpsBearing,
+      Value<double?> gravX,
+      Value<double?> gravY,
+      Value<double?> gravZ,
+      Value<double?> pressure,
     });
 typedef $$SensorSamplesTableUpdateCompanionBuilder =
     SensorSamplesCompanion Function({
@@ -1939,6 +2185,11 @@ typedef $$SensorSamplesTableUpdateCompanionBuilder =
       Value<double?> gpsHeading,
       Value<double?> gpsAltitude,
       Value<double?> gpsAccuracy,
+      Value<double?> gpsBearing,
+      Value<double?> gravX,
+      Value<double?> gravY,
+      Value<double?> gravZ,
+      Value<double?> pressure,
     });
 
 final class $$SensorSamplesTableReferences
@@ -2068,6 +2319,31 @@ class $$SensorSamplesTableFilterComposer
     builder: (column) => ColumnFilters(column),
   );
 
+  ColumnFilters<double> get gpsBearing => $composableBuilder(
+    column: $table.gpsBearing,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<double> get gravX => $composableBuilder(
+    column: $table.gravX,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<double> get gravY => $composableBuilder(
+    column: $table.gravY,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<double> get gravZ => $composableBuilder(
+    column: $table.gravZ,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<double> get pressure => $composableBuilder(
+    column: $table.pressure,
+    builder: (column) => ColumnFilters(column),
+  );
+
   $$RecordingsTableFilterComposer get recordingId {
     final $$RecordingsTableFilterComposer composer = $composerBuilder(
       composer: this,
@@ -2191,6 +2467,31 @@ class $$SensorSamplesTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<double> get gpsBearing => $composableBuilder(
+    column: $table.gpsBearing,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<double> get gravX => $composableBuilder(
+    column: $table.gravX,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<double> get gravY => $composableBuilder(
+    column: $table.gravY,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<double> get gravZ => $composableBuilder(
+    column: $table.gravZ,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<double> get pressure => $composableBuilder(
+    column: $table.pressure,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   $$RecordingsTableOrderingComposer get recordingId {
     final $$RecordingsTableOrderingComposer composer = $composerBuilder(
       composer: this,
@@ -2294,6 +2595,23 @@ class $$SensorSamplesTableAnnotationComposer
     builder: (column) => column,
   );
 
+  GeneratedColumn<double> get gpsBearing => $composableBuilder(
+    column: $table.gpsBearing,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<double> get gravX =>
+      $composableBuilder(column: $table.gravX, builder: (column) => column);
+
+  GeneratedColumn<double> get gravY =>
+      $composableBuilder(column: $table.gravY, builder: (column) => column);
+
+  GeneratedColumn<double> get gravZ =>
+      $composableBuilder(column: $table.gravZ, builder: (column) => column);
+
+  GeneratedColumn<double> get pressure =>
+      $composableBuilder(column: $table.pressure, builder: (column) => column);
+
   $$RecordingsTableAnnotationComposer get recordingId {
     final $$RecordingsTableAnnotationComposer composer = $composerBuilder(
       composer: this,
@@ -2365,6 +2683,11 @@ class $$SensorSamplesTableTableManager
                 Value<double?> gpsHeading = const Value.absent(),
                 Value<double?> gpsAltitude = const Value.absent(),
                 Value<double?> gpsAccuracy = const Value.absent(),
+                Value<double?> gpsBearing = const Value.absent(),
+                Value<double?> gravX = const Value.absent(),
+                Value<double?> gravY = const Value.absent(),
+                Value<double?> gravZ = const Value.absent(),
+                Value<double?> pressure = const Value.absent(),
               }) => SensorSamplesCompanion(
                 id: id,
                 recordingId: recordingId,
@@ -2385,6 +2708,11 @@ class $$SensorSamplesTableTableManager
                 gpsHeading: gpsHeading,
                 gpsAltitude: gpsAltitude,
                 gpsAccuracy: gpsAccuracy,
+                gpsBearing: gpsBearing,
+                gravX: gravX,
+                gravY: gravY,
+                gravZ: gravZ,
+                pressure: pressure,
               ),
           createCompanionCallback:
               ({
@@ -2407,6 +2735,11 @@ class $$SensorSamplesTableTableManager
                 Value<double?> gpsHeading = const Value.absent(),
                 Value<double?> gpsAltitude = const Value.absent(),
                 Value<double?> gpsAccuracy = const Value.absent(),
+                Value<double?> gpsBearing = const Value.absent(),
+                Value<double?> gravX = const Value.absent(),
+                Value<double?> gravY = const Value.absent(),
+                Value<double?> gravZ = const Value.absent(),
+                Value<double?> pressure = const Value.absent(),
               }) => SensorSamplesCompanion.insert(
                 id: id,
                 recordingId: recordingId,
@@ -2427,6 +2760,11 @@ class $$SensorSamplesTableTableManager
                 gpsHeading: gpsHeading,
                 gpsAltitude: gpsAltitude,
                 gpsAccuracy: gpsAccuracy,
+                gpsBearing: gpsBearing,
+                gravX: gravX,
+                gravY: gravY,
+                gravZ: gravZ,
+                pressure: pressure,
               ),
           withReferenceMapper: (p0) => p0
               .map(

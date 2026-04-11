@@ -1,0 +1,175 @@
+import 'dart:convert';
+import 'dart:io';
+import 'package:drift/drift.dart';
+import 'package:file_picker/file_picker.dart';
+import '../data/database/database.dart';
+
+enum ExportFormat { csv, json }
+
+class ExportService {
+  static Future<File?> exportRecording(
+    Recording recording,
+    List<SensorSample> samples,
+    ExportFormat format,
+  ) async {
+    final safeName = recording.name.replaceAll(RegExp(r'[^\w\s\-]'), '_');
+    final ext = format == ExportFormat.csv ? 'csv' : 'json';
+    final defaultName = '${safeName}_${recording.id}.$ext';
+
+    final savePath = await FilePicker.platform.saveFile(
+      dialogTitle: 'Export Recording',
+      fileName: defaultName,
+      type: FileType.custom,
+      allowedExtensions: [ext],
+    );
+    if (savePath == null) return null;
+
+    final content = switch (format) {
+      ExportFormat.csv => _toCsv(recording, samples),
+      ExportFormat.json => _toJson(recording, samples),
+    };
+
+    final file = File(savePath);
+    await file.writeAsString(content);
+    return file;
+  }
+
+  static Future<int?> importRecording() async {
+    final result = await FilePicker.platform.pickFiles(
+      dialogTitle: 'Import Recording',
+      type: FileType.custom,
+      allowedExtensions: ['json'],
+    );
+    if (result == null || result.files.isEmpty) return null;
+
+    final filePath = result.files.single.path;
+    if (filePath == null) return null;
+
+    final content = await File(filePath).readAsString();
+    final data = jsonDecode(content) as Map<String, dynamic>;
+
+    final rec = data['recording'] as Map<String, dynamic>;
+    final samples = data['samples'] as List<dynamic>;
+
+    final db = AppDatabase();
+
+    final recordingId = await db.insertRecording(
+      RecordingsCompanion.insert(
+        name: rec['name'] as String,
+        startedAt: DateTime.parse(rec['startedAt'] as String),
+        endedAt: rec['endedAt'] != null
+            ? Value(DateTime.parse(rec['endedAt'] as String))
+            : const Value.absent(),
+        durationMs: Value(rec['durationMs'] as int? ?? 0),
+        notes: Value(rec['notes'] as String? ?? ''),
+      ),
+    );
+
+    final batch = samples
+        .cast<Map<String, dynamic>>()
+        .map(
+          (s) => SensorSamplesCompanion.insert(
+            recordingId: recordingId,
+            timestampUs: s['timestampUs'] as int,
+            accelX: Value(s['accelX'] as double?),
+            accelY: Value(s['accelY'] as double?),
+            accelZ: Value(s['accelZ'] as double?),
+            linearAccelX: Value(s['linearAccelX'] as double?),
+            linearAccelY: Value(s['linearAccelY'] as double?),
+            linearAccelZ: Value(s['linearAccelZ'] as double?),
+            gyroX: Value(s['gyroX'] as double?),
+            gyroY: Value(s['gyroY'] as double?),
+            gyroZ: Value(s['gyroZ'] as double?),
+            forwardAccel: Value(s['forwardAccel'] as double?),
+            gpsSpeed: Value(s['gpsSpeed'] as double?),
+            gpsLat: Value(s['gpsLat'] as double?),
+            gpsLon: Value(s['gpsLon'] as double?),
+            gpsHeading: Value(s['gpsHeading'] as double?),
+            gpsAltitude: Value(s['gpsAltitude'] as double?),
+            gpsAccuracy: Value(s['gpsAccuracy'] as double?),
+            gpsBearing: Value(s['gpsBearing'] as double?),
+            gravX: Value(s['gravX'] as double?),
+            gravY: Value(s['gravY'] as double?),
+            gravZ: Value(s['gravZ'] as double?),
+            pressure: Value(s['pressure'] as double?),
+          ),
+        )
+        .toList();
+
+    await db.insertSensorSamplesBatch(batch);
+    return recordingId;
+  }
+
+  static String _toCsv(Recording recording, List<SensorSample> samples) {
+    final buf = StringBuffer();
+
+    buf.writeln(
+      'timestampUs,accelX,accelY,accelZ,'
+      'linearAccelX,linearAccelY,linearAccelZ,'
+      'gyroX,gyroY,gyroZ,'
+      'forwardAccel,'
+      'gpsSpeed,gpsLat,gpsLon,gpsHeading,gpsAltitude,gpsAccuracy,gpsBearing,'
+      'gravX,gravY,gravZ,'
+      'pressure',
+    );
+
+    for (final s in samples) {
+      buf.writeln(
+        '${s.timestampUs},'
+        '${s.accelX ?? ''},${s.accelY ?? ''},${s.accelZ ?? ''},'
+        '${s.linearAccelX ?? ''},${s.linearAccelY ?? ''},${s.linearAccelZ ?? ''},'
+        '${s.gyroX ?? ''},${s.gyroY ?? ''},${s.gyroZ ?? ''},'
+        '${s.forwardAccel ?? ''},'
+        '${s.gpsSpeed ?? ''},${s.gpsLat ?? ''},${s.gpsLon ?? ''},'
+        '${s.gpsHeading ?? ''},${s.gpsAltitude ?? ''},${s.gpsAccuracy ?? ''},${s.gpsBearing ?? ''},'
+        '${s.gravX ?? ''},${s.gravY ?? ''},${s.gravZ ?? ''},'
+        '${s.pressure ?? ''}',
+      );
+    }
+
+    return buf.toString();
+  }
+
+  static String _toJson(Recording recording, List<SensorSample> samples) {
+    final data = {
+      'recording': {
+        'id': recording.id,
+        'name': recording.name,
+        'startedAt': recording.startedAt.toIso8601String(),
+        'endedAt': recording.endedAt?.toIso8601String(),
+        'durationMs': recording.durationMs,
+        'notes': recording.notes,
+      },
+      'samples': samples
+          .map(
+            (s) => {
+              'timestampUs': s.timestampUs,
+              'accelX': s.accelX,
+              'accelY': s.accelY,
+              'accelZ': s.accelZ,
+              'linearAccelX': s.linearAccelX,
+              'linearAccelY': s.linearAccelY,
+              'linearAccelZ': s.linearAccelZ,
+              'gyroX': s.gyroX,
+              'gyroY': s.gyroY,
+              'gyroZ': s.gyroZ,
+              'forwardAccel': s.forwardAccel,
+              'gpsSpeed': s.gpsSpeed,
+              'gpsLat': s.gpsLat,
+              'gpsLon': s.gpsLon,
+              'gpsHeading': s.gpsHeading,
+              'gpsAltitude': s.gpsAltitude,
+              'gpsAccuracy': s.gpsAccuracy,
+              'gpsBearing': s.gpsBearing,
+              'gravX': s.gravX,
+              'gravY': s.gravY,
+              'gravZ': s.gravZ,
+              'pressure': s.pressure,
+            },
+          )
+          .toList(),
+    };
+
+    return const JsonEncoder.withIndent('  ').convert(data);
+  }
+}

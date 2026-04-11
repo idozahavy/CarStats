@@ -3,7 +3,12 @@ class SensorConstants {
   static const int gpsSamplingMs = 1000; // 1 Hz
   static const int calibrationDurationSeconds = 5;
   static const int calibrationSampleCount = 250; // 5s * 50Hz
-  static const double gpsMinSpeedForHeading = 2.0; // m/s — below this GPS heading is unreliable
+  static const double gpsMinSpeedForHeading =
+      2.0; // m/s — below this GPS heading is unreliable
+  static const double gpsStationarySpeed =
+      0.5; // m/s — below this the car is considered stopped
+  static const double accelNoiseFloor =
+      0.05; // g — accel values below this are clamped to 0 when stationary
 }
 
 class StorageKeys {

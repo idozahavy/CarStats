@@ -3,7 +3,6 @@ import 'package:provider/provider.dart';
 import 'package:fl_chart/fl_chart.dart';
 import '../../core/chart_utils.dart';
 import '../../services/recording_engine.dart';
-import '../../core/providers.dart';
 import '../recording_detail/recording_detail_screen.dart';
 
 class RecordingScreen extends StatelessWidget {
@@ -44,7 +43,7 @@ class RecordingScreen extends StatelessWidget {
                 },
               ),
             ),
-            body: _buildBody(context, engine),
+            body: SafeArea(top: false, child: _buildBody(context, engine)),
           );
         },
       ),
@@ -97,10 +96,7 @@ class _CalibrationView extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 16),
-          Text(
-            'Hold the phone still...',
-            style: theme.textTheme.titleMedium,
-          ),
+          Text('Hold the phone still...', style: theme.textTheme.titleMedium),
           const SizedBox(height: 8),
           Text(
             'Calibrating orientation',
@@ -124,7 +120,6 @@ class _RecordingView extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final snap = engine.latestSnapshot;
-    final isDevMode = context.watch<SettingsProvider>().devMode;
 
     return Padding(
       padding: const EdgeInsets.all(16),
@@ -150,15 +145,83 @@ class _RecordingView extends StatelessWidget {
               ),
             ],
           ),
-          if (isDevMode) ...[
-            const SizedBox(height: 12),
-            _StatCard(
-              label: 'Platform Linear Accel',
-              value: snap?.linearAccelMagnitude?.toStringAsFixed(3) ?? '--',
-              unit: 'g (magnitude)',
-            ),
-          ],
+          const SizedBox(height: 12),
+          Row(
+            children: [
+              Expanded(
+                child: _StatCard(
+                  label: 'Pitch',
+                  value: snap?.pitchDeg?.toStringAsFixed(1) ?? '--',
+                  unit: '°',
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: _StatCard(
+                  label: 'Roll',
+                  value: snap?.rollDeg?.toStringAsFixed(1) ?? '--',
+                  unit: '°',
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          Row(
+            children: [
+              Expanded(
+                child: _StatCard(
+                  label: 'Peak Accel',
+                  value: snap?.peakForwardG.toStringAsFixed(3) ?? '--',
+                  unit: 'g',
+                  compact: true,
+                ),
+              ),
+              const SizedBox(width: 8),
+              Expanded(
+                child: _StatCard(
+                  label: 'Peak Brake',
+                  value: snap?.peakBrakeG.toStringAsFixed(3) ?? '--',
+                  unit: 'g',
+                  compact: true,
+                ),
+              ),
+              const SizedBox(width: 8),
+              Expanded(
+                child: _StatCard(
+                  label: 'Peak Lateral',
+                  value: snap?.peakLateralG.toStringAsFixed(3) ?? '--',
+                  unit: 'g',
+                  compact: true,
+                ),
+              ),
+            ],
+          ),
           const SizedBox(height: 16),
+          Row(
+            children: [
+              Icon(
+                snap?.headingCalibrated == true
+                    ? Icons.check_circle
+                    : Icons.sync,
+                size: 14,
+                color: snap?.headingCalibrated == true
+                    ? theme.colorScheme.primary
+                    : theme.colorScheme.onSurfaceVariant,
+              ),
+              const SizedBox(width: 4),
+              Text(
+                snap?.headingCalibrated == true
+                    ? 'Heading locked'
+                    : 'Calibrating heading...',
+                style: theme.textTheme.labelSmall?.copyWith(
+                  color: snap?.headingCalibrated == true
+                      ? theme.colorScheme.primary
+                      : theme.colorScheme.onSurfaceVariant,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 8),
           Text('Speed vs Acceleration', style: theme.textTheme.titleSmall),
           const SizedBox(height: 8),
           Expanded(child: _LiveChart(engine: engine)),
@@ -182,21 +245,35 @@ class _StatCard extends StatelessWidget {
   final String label;
   final String value;
   final String unit;
-  const _StatCard({required this.label, required this.value, required this.unit});
+  final bool compact;
+  const _StatCard({
+    required this.label,
+    required this.value,
+    required this.unit,
+    this.compact = false,
+  });
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     return Card(
       child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 12),
+        padding: compact
+            ? const EdgeInsets.symmetric(vertical: 8, horizontal: 8)
+            : const EdgeInsets.symmetric(vertical: 16, horizontal: 12),
         child: Column(
           children: [
             Text(label, style: theme.textTheme.labelSmall),
             const SizedBox(height: 4),
             Text(
               value,
-              style: theme.textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold),
+              style: compact
+                  ? theme.textTheme.titleSmall?.copyWith(
+                      fontWeight: FontWeight.bold,
+                    )
+                  : theme.textTheme.headlineSmall?.copyWith(
+                      fontWeight: FontWeight.bold,
+                    ),
             ),
             Text(unit, style: theme.textTheme.bodySmall),
           ],
@@ -232,14 +309,17 @@ class _LiveChart extends StatelessWidget {
       );
     }
 
-    final displaySpots = downsample(spots);
+    final displaySpots = downsample(spots, xMin: 0, xMax: 300);
 
     return LineChart(
       LineChartData(
         gridData: const FlGridData(show: true),
         titlesData: FlTitlesData(
           bottomTitles: AxisTitles(
-            axisNameWidget: const Text('Speed (km/h)', style: TextStyle(fontSize: 12)),
+            axisNameWidget: const Text(
+              'Speed (km/h)',
+              style: TextStyle(fontSize: 12),
+            ),
             sideTitles: SideTitles(
               showTitles: true,
               reservedSize: 30,
@@ -250,7 +330,10 @@ class _LiveChart extends StatelessWidget {
             ),
           ),
           leftTitles: AxisTitles(
-            axisNameWidget: const Text('Accel (g)', style: TextStyle(fontSize: 12)),
+            axisNameWidget: const Text(
+              'Accel (g)',
+              style: TextStyle(fontSize: 12),
+            ),
             sideTitles: SideTitles(
               showTitles: true,
               reservedSize: 40,
@@ -260,8 +343,12 @@ class _LiveChart extends StatelessWidget {
               ),
             ),
           ),
-          topTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
-          rightTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+          topTitles: const AxisTitles(
+            sideTitles: SideTitles(showTitles: false),
+          ),
+          rightTitles: const AxisTitles(
+            sideTitles: SideTitles(showTitles: false),
+          ),
         ),
         borderData: FlBorderData(show: true),
         lineBarsData: [
@@ -295,7 +382,11 @@ class _StoppedView extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(Icons.check_circle, size: 64, color: theme.colorScheme.primary),
+            Icon(
+              Icons.check_circle,
+              size: 64,
+              color: theme.colorScheme.primary,
+            ),
             const SizedBox(height: 16),
             Text('Recording saved!', style: theme.textTheme.titleLarge),
             const SizedBox(height: 32),
@@ -306,7 +397,8 @@ class _StoppedView extends StatelessWidget {
                 Navigator.pushReplacement(
                   context,
                   MaterialPageRoute(
-                    builder: (_) => RecordingDetailScreen(recordingId: recordingId),
+                    builder: (_) =>
+                        RecordingDetailScreen(recordingId: recordingId),
                   ),
                 );
               },

@@ -6,20 +6,29 @@ import 'package:path/path.dart' as p;
 
 part 'database.g.dart';
 
+abstract interface class RecordingStore {
+  Future<int> insertRecording(RecordingsCompanion entry);
+  Future<void> updateRecording(RecordingsCompanion entry);
+  Future<void> deleteRecording(int id);
+  Future<void> insertSensorSamplesBatch(List<SensorSamplesCompanion> entries);
+}
+
 class Recordings extends Table {
   IntColumn get id => integer().autoIncrement()();
   TextColumn get name => text().withLength(min: 1, max: 200)();
   DateTimeColumn get startedAt => dateTime()();
   DateTimeColumn get endedAt => dateTime().nullable()();
   IntColumn get durationMs => integer().withDefault(const Constant(0))();
-  BoolColumn get isDevRecording => boolean().withDefault(const Constant(false))();
+  BoolColumn get isDevRecording =>
+      boolean().withDefault(const Constant(false))();
   TextColumn get notes => text().withDefault(const Constant(''))();
 }
 
 class SensorSamples extends Table {
   IntColumn get id => integer().autoIncrement()();
   IntColumn get recordingId => integer().references(Recordings, #id)();
-  IntColumn get timestampUs => integer()(); // microseconds since recording start
+  IntColumn get timestampUs =>
+      integer()(); // microseconds since recording start
 
   // Raw accelerometer
   RealColumn get accelX => real().nullable()();
@@ -46,10 +55,19 @@ class SensorSamples extends Table {
   RealColumn get gpsHeading => real().nullable()();
   RealColumn get gpsAltitude => real().nullable()();
   RealColumn get gpsAccuracy => real().nullable()();
+  RealColumn get gpsBearing => real().nullable()(); // derived bearing (degrees)
+
+  // Gravity vector (world-frame Z axis in phone coords)
+  RealColumn get gravX => real().nullable()();
+  RealColumn get gravY => real().nullable()();
+  RealColumn get gravZ => real().nullable()();
+
+  // Barometric pressure (hPa)
+  RealColumn get pressure => real().nullable()();
 }
 
 @DriftDatabase(tables: [Recordings, SensorSamples])
-class AppDatabase extends _$AppDatabase {
+class AppDatabase extends _$AppDatabase implements RecordingStore {
   AppDatabase._internal(super.e);
 
   static AppDatabase? _instance;
@@ -60,12 +78,37 @@ class AppDatabase extends _$AppDatabase {
   }
 
   @override
-  int get schemaVersion => 1;
+  int get schemaVersion => 2;
+
+  @override
+  MigrationStrategy get migration => MigrationStrategy(
+    onUpgrade: (migrator, from, to) async {
+      if (from < 2) {
+        await customStatement(
+          'ALTER TABLE sensor_samples ADD COLUMN gps_bearing REAL',
+        );
+        await customStatement(
+          'ALTER TABLE sensor_samples ADD COLUMN grav_x REAL',
+        );
+        await customStatement(
+          'ALTER TABLE sensor_samples ADD COLUMN grav_y REAL',
+        );
+        await customStatement(
+          'ALTER TABLE sensor_samples ADD COLUMN grav_z REAL',
+        );
+        await customStatement(
+          'ALTER TABLE sensor_samples ADD COLUMN pressure REAL',
+        );
+      }
+    },
+  );
 
   // --- Recording queries ---
 
   Future<List<Recording>> getAllRecordings() {
-    return (select(recordings)..orderBy([(t) => OrderingTerm.desc(t.startedAt)])).get();
+    return (select(
+      recordings,
+    )..orderBy([(t) => OrderingTerm.desc(t.startedAt)])).get();
   }
 
   Future<Recording> getRecording(int id) {
@@ -77,12 +120,16 @@ class AppDatabase extends _$AppDatabase {
   }
 
   Future<void> updateRecording(RecordingsCompanion entry) {
-    return (update(recordings)..where((t) => t.id.equals(entry.id.value))).write(entry);
+    return (update(
+      recordings,
+    )..where((t) => t.id.equals(entry.id.value))).write(entry);
   }
 
   Future<void> deleteRecording(int id) {
     return transaction(() async {
-      await (delete(sensorSamples)..where((t) => t.recordingId.equals(id))).go();
+      await (delete(
+        sensorSamples,
+      )..where((t) => t.recordingId.equals(id))).go();
       await (delete(recordings)..where((t) => t.id.equals(id))).go();
     });
   }
