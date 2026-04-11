@@ -1,0 +1,2506 @@
+// GENERATED CODE - DO NOT MODIFY BY HAND
+
+part of 'database.dart';
+
+// ignore_for_file: type=lint
+class $RecordingsTable extends Recordings
+    with TableInfo<$RecordingsTable, Recording> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $RecordingsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
+    'id',
+    aliasedName,
+    false,
+    hasAutoIncrement: true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'PRIMARY KEY AUTOINCREMENT',
+    ),
+  );
+  static const VerificationMeta _nameMeta = const VerificationMeta('name');
+  @override
+  late final GeneratedColumn<String> name = GeneratedColumn<String>(
+    'name',
+    aliasedName,
+    false,
+    additionalChecks: GeneratedColumn.checkTextLength(
+      minTextLength: 1,
+      maxTextLength: 200,
+    ),
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _startedAtMeta = const VerificationMeta(
+    'startedAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> startedAt = GeneratedColumn<DateTime>(
+    'started_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _endedAtMeta = const VerificationMeta(
+    'endedAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> endedAt = GeneratedColumn<DateTime>(
+    'ended_at',
+    aliasedName,
+    true,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _durationMsMeta = const VerificationMeta(
+    'durationMs',
+  );
+  @override
+  late final GeneratedColumn<int> durationMs = GeneratedColumn<int>(
+    'duration_ms',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(0),
+  );
+  static const VerificationMeta _isDevRecordingMeta = const VerificationMeta(
+    'isDevRecording',
+  );
+  @override
+  late final GeneratedColumn<bool> isDevRecording = GeneratedColumn<bool>(
+    'is_dev_recording',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("is_dev_recording" IN (0, 1))',
+    ),
+    defaultValue: const Constant(false),
+  );
+  static const VerificationMeta _notesMeta = const VerificationMeta('notes');
+  @override
+  late final GeneratedColumn<String> notes = GeneratedColumn<String>(
+    'notes',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(''),
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    name,
+    startedAt,
+    endedAt,
+    durationMs,
+    isDevRecording,
+    notes,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'recordings';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<Recording> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    }
+    if (data.containsKey('name')) {
+      context.handle(
+        _nameMeta,
+        name.isAcceptableOrUnknown(data['name']!, _nameMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_nameMeta);
+    }
+    if (data.containsKey('started_at')) {
+      context.handle(
+        _startedAtMeta,
+        startedAt.isAcceptableOrUnknown(data['started_at']!, _startedAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_startedAtMeta);
+    }
+    if (data.containsKey('ended_at')) {
+      context.handle(
+        _endedAtMeta,
+        endedAt.isAcceptableOrUnknown(data['ended_at']!, _endedAtMeta),
+      );
+    }
+    if (data.containsKey('duration_ms')) {
+      context.handle(
+        _durationMsMeta,
+        durationMs.isAcceptableOrUnknown(data['duration_ms']!, _durationMsMeta),
+      );
+    }
+    if (data.containsKey('is_dev_recording')) {
+      context.handle(
+        _isDevRecordingMeta,
+        isDevRecording.isAcceptableOrUnknown(
+          data['is_dev_recording']!,
+          _isDevRecordingMeta,
+        ),
+      );
+    }
+    if (data.containsKey('notes')) {
+      context.handle(
+        _notesMeta,
+        notes.isAcceptableOrUnknown(data['notes']!, _notesMeta),
+      );
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  Recording map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return Recording(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}id'],
+      )!,
+      name: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}name'],
+      )!,
+      startedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}started_at'],
+      )!,
+      endedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}ended_at'],
+      ),
+      durationMs: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}duration_ms'],
+      )!,
+      isDevRecording: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}is_dev_recording'],
+      )!,
+      notes: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}notes'],
+      )!,
+    );
+  }
+
+  @override
+  $RecordingsTable createAlias(String alias) {
+    return $RecordingsTable(attachedDatabase, alias);
+  }
+}
+
+class Recording extends DataClass implements Insertable<Recording> {
+  final int id;
+  final String name;
+  final DateTime startedAt;
+  final DateTime? endedAt;
+  final int durationMs;
+  final bool isDevRecording;
+  final String notes;
+  const Recording({
+    required this.id,
+    required this.name,
+    required this.startedAt,
+    this.endedAt,
+    required this.durationMs,
+    required this.isDevRecording,
+    required this.notes,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<int>(id);
+    map['name'] = Variable<String>(name);
+    map['started_at'] = Variable<DateTime>(startedAt);
+    if (!nullToAbsent || endedAt != null) {
+      map['ended_at'] = Variable<DateTime>(endedAt);
+    }
+    map['duration_ms'] = Variable<int>(durationMs);
+    map['is_dev_recording'] = Variable<bool>(isDevRecording);
+    map['notes'] = Variable<String>(notes);
+    return map;
+  }
+
+  RecordingsCompanion toCompanion(bool nullToAbsent) {
+    return RecordingsCompanion(
+      id: Value(id),
+      name: Value(name),
+      startedAt: Value(startedAt),
+      endedAt: endedAt == null && nullToAbsent
+          ? const Value.absent()
+          : Value(endedAt),
+      durationMs: Value(durationMs),
+      isDevRecording: Value(isDevRecording),
+      notes: Value(notes),
+    );
+  }
+
+  factory Recording.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return Recording(
+      id: serializer.fromJson<int>(json['id']),
+      name: serializer.fromJson<String>(json['name']),
+      startedAt: serializer.fromJson<DateTime>(json['startedAt']),
+      endedAt: serializer.fromJson<DateTime?>(json['endedAt']),
+      durationMs: serializer.fromJson<int>(json['durationMs']),
+      isDevRecording: serializer.fromJson<bool>(json['isDevRecording']),
+      notes: serializer.fromJson<String>(json['notes']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<int>(id),
+      'name': serializer.toJson<String>(name),
+      'startedAt': serializer.toJson<DateTime>(startedAt),
+      'endedAt': serializer.toJson<DateTime?>(endedAt),
+      'durationMs': serializer.toJson<int>(durationMs),
+      'isDevRecording': serializer.toJson<bool>(isDevRecording),
+      'notes': serializer.toJson<String>(notes),
+    };
+  }
+
+  Recording copyWith({
+    int? id,
+    String? name,
+    DateTime? startedAt,
+    Value<DateTime?> endedAt = const Value.absent(),
+    int? durationMs,
+    bool? isDevRecording,
+    String? notes,
+  }) => Recording(
+    id: id ?? this.id,
+    name: name ?? this.name,
+    startedAt: startedAt ?? this.startedAt,
+    endedAt: endedAt.present ? endedAt.value : this.endedAt,
+    durationMs: durationMs ?? this.durationMs,
+    isDevRecording: isDevRecording ?? this.isDevRecording,
+    notes: notes ?? this.notes,
+  );
+  Recording copyWithCompanion(RecordingsCompanion data) {
+    return Recording(
+      id: data.id.present ? data.id.value : this.id,
+      name: data.name.present ? data.name.value : this.name,
+      startedAt: data.startedAt.present ? data.startedAt.value : this.startedAt,
+      endedAt: data.endedAt.present ? data.endedAt.value : this.endedAt,
+      durationMs: data.durationMs.present
+          ? data.durationMs.value
+          : this.durationMs,
+      isDevRecording: data.isDevRecording.present
+          ? data.isDevRecording.value
+          : this.isDevRecording,
+      notes: data.notes.present ? data.notes.value : this.notes,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('Recording(')
+          ..write('id: $id, ')
+          ..write('name: $name, ')
+          ..write('startedAt: $startedAt, ')
+          ..write('endedAt: $endedAt, ')
+          ..write('durationMs: $durationMs, ')
+          ..write('isDevRecording: $isDevRecording, ')
+          ..write('notes: $notes')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    id,
+    name,
+    startedAt,
+    endedAt,
+    durationMs,
+    isDevRecording,
+    notes,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is Recording &&
+          other.id == this.id &&
+          other.name == this.name &&
+          other.startedAt == this.startedAt &&
+          other.endedAt == this.endedAt &&
+          other.durationMs == this.durationMs &&
+          other.isDevRecording == this.isDevRecording &&
+          other.notes == this.notes);
+}
+
+class RecordingsCompanion extends UpdateCompanion<Recording> {
+  final Value<int> id;
+  final Value<String> name;
+  final Value<DateTime> startedAt;
+  final Value<DateTime?> endedAt;
+  final Value<int> durationMs;
+  final Value<bool> isDevRecording;
+  final Value<String> notes;
+  const RecordingsCompanion({
+    this.id = const Value.absent(),
+    this.name = const Value.absent(),
+    this.startedAt = const Value.absent(),
+    this.endedAt = const Value.absent(),
+    this.durationMs = const Value.absent(),
+    this.isDevRecording = const Value.absent(),
+    this.notes = const Value.absent(),
+  });
+  RecordingsCompanion.insert({
+    this.id = const Value.absent(),
+    required String name,
+    required DateTime startedAt,
+    this.endedAt = const Value.absent(),
+    this.durationMs = const Value.absent(),
+    this.isDevRecording = const Value.absent(),
+    this.notes = const Value.absent(),
+  }) : name = Value(name),
+       startedAt = Value(startedAt);
+  static Insertable<Recording> custom({
+    Expression<int>? id,
+    Expression<String>? name,
+    Expression<DateTime>? startedAt,
+    Expression<DateTime>? endedAt,
+    Expression<int>? durationMs,
+    Expression<bool>? isDevRecording,
+    Expression<String>? notes,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (name != null) 'name': name,
+      if (startedAt != null) 'started_at': startedAt,
+      if (endedAt != null) 'ended_at': endedAt,
+      if (durationMs != null) 'duration_ms': durationMs,
+      if (isDevRecording != null) 'is_dev_recording': isDevRecording,
+      if (notes != null) 'notes': notes,
+    });
+  }
+
+  RecordingsCompanion copyWith({
+    Value<int>? id,
+    Value<String>? name,
+    Value<DateTime>? startedAt,
+    Value<DateTime?>? endedAt,
+    Value<int>? durationMs,
+    Value<bool>? isDevRecording,
+    Value<String>? notes,
+  }) {
+    return RecordingsCompanion(
+      id: id ?? this.id,
+      name: name ?? this.name,
+      startedAt: startedAt ?? this.startedAt,
+      endedAt: endedAt ?? this.endedAt,
+      durationMs: durationMs ?? this.durationMs,
+      isDevRecording: isDevRecording ?? this.isDevRecording,
+      notes: notes ?? this.notes,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<int>(id.value);
+    }
+    if (name.present) {
+      map['name'] = Variable<String>(name.value);
+    }
+    if (startedAt.present) {
+      map['started_at'] = Variable<DateTime>(startedAt.value);
+    }
+    if (endedAt.present) {
+      map['ended_at'] = Variable<DateTime>(endedAt.value);
+    }
+    if (durationMs.present) {
+      map['duration_ms'] = Variable<int>(durationMs.value);
+    }
+    if (isDevRecording.present) {
+      map['is_dev_recording'] = Variable<bool>(isDevRecording.value);
+    }
+    if (notes.present) {
+      map['notes'] = Variable<String>(notes.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('RecordingsCompanion(')
+          ..write('id: $id, ')
+          ..write('name: $name, ')
+          ..write('startedAt: $startedAt, ')
+          ..write('endedAt: $endedAt, ')
+          ..write('durationMs: $durationMs, ')
+          ..write('isDevRecording: $isDevRecording, ')
+          ..write('notes: $notes')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $SensorSamplesTable extends SensorSamples
+    with TableInfo<$SensorSamplesTable, SensorSample> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $SensorSamplesTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
+    'id',
+    aliasedName,
+    false,
+    hasAutoIncrement: true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'PRIMARY KEY AUTOINCREMENT',
+    ),
+  );
+  static const VerificationMeta _recordingIdMeta = const VerificationMeta(
+    'recordingId',
+  );
+  @override
+  late final GeneratedColumn<int> recordingId = GeneratedColumn<int>(
+    'recording_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'REFERENCES recordings (id)',
+    ),
+  );
+  static const VerificationMeta _timestampUsMeta = const VerificationMeta(
+    'timestampUs',
+  );
+  @override
+  late final GeneratedColumn<int> timestampUs = GeneratedColumn<int>(
+    'timestamp_us',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _accelXMeta = const VerificationMeta('accelX');
+  @override
+  late final GeneratedColumn<double> accelX = GeneratedColumn<double>(
+    'accel_x',
+    aliasedName,
+    true,
+    type: DriftSqlType.double,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _accelYMeta = const VerificationMeta('accelY');
+  @override
+  late final GeneratedColumn<double> accelY = GeneratedColumn<double>(
+    'accel_y',
+    aliasedName,
+    true,
+    type: DriftSqlType.double,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _accelZMeta = const VerificationMeta('accelZ');
+  @override
+  late final GeneratedColumn<double> accelZ = GeneratedColumn<double>(
+    'accel_z',
+    aliasedName,
+    true,
+    type: DriftSqlType.double,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _linearAccelXMeta = const VerificationMeta(
+    'linearAccelX',
+  );
+  @override
+  late final GeneratedColumn<double> linearAccelX = GeneratedColumn<double>(
+    'linear_accel_x',
+    aliasedName,
+    true,
+    type: DriftSqlType.double,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _linearAccelYMeta = const VerificationMeta(
+    'linearAccelY',
+  );
+  @override
+  late final GeneratedColumn<double> linearAccelY = GeneratedColumn<double>(
+    'linear_accel_y',
+    aliasedName,
+    true,
+    type: DriftSqlType.double,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _linearAccelZMeta = const VerificationMeta(
+    'linearAccelZ',
+  );
+  @override
+  late final GeneratedColumn<double> linearAccelZ = GeneratedColumn<double>(
+    'linear_accel_z',
+    aliasedName,
+    true,
+    type: DriftSqlType.double,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _gyroXMeta = const VerificationMeta('gyroX');
+  @override
+  late final GeneratedColumn<double> gyroX = GeneratedColumn<double>(
+    'gyro_x',
+    aliasedName,
+    true,
+    type: DriftSqlType.double,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _gyroYMeta = const VerificationMeta('gyroY');
+  @override
+  late final GeneratedColumn<double> gyroY = GeneratedColumn<double>(
+    'gyro_y',
+    aliasedName,
+    true,
+    type: DriftSqlType.double,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _gyroZMeta = const VerificationMeta('gyroZ');
+  @override
+  late final GeneratedColumn<double> gyroZ = GeneratedColumn<double>(
+    'gyro_z',
+    aliasedName,
+    true,
+    type: DriftSqlType.double,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _forwardAccelMeta = const VerificationMeta(
+    'forwardAccel',
+  );
+  @override
+  late final GeneratedColumn<double> forwardAccel = GeneratedColumn<double>(
+    'forward_accel',
+    aliasedName,
+    true,
+    type: DriftSqlType.double,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _gpsSpeedMeta = const VerificationMeta(
+    'gpsSpeed',
+  );
+  @override
+  late final GeneratedColumn<double> gpsSpeed = GeneratedColumn<double>(
+    'gps_speed',
+    aliasedName,
+    true,
+    type: DriftSqlType.double,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _gpsLatMeta = const VerificationMeta('gpsLat');
+  @override
+  late final GeneratedColumn<double> gpsLat = GeneratedColumn<double>(
+    'gps_lat',
+    aliasedName,
+    true,
+    type: DriftSqlType.double,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _gpsLonMeta = const VerificationMeta('gpsLon');
+  @override
+  late final GeneratedColumn<double> gpsLon = GeneratedColumn<double>(
+    'gps_lon',
+    aliasedName,
+    true,
+    type: DriftSqlType.double,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _gpsHeadingMeta = const VerificationMeta(
+    'gpsHeading',
+  );
+  @override
+  late final GeneratedColumn<double> gpsHeading = GeneratedColumn<double>(
+    'gps_heading',
+    aliasedName,
+    true,
+    type: DriftSqlType.double,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _gpsAltitudeMeta = const VerificationMeta(
+    'gpsAltitude',
+  );
+  @override
+  late final GeneratedColumn<double> gpsAltitude = GeneratedColumn<double>(
+    'gps_altitude',
+    aliasedName,
+    true,
+    type: DriftSqlType.double,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _gpsAccuracyMeta = const VerificationMeta(
+    'gpsAccuracy',
+  );
+  @override
+  late final GeneratedColumn<double> gpsAccuracy = GeneratedColumn<double>(
+    'gps_accuracy',
+    aliasedName,
+    true,
+    type: DriftSqlType.double,
+    requiredDuringInsert: false,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    recordingId,
+    timestampUs,
+    accelX,
+    accelY,
+    accelZ,
+    linearAccelX,
+    linearAccelY,
+    linearAccelZ,
+    gyroX,
+    gyroY,
+    gyroZ,
+    forwardAccel,
+    gpsSpeed,
+    gpsLat,
+    gpsLon,
+    gpsHeading,
+    gpsAltitude,
+    gpsAccuracy,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'sensor_samples';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<SensorSample> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    }
+    if (data.containsKey('recording_id')) {
+      context.handle(
+        _recordingIdMeta,
+        recordingId.isAcceptableOrUnknown(
+          data['recording_id']!,
+          _recordingIdMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_recordingIdMeta);
+    }
+    if (data.containsKey('timestamp_us')) {
+      context.handle(
+        _timestampUsMeta,
+        timestampUs.isAcceptableOrUnknown(
+          data['timestamp_us']!,
+          _timestampUsMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_timestampUsMeta);
+    }
+    if (data.containsKey('accel_x')) {
+      context.handle(
+        _accelXMeta,
+        accelX.isAcceptableOrUnknown(data['accel_x']!, _accelXMeta),
+      );
+    }
+    if (data.containsKey('accel_y')) {
+      context.handle(
+        _accelYMeta,
+        accelY.isAcceptableOrUnknown(data['accel_y']!, _accelYMeta),
+      );
+    }
+    if (data.containsKey('accel_z')) {
+      context.handle(
+        _accelZMeta,
+        accelZ.isAcceptableOrUnknown(data['accel_z']!, _accelZMeta),
+      );
+    }
+    if (data.containsKey('linear_accel_x')) {
+      context.handle(
+        _linearAccelXMeta,
+        linearAccelX.isAcceptableOrUnknown(
+          data['linear_accel_x']!,
+          _linearAccelXMeta,
+        ),
+      );
+    }
+    if (data.containsKey('linear_accel_y')) {
+      context.handle(
+        _linearAccelYMeta,
+        linearAccelY.isAcceptableOrUnknown(
+          data['linear_accel_y']!,
+          _linearAccelYMeta,
+        ),
+      );
+    }
+    if (data.containsKey('linear_accel_z')) {
+      context.handle(
+        _linearAccelZMeta,
+        linearAccelZ.isAcceptableOrUnknown(
+          data['linear_accel_z']!,
+          _linearAccelZMeta,
+        ),
+      );
+    }
+    if (data.containsKey('gyro_x')) {
+      context.handle(
+        _gyroXMeta,
+        gyroX.isAcceptableOrUnknown(data['gyro_x']!, _gyroXMeta),
+      );
+    }
+    if (data.containsKey('gyro_y')) {
+      context.handle(
+        _gyroYMeta,
+        gyroY.isAcceptableOrUnknown(data['gyro_y']!, _gyroYMeta),
+      );
+    }
+    if (data.containsKey('gyro_z')) {
+      context.handle(
+        _gyroZMeta,
+        gyroZ.isAcceptableOrUnknown(data['gyro_z']!, _gyroZMeta),
+      );
+    }
+    if (data.containsKey('forward_accel')) {
+      context.handle(
+        _forwardAccelMeta,
+        forwardAccel.isAcceptableOrUnknown(
+          data['forward_accel']!,
+          _forwardAccelMeta,
+        ),
+      );
+    }
+    if (data.containsKey('gps_speed')) {
+      context.handle(
+        _gpsSpeedMeta,
+        gpsSpeed.isAcceptableOrUnknown(data['gps_speed']!, _gpsSpeedMeta),
+      );
+    }
+    if (data.containsKey('gps_lat')) {
+      context.handle(
+        _gpsLatMeta,
+        gpsLat.isAcceptableOrUnknown(data['gps_lat']!, _gpsLatMeta),
+      );
+    }
+    if (data.containsKey('gps_lon')) {
+      context.handle(
+        _gpsLonMeta,
+        gpsLon.isAcceptableOrUnknown(data['gps_lon']!, _gpsLonMeta),
+      );
+    }
+    if (data.containsKey('gps_heading')) {
+      context.handle(
+        _gpsHeadingMeta,
+        gpsHeading.isAcceptableOrUnknown(data['gps_heading']!, _gpsHeadingMeta),
+      );
+    }
+    if (data.containsKey('gps_altitude')) {
+      context.handle(
+        _gpsAltitudeMeta,
+        gpsAltitude.isAcceptableOrUnknown(
+          data['gps_altitude']!,
+          _gpsAltitudeMeta,
+        ),
+      );
+    }
+    if (data.containsKey('gps_accuracy')) {
+      context.handle(
+        _gpsAccuracyMeta,
+        gpsAccuracy.isAcceptableOrUnknown(
+          data['gps_accuracy']!,
+          _gpsAccuracyMeta,
+        ),
+      );
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  SensorSample map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return SensorSample(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}id'],
+      )!,
+      recordingId: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}recording_id'],
+      )!,
+      timestampUs: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}timestamp_us'],
+      )!,
+      accelX: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}accel_x'],
+      ),
+      accelY: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}accel_y'],
+      ),
+      accelZ: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}accel_z'],
+      ),
+      linearAccelX: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}linear_accel_x'],
+      ),
+      linearAccelY: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}linear_accel_y'],
+      ),
+      linearAccelZ: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}linear_accel_z'],
+      ),
+      gyroX: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}gyro_x'],
+      ),
+      gyroY: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}gyro_y'],
+      ),
+      gyroZ: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}gyro_z'],
+      ),
+      forwardAccel: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}forward_accel'],
+      ),
+      gpsSpeed: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}gps_speed'],
+      ),
+      gpsLat: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}gps_lat'],
+      ),
+      gpsLon: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}gps_lon'],
+      ),
+      gpsHeading: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}gps_heading'],
+      ),
+      gpsAltitude: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}gps_altitude'],
+      ),
+      gpsAccuracy: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}gps_accuracy'],
+      ),
+    );
+  }
+
+  @override
+  $SensorSamplesTable createAlias(String alias) {
+    return $SensorSamplesTable(attachedDatabase, alias);
+  }
+}
+
+class SensorSample extends DataClass implements Insertable<SensorSample> {
+  final int id;
+  final int recordingId;
+  final int timestampUs;
+  final double? accelX;
+  final double? accelY;
+  final double? accelZ;
+  final double? linearAccelX;
+  final double? linearAccelY;
+  final double? linearAccelZ;
+  final double? gyroX;
+  final double? gyroY;
+  final double? gyroZ;
+  final double? forwardAccel;
+  final double? gpsSpeed;
+  final double? gpsLat;
+  final double? gpsLon;
+  final double? gpsHeading;
+  final double? gpsAltitude;
+  final double? gpsAccuracy;
+  const SensorSample({
+    required this.id,
+    required this.recordingId,
+    required this.timestampUs,
+    this.accelX,
+    this.accelY,
+    this.accelZ,
+    this.linearAccelX,
+    this.linearAccelY,
+    this.linearAccelZ,
+    this.gyroX,
+    this.gyroY,
+    this.gyroZ,
+    this.forwardAccel,
+    this.gpsSpeed,
+    this.gpsLat,
+    this.gpsLon,
+    this.gpsHeading,
+    this.gpsAltitude,
+    this.gpsAccuracy,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<int>(id);
+    map['recording_id'] = Variable<int>(recordingId);
+    map['timestamp_us'] = Variable<int>(timestampUs);
+    if (!nullToAbsent || accelX != null) {
+      map['accel_x'] = Variable<double>(accelX);
+    }
+    if (!nullToAbsent || accelY != null) {
+      map['accel_y'] = Variable<double>(accelY);
+    }
+    if (!nullToAbsent || accelZ != null) {
+      map['accel_z'] = Variable<double>(accelZ);
+    }
+    if (!nullToAbsent || linearAccelX != null) {
+      map['linear_accel_x'] = Variable<double>(linearAccelX);
+    }
+    if (!nullToAbsent || linearAccelY != null) {
+      map['linear_accel_y'] = Variable<double>(linearAccelY);
+    }
+    if (!nullToAbsent || linearAccelZ != null) {
+      map['linear_accel_z'] = Variable<double>(linearAccelZ);
+    }
+    if (!nullToAbsent || gyroX != null) {
+      map['gyro_x'] = Variable<double>(gyroX);
+    }
+    if (!nullToAbsent || gyroY != null) {
+      map['gyro_y'] = Variable<double>(gyroY);
+    }
+    if (!nullToAbsent || gyroZ != null) {
+      map['gyro_z'] = Variable<double>(gyroZ);
+    }
+    if (!nullToAbsent || forwardAccel != null) {
+      map['forward_accel'] = Variable<double>(forwardAccel);
+    }
+    if (!nullToAbsent || gpsSpeed != null) {
+      map['gps_speed'] = Variable<double>(gpsSpeed);
+    }
+    if (!nullToAbsent || gpsLat != null) {
+      map['gps_lat'] = Variable<double>(gpsLat);
+    }
+    if (!nullToAbsent || gpsLon != null) {
+      map['gps_lon'] = Variable<double>(gpsLon);
+    }
+    if (!nullToAbsent || gpsHeading != null) {
+      map['gps_heading'] = Variable<double>(gpsHeading);
+    }
+    if (!nullToAbsent || gpsAltitude != null) {
+      map['gps_altitude'] = Variable<double>(gpsAltitude);
+    }
+    if (!nullToAbsent || gpsAccuracy != null) {
+      map['gps_accuracy'] = Variable<double>(gpsAccuracy);
+    }
+    return map;
+  }
+
+  SensorSamplesCompanion toCompanion(bool nullToAbsent) {
+    return SensorSamplesCompanion(
+      id: Value(id),
+      recordingId: Value(recordingId),
+      timestampUs: Value(timestampUs),
+      accelX: accelX == null && nullToAbsent
+          ? const Value.absent()
+          : Value(accelX),
+      accelY: accelY == null && nullToAbsent
+          ? const Value.absent()
+          : Value(accelY),
+      accelZ: accelZ == null && nullToAbsent
+          ? const Value.absent()
+          : Value(accelZ),
+      linearAccelX: linearAccelX == null && nullToAbsent
+          ? const Value.absent()
+          : Value(linearAccelX),
+      linearAccelY: linearAccelY == null && nullToAbsent
+          ? const Value.absent()
+          : Value(linearAccelY),
+      linearAccelZ: linearAccelZ == null && nullToAbsent
+          ? const Value.absent()
+          : Value(linearAccelZ),
+      gyroX: gyroX == null && nullToAbsent
+          ? const Value.absent()
+          : Value(gyroX),
+      gyroY: gyroY == null && nullToAbsent
+          ? const Value.absent()
+          : Value(gyroY),
+      gyroZ: gyroZ == null && nullToAbsent
+          ? const Value.absent()
+          : Value(gyroZ),
+      forwardAccel: forwardAccel == null && nullToAbsent
+          ? const Value.absent()
+          : Value(forwardAccel),
+      gpsSpeed: gpsSpeed == null && nullToAbsent
+          ? const Value.absent()
+          : Value(gpsSpeed),
+      gpsLat: gpsLat == null && nullToAbsent
+          ? const Value.absent()
+          : Value(gpsLat),
+      gpsLon: gpsLon == null && nullToAbsent
+          ? const Value.absent()
+          : Value(gpsLon),
+      gpsHeading: gpsHeading == null && nullToAbsent
+          ? const Value.absent()
+          : Value(gpsHeading),
+      gpsAltitude: gpsAltitude == null && nullToAbsent
+          ? const Value.absent()
+          : Value(gpsAltitude),
+      gpsAccuracy: gpsAccuracy == null && nullToAbsent
+          ? const Value.absent()
+          : Value(gpsAccuracy),
+    );
+  }
+
+  factory SensorSample.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return SensorSample(
+      id: serializer.fromJson<int>(json['id']),
+      recordingId: serializer.fromJson<int>(json['recordingId']),
+      timestampUs: serializer.fromJson<int>(json['timestampUs']),
+      accelX: serializer.fromJson<double?>(json['accelX']),
+      accelY: serializer.fromJson<double?>(json['accelY']),
+      accelZ: serializer.fromJson<double?>(json['accelZ']),
+      linearAccelX: serializer.fromJson<double?>(json['linearAccelX']),
+      linearAccelY: serializer.fromJson<double?>(json['linearAccelY']),
+      linearAccelZ: serializer.fromJson<double?>(json['linearAccelZ']),
+      gyroX: serializer.fromJson<double?>(json['gyroX']),
+      gyroY: serializer.fromJson<double?>(json['gyroY']),
+      gyroZ: serializer.fromJson<double?>(json['gyroZ']),
+      forwardAccel: serializer.fromJson<double?>(json['forwardAccel']),
+      gpsSpeed: serializer.fromJson<double?>(json['gpsSpeed']),
+      gpsLat: serializer.fromJson<double?>(json['gpsLat']),
+      gpsLon: serializer.fromJson<double?>(json['gpsLon']),
+      gpsHeading: serializer.fromJson<double?>(json['gpsHeading']),
+      gpsAltitude: serializer.fromJson<double?>(json['gpsAltitude']),
+      gpsAccuracy: serializer.fromJson<double?>(json['gpsAccuracy']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<int>(id),
+      'recordingId': serializer.toJson<int>(recordingId),
+      'timestampUs': serializer.toJson<int>(timestampUs),
+      'accelX': serializer.toJson<double?>(accelX),
+      'accelY': serializer.toJson<double?>(accelY),
+      'accelZ': serializer.toJson<double?>(accelZ),
+      'linearAccelX': serializer.toJson<double?>(linearAccelX),
+      'linearAccelY': serializer.toJson<double?>(linearAccelY),
+      'linearAccelZ': serializer.toJson<double?>(linearAccelZ),
+      'gyroX': serializer.toJson<double?>(gyroX),
+      'gyroY': serializer.toJson<double?>(gyroY),
+      'gyroZ': serializer.toJson<double?>(gyroZ),
+      'forwardAccel': serializer.toJson<double?>(forwardAccel),
+      'gpsSpeed': serializer.toJson<double?>(gpsSpeed),
+      'gpsLat': serializer.toJson<double?>(gpsLat),
+      'gpsLon': serializer.toJson<double?>(gpsLon),
+      'gpsHeading': serializer.toJson<double?>(gpsHeading),
+      'gpsAltitude': serializer.toJson<double?>(gpsAltitude),
+      'gpsAccuracy': serializer.toJson<double?>(gpsAccuracy),
+    };
+  }
+
+  SensorSample copyWith({
+    int? id,
+    int? recordingId,
+    int? timestampUs,
+    Value<double?> accelX = const Value.absent(),
+    Value<double?> accelY = const Value.absent(),
+    Value<double?> accelZ = const Value.absent(),
+    Value<double?> linearAccelX = const Value.absent(),
+    Value<double?> linearAccelY = const Value.absent(),
+    Value<double?> linearAccelZ = const Value.absent(),
+    Value<double?> gyroX = const Value.absent(),
+    Value<double?> gyroY = const Value.absent(),
+    Value<double?> gyroZ = const Value.absent(),
+    Value<double?> forwardAccel = const Value.absent(),
+    Value<double?> gpsSpeed = const Value.absent(),
+    Value<double?> gpsLat = const Value.absent(),
+    Value<double?> gpsLon = const Value.absent(),
+    Value<double?> gpsHeading = const Value.absent(),
+    Value<double?> gpsAltitude = const Value.absent(),
+    Value<double?> gpsAccuracy = const Value.absent(),
+  }) => SensorSample(
+    id: id ?? this.id,
+    recordingId: recordingId ?? this.recordingId,
+    timestampUs: timestampUs ?? this.timestampUs,
+    accelX: accelX.present ? accelX.value : this.accelX,
+    accelY: accelY.present ? accelY.value : this.accelY,
+    accelZ: accelZ.present ? accelZ.value : this.accelZ,
+    linearAccelX: linearAccelX.present ? linearAccelX.value : this.linearAccelX,
+    linearAccelY: linearAccelY.present ? linearAccelY.value : this.linearAccelY,
+    linearAccelZ: linearAccelZ.present ? linearAccelZ.value : this.linearAccelZ,
+    gyroX: gyroX.present ? gyroX.value : this.gyroX,
+    gyroY: gyroY.present ? gyroY.value : this.gyroY,
+    gyroZ: gyroZ.present ? gyroZ.value : this.gyroZ,
+    forwardAccel: forwardAccel.present ? forwardAccel.value : this.forwardAccel,
+    gpsSpeed: gpsSpeed.present ? gpsSpeed.value : this.gpsSpeed,
+    gpsLat: gpsLat.present ? gpsLat.value : this.gpsLat,
+    gpsLon: gpsLon.present ? gpsLon.value : this.gpsLon,
+    gpsHeading: gpsHeading.present ? gpsHeading.value : this.gpsHeading,
+    gpsAltitude: gpsAltitude.present ? gpsAltitude.value : this.gpsAltitude,
+    gpsAccuracy: gpsAccuracy.present ? gpsAccuracy.value : this.gpsAccuracy,
+  );
+  SensorSample copyWithCompanion(SensorSamplesCompanion data) {
+    return SensorSample(
+      id: data.id.present ? data.id.value : this.id,
+      recordingId: data.recordingId.present
+          ? data.recordingId.value
+          : this.recordingId,
+      timestampUs: data.timestampUs.present
+          ? data.timestampUs.value
+          : this.timestampUs,
+      accelX: data.accelX.present ? data.accelX.value : this.accelX,
+      accelY: data.accelY.present ? data.accelY.value : this.accelY,
+      accelZ: data.accelZ.present ? data.accelZ.value : this.accelZ,
+      linearAccelX: data.linearAccelX.present
+          ? data.linearAccelX.value
+          : this.linearAccelX,
+      linearAccelY: data.linearAccelY.present
+          ? data.linearAccelY.value
+          : this.linearAccelY,
+      linearAccelZ: data.linearAccelZ.present
+          ? data.linearAccelZ.value
+          : this.linearAccelZ,
+      gyroX: data.gyroX.present ? data.gyroX.value : this.gyroX,
+      gyroY: data.gyroY.present ? data.gyroY.value : this.gyroY,
+      gyroZ: data.gyroZ.present ? data.gyroZ.value : this.gyroZ,
+      forwardAccel: data.forwardAccel.present
+          ? data.forwardAccel.value
+          : this.forwardAccel,
+      gpsSpeed: data.gpsSpeed.present ? data.gpsSpeed.value : this.gpsSpeed,
+      gpsLat: data.gpsLat.present ? data.gpsLat.value : this.gpsLat,
+      gpsLon: data.gpsLon.present ? data.gpsLon.value : this.gpsLon,
+      gpsHeading: data.gpsHeading.present
+          ? data.gpsHeading.value
+          : this.gpsHeading,
+      gpsAltitude: data.gpsAltitude.present
+          ? data.gpsAltitude.value
+          : this.gpsAltitude,
+      gpsAccuracy: data.gpsAccuracy.present
+          ? data.gpsAccuracy.value
+          : this.gpsAccuracy,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('SensorSample(')
+          ..write('id: $id, ')
+          ..write('recordingId: $recordingId, ')
+          ..write('timestampUs: $timestampUs, ')
+          ..write('accelX: $accelX, ')
+          ..write('accelY: $accelY, ')
+          ..write('accelZ: $accelZ, ')
+          ..write('linearAccelX: $linearAccelX, ')
+          ..write('linearAccelY: $linearAccelY, ')
+          ..write('linearAccelZ: $linearAccelZ, ')
+          ..write('gyroX: $gyroX, ')
+          ..write('gyroY: $gyroY, ')
+          ..write('gyroZ: $gyroZ, ')
+          ..write('forwardAccel: $forwardAccel, ')
+          ..write('gpsSpeed: $gpsSpeed, ')
+          ..write('gpsLat: $gpsLat, ')
+          ..write('gpsLon: $gpsLon, ')
+          ..write('gpsHeading: $gpsHeading, ')
+          ..write('gpsAltitude: $gpsAltitude, ')
+          ..write('gpsAccuracy: $gpsAccuracy')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    id,
+    recordingId,
+    timestampUs,
+    accelX,
+    accelY,
+    accelZ,
+    linearAccelX,
+    linearAccelY,
+    linearAccelZ,
+    gyroX,
+    gyroY,
+    gyroZ,
+    forwardAccel,
+    gpsSpeed,
+    gpsLat,
+    gpsLon,
+    gpsHeading,
+    gpsAltitude,
+    gpsAccuracy,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is SensorSample &&
+          other.id == this.id &&
+          other.recordingId == this.recordingId &&
+          other.timestampUs == this.timestampUs &&
+          other.accelX == this.accelX &&
+          other.accelY == this.accelY &&
+          other.accelZ == this.accelZ &&
+          other.linearAccelX == this.linearAccelX &&
+          other.linearAccelY == this.linearAccelY &&
+          other.linearAccelZ == this.linearAccelZ &&
+          other.gyroX == this.gyroX &&
+          other.gyroY == this.gyroY &&
+          other.gyroZ == this.gyroZ &&
+          other.forwardAccel == this.forwardAccel &&
+          other.gpsSpeed == this.gpsSpeed &&
+          other.gpsLat == this.gpsLat &&
+          other.gpsLon == this.gpsLon &&
+          other.gpsHeading == this.gpsHeading &&
+          other.gpsAltitude == this.gpsAltitude &&
+          other.gpsAccuracy == this.gpsAccuracy);
+}
+
+class SensorSamplesCompanion extends UpdateCompanion<SensorSample> {
+  final Value<int> id;
+  final Value<int> recordingId;
+  final Value<int> timestampUs;
+  final Value<double?> accelX;
+  final Value<double?> accelY;
+  final Value<double?> accelZ;
+  final Value<double?> linearAccelX;
+  final Value<double?> linearAccelY;
+  final Value<double?> linearAccelZ;
+  final Value<double?> gyroX;
+  final Value<double?> gyroY;
+  final Value<double?> gyroZ;
+  final Value<double?> forwardAccel;
+  final Value<double?> gpsSpeed;
+  final Value<double?> gpsLat;
+  final Value<double?> gpsLon;
+  final Value<double?> gpsHeading;
+  final Value<double?> gpsAltitude;
+  final Value<double?> gpsAccuracy;
+  const SensorSamplesCompanion({
+    this.id = const Value.absent(),
+    this.recordingId = const Value.absent(),
+    this.timestampUs = const Value.absent(),
+    this.accelX = const Value.absent(),
+    this.accelY = const Value.absent(),
+    this.accelZ = const Value.absent(),
+    this.linearAccelX = const Value.absent(),
+    this.linearAccelY = const Value.absent(),
+    this.linearAccelZ = const Value.absent(),
+    this.gyroX = const Value.absent(),
+    this.gyroY = const Value.absent(),
+    this.gyroZ = const Value.absent(),
+    this.forwardAccel = const Value.absent(),
+    this.gpsSpeed = const Value.absent(),
+    this.gpsLat = const Value.absent(),
+    this.gpsLon = const Value.absent(),
+    this.gpsHeading = const Value.absent(),
+    this.gpsAltitude = const Value.absent(),
+    this.gpsAccuracy = const Value.absent(),
+  });
+  SensorSamplesCompanion.insert({
+    this.id = const Value.absent(),
+    required int recordingId,
+    required int timestampUs,
+    this.accelX = const Value.absent(),
+    this.accelY = const Value.absent(),
+    this.accelZ = const Value.absent(),
+    this.linearAccelX = const Value.absent(),
+    this.linearAccelY = const Value.absent(),
+    this.linearAccelZ = const Value.absent(),
+    this.gyroX = const Value.absent(),
+    this.gyroY = const Value.absent(),
+    this.gyroZ = const Value.absent(),
+    this.forwardAccel = const Value.absent(),
+    this.gpsSpeed = const Value.absent(),
+    this.gpsLat = const Value.absent(),
+    this.gpsLon = const Value.absent(),
+    this.gpsHeading = const Value.absent(),
+    this.gpsAltitude = const Value.absent(),
+    this.gpsAccuracy = const Value.absent(),
+  }) : recordingId = Value(recordingId),
+       timestampUs = Value(timestampUs);
+  static Insertable<SensorSample> custom({
+    Expression<int>? id,
+    Expression<int>? recordingId,
+    Expression<int>? timestampUs,
+    Expression<double>? accelX,
+    Expression<double>? accelY,
+    Expression<double>? accelZ,
+    Expression<double>? linearAccelX,
+    Expression<double>? linearAccelY,
+    Expression<double>? linearAccelZ,
+    Expression<double>? gyroX,
+    Expression<double>? gyroY,
+    Expression<double>? gyroZ,
+    Expression<double>? forwardAccel,
+    Expression<double>? gpsSpeed,
+    Expression<double>? gpsLat,
+    Expression<double>? gpsLon,
+    Expression<double>? gpsHeading,
+    Expression<double>? gpsAltitude,
+    Expression<double>? gpsAccuracy,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (recordingId != null) 'recording_id': recordingId,
+      if (timestampUs != null) 'timestamp_us': timestampUs,
+      if (accelX != null) 'accel_x': accelX,
+      if (accelY != null) 'accel_y': accelY,
+      if (accelZ != null) 'accel_z': accelZ,
+      if (linearAccelX != null) 'linear_accel_x': linearAccelX,
+      if (linearAccelY != null) 'linear_accel_y': linearAccelY,
+      if (linearAccelZ != null) 'linear_accel_z': linearAccelZ,
+      if (gyroX != null) 'gyro_x': gyroX,
+      if (gyroY != null) 'gyro_y': gyroY,
+      if (gyroZ != null) 'gyro_z': gyroZ,
+      if (forwardAccel != null) 'forward_accel': forwardAccel,
+      if (gpsSpeed != null) 'gps_speed': gpsSpeed,
+      if (gpsLat != null) 'gps_lat': gpsLat,
+      if (gpsLon != null) 'gps_lon': gpsLon,
+      if (gpsHeading != null) 'gps_heading': gpsHeading,
+      if (gpsAltitude != null) 'gps_altitude': gpsAltitude,
+      if (gpsAccuracy != null) 'gps_accuracy': gpsAccuracy,
+    });
+  }
+
+  SensorSamplesCompanion copyWith({
+    Value<int>? id,
+    Value<int>? recordingId,
+    Value<int>? timestampUs,
+    Value<double?>? accelX,
+    Value<double?>? accelY,
+    Value<double?>? accelZ,
+    Value<double?>? linearAccelX,
+    Value<double?>? linearAccelY,
+    Value<double?>? linearAccelZ,
+    Value<double?>? gyroX,
+    Value<double?>? gyroY,
+    Value<double?>? gyroZ,
+    Value<double?>? forwardAccel,
+    Value<double?>? gpsSpeed,
+    Value<double?>? gpsLat,
+    Value<double?>? gpsLon,
+    Value<double?>? gpsHeading,
+    Value<double?>? gpsAltitude,
+    Value<double?>? gpsAccuracy,
+  }) {
+    return SensorSamplesCompanion(
+      id: id ?? this.id,
+      recordingId: recordingId ?? this.recordingId,
+      timestampUs: timestampUs ?? this.timestampUs,
+      accelX: accelX ?? this.accelX,
+      accelY: accelY ?? this.accelY,
+      accelZ: accelZ ?? this.accelZ,
+      linearAccelX: linearAccelX ?? this.linearAccelX,
+      linearAccelY: linearAccelY ?? this.linearAccelY,
+      linearAccelZ: linearAccelZ ?? this.linearAccelZ,
+      gyroX: gyroX ?? this.gyroX,
+      gyroY: gyroY ?? this.gyroY,
+      gyroZ: gyroZ ?? this.gyroZ,
+      forwardAccel: forwardAccel ?? this.forwardAccel,
+      gpsSpeed: gpsSpeed ?? this.gpsSpeed,
+      gpsLat: gpsLat ?? this.gpsLat,
+      gpsLon: gpsLon ?? this.gpsLon,
+      gpsHeading: gpsHeading ?? this.gpsHeading,
+      gpsAltitude: gpsAltitude ?? this.gpsAltitude,
+      gpsAccuracy: gpsAccuracy ?? this.gpsAccuracy,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<int>(id.value);
+    }
+    if (recordingId.present) {
+      map['recording_id'] = Variable<int>(recordingId.value);
+    }
+    if (timestampUs.present) {
+      map['timestamp_us'] = Variable<int>(timestampUs.value);
+    }
+    if (accelX.present) {
+      map['accel_x'] = Variable<double>(accelX.value);
+    }
+    if (accelY.present) {
+      map['accel_y'] = Variable<double>(accelY.value);
+    }
+    if (accelZ.present) {
+      map['accel_z'] = Variable<double>(accelZ.value);
+    }
+    if (linearAccelX.present) {
+      map['linear_accel_x'] = Variable<double>(linearAccelX.value);
+    }
+    if (linearAccelY.present) {
+      map['linear_accel_y'] = Variable<double>(linearAccelY.value);
+    }
+    if (linearAccelZ.present) {
+      map['linear_accel_z'] = Variable<double>(linearAccelZ.value);
+    }
+    if (gyroX.present) {
+      map['gyro_x'] = Variable<double>(gyroX.value);
+    }
+    if (gyroY.present) {
+      map['gyro_y'] = Variable<double>(gyroY.value);
+    }
+    if (gyroZ.present) {
+      map['gyro_z'] = Variable<double>(gyroZ.value);
+    }
+    if (forwardAccel.present) {
+      map['forward_accel'] = Variable<double>(forwardAccel.value);
+    }
+    if (gpsSpeed.present) {
+      map['gps_speed'] = Variable<double>(gpsSpeed.value);
+    }
+    if (gpsLat.present) {
+      map['gps_lat'] = Variable<double>(gpsLat.value);
+    }
+    if (gpsLon.present) {
+      map['gps_lon'] = Variable<double>(gpsLon.value);
+    }
+    if (gpsHeading.present) {
+      map['gps_heading'] = Variable<double>(gpsHeading.value);
+    }
+    if (gpsAltitude.present) {
+      map['gps_altitude'] = Variable<double>(gpsAltitude.value);
+    }
+    if (gpsAccuracy.present) {
+      map['gps_accuracy'] = Variable<double>(gpsAccuracy.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('SensorSamplesCompanion(')
+          ..write('id: $id, ')
+          ..write('recordingId: $recordingId, ')
+          ..write('timestampUs: $timestampUs, ')
+          ..write('accelX: $accelX, ')
+          ..write('accelY: $accelY, ')
+          ..write('accelZ: $accelZ, ')
+          ..write('linearAccelX: $linearAccelX, ')
+          ..write('linearAccelY: $linearAccelY, ')
+          ..write('linearAccelZ: $linearAccelZ, ')
+          ..write('gyroX: $gyroX, ')
+          ..write('gyroY: $gyroY, ')
+          ..write('gyroZ: $gyroZ, ')
+          ..write('forwardAccel: $forwardAccel, ')
+          ..write('gpsSpeed: $gpsSpeed, ')
+          ..write('gpsLat: $gpsLat, ')
+          ..write('gpsLon: $gpsLon, ')
+          ..write('gpsHeading: $gpsHeading, ')
+          ..write('gpsAltitude: $gpsAltitude, ')
+          ..write('gpsAccuracy: $gpsAccuracy')
+          ..write(')'))
+        .toString();
+  }
+}
+
+abstract class _$AppDatabase extends GeneratedDatabase {
+  _$AppDatabase(QueryExecutor e) : super(e);
+  $AppDatabaseManager get managers => $AppDatabaseManager(this);
+  late final $RecordingsTable recordings = $RecordingsTable(this);
+  late final $SensorSamplesTable sensorSamples = $SensorSamplesTable(this);
+  @override
+  Iterable<TableInfo<Table, Object?>> get allTables =>
+      allSchemaEntities.whereType<TableInfo<Table, Object?>>();
+  @override
+  List<DatabaseSchemaEntity> get allSchemaEntities => [
+    recordings,
+    sensorSamples,
+  ];
+}
+
+typedef $$RecordingsTableCreateCompanionBuilder =
+    RecordingsCompanion Function({
+      Value<int> id,
+      required String name,
+      required DateTime startedAt,
+      Value<DateTime?> endedAt,
+      Value<int> durationMs,
+      Value<bool> isDevRecording,
+      Value<String> notes,
+    });
+typedef $$RecordingsTableUpdateCompanionBuilder =
+    RecordingsCompanion Function({
+      Value<int> id,
+      Value<String> name,
+      Value<DateTime> startedAt,
+      Value<DateTime?> endedAt,
+      Value<int> durationMs,
+      Value<bool> isDevRecording,
+      Value<String> notes,
+    });
+
+final class $$RecordingsTableReferences
+    extends BaseReferences<_$AppDatabase, $RecordingsTable, Recording> {
+  $$RecordingsTableReferences(super.$_db, super.$_table, super.$_typedResult);
+
+  static MultiTypedResultKey<$SensorSamplesTable, List<SensorSample>>
+  _sensorSamplesRefsTable(_$AppDatabase db) => MultiTypedResultKey.fromTable(
+    db.sensorSamples,
+    aliasName: $_aliasNameGenerator(
+      db.recordings.id,
+      db.sensorSamples.recordingId,
+    ),
+  );
+
+  $$SensorSamplesTableProcessedTableManager get sensorSamplesRefs {
+    final manager = $$SensorSamplesTableTableManager(
+      $_db,
+      $_db.sensorSamples,
+    ).filter((f) => f.recordingId.id.sqlEquals($_itemColumn<int>('id')!));
+
+    final cache = $_typedResult.readTableOrNull(_sensorSamplesRefsTable($_db));
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: cache),
+    );
+  }
+}
+
+class $$RecordingsTableFilterComposer
+    extends Composer<_$AppDatabase, $RecordingsTable> {
+  $$RecordingsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get name => $composableBuilder(
+    column: $table.name,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get startedAt => $composableBuilder(
+    column: $table.startedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get endedAt => $composableBuilder(
+    column: $table.endedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get durationMs => $composableBuilder(
+    column: $table.durationMs,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get isDevRecording => $composableBuilder(
+    column: $table.isDevRecording,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get notes => $composableBuilder(
+    column: $table.notes,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  Expression<bool> sensorSamplesRefs(
+    Expression<bool> Function($$SensorSamplesTableFilterComposer f) f,
+  ) {
+    final $$SensorSamplesTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.sensorSamples,
+      getReferencedColumn: (t) => t.recordingId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$SensorSamplesTableFilterComposer(
+            $db: $db,
+            $table: $db.sensorSamples,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+}
+
+class $$RecordingsTableOrderingComposer
+    extends Composer<_$AppDatabase, $RecordingsTable> {
+  $$RecordingsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get name => $composableBuilder(
+    column: $table.name,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get startedAt => $composableBuilder(
+    column: $table.startedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get endedAt => $composableBuilder(
+    column: $table.endedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get durationMs => $composableBuilder(
+    column: $table.durationMs,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<bool> get isDevRecording => $composableBuilder(
+    column: $table.isDevRecording,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get notes => $composableBuilder(
+    column: $table.notes,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$RecordingsTableAnnotationComposer
+    extends Composer<_$AppDatabase, $RecordingsTable> {
+  $$RecordingsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<int> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get name =>
+      $composableBuilder(column: $table.name, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get startedAt =>
+      $composableBuilder(column: $table.startedAt, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get endedAt =>
+      $composableBuilder(column: $table.endedAt, builder: (column) => column);
+
+  GeneratedColumn<int> get durationMs => $composableBuilder(
+    column: $table.durationMs,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<bool> get isDevRecording => $composableBuilder(
+    column: $table.isDevRecording,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get notes =>
+      $composableBuilder(column: $table.notes, builder: (column) => column);
+
+  Expression<T> sensorSamplesRefs<T extends Object>(
+    Expression<T> Function($$SensorSamplesTableAnnotationComposer a) f,
+  ) {
+    final $$SensorSamplesTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.sensorSamples,
+      getReferencedColumn: (t) => t.recordingId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$SensorSamplesTableAnnotationComposer(
+            $db: $db,
+            $table: $db.sensorSamples,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+}
+
+class $$RecordingsTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $RecordingsTable,
+          Recording,
+          $$RecordingsTableFilterComposer,
+          $$RecordingsTableOrderingComposer,
+          $$RecordingsTableAnnotationComposer,
+          $$RecordingsTableCreateCompanionBuilder,
+          $$RecordingsTableUpdateCompanionBuilder,
+          (Recording, $$RecordingsTableReferences),
+          Recording,
+          PrefetchHooks Function({bool sensorSamplesRefs})
+        > {
+  $$RecordingsTableTableManager(_$AppDatabase db, $RecordingsTable table)
+    : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$RecordingsTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$RecordingsTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$RecordingsTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                Value<String> name = const Value.absent(),
+                Value<DateTime> startedAt = const Value.absent(),
+                Value<DateTime?> endedAt = const Value.absent(),
+                Value<int> durationMs = const Value.absent(),
+                Value<bool> isDevRecording = const Value.absent(),
+                Value<String> notes = const Value.absent(),
+              }) => RecordingsCompanion(
+                id: id,
+                name: name,
+                startedAt: startedAt,
+                endedAt: endedAt,
+                durationMs: durationMs,
+                isDevRecording: isDevRecording,
+                notes: notes,
+              ),
+          createCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                required String name,
+                required DateTime startedAt,
+                Value<DateTime?> endedAt = const Value.absent(),
+                Value<int> durationMs = const Value.absent(),
+                Value<bool> isDevRecording = const Value.absent(),
+                Value<String> notes = const Value.absent(),
+              }) => RecordingsCompanion.insert(
+                id: id,
+                name: name,
+                startedAt: startedAt,
+                endedAt: endedAt,
+                durationMs: durationMs,
+                isDevRecording: isDevRecording,
+                notes: notes,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable(table),
+                  $$RecordingsTableReferences(db, table, e),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback: ({sensorSamplesRefs = false}) {
+            return PrefetchHooks(
+              db: db,
+              explicitlyWatchedTables: [
+                if (sensorSamplesRefs) db.sensorSamples,
+              ],
+              addJoins: null,
+              getPrefetchedDataCallback: (items) async {
+                return [
+                  if (sensorSamplesRefs)
+                    await $_getPrefetchedData<
+                      Recording,
+                      $RecordingsTable,
+                      SensorSample
+                    >(
+                      currentTable: table,
+                      referencedTable: $$RecordingsTableReferences
+                          ._sensorSamplesRefsTable(db),
+                      managerFromTypedResult: (p0) =>
+                          $$RecordingsTableReferences(
+                            db,
+                            table,
+                            p0,
+                          ).sensorSamplesRefs,
+                      referencedItemsForCurrentItem: (item, referencedItems) =>
+                          referencedItems.where(
+                            (e) => e.recordingId == item.id,
+                          ),
+                      typedResults: items,
+                    ),
+                ];
+              },
+            );
+          },
+        ),
+      );
+}
+
+typedef $$RecordingsTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $RecordingsTable,
+      Recording,
+      $$RecordingsTableFilterComposer,
+      $$RecordingsTableOrderingComposer,
+      $$RecordingsTableAnnotationComposer,
+      $$RecordingsTableCreateCompanionBuilder,
+      $$RecordingsTableUpdateCompanionBuilder,
+      (Recording, $$RecordingsTableReferences),
+      Recording,
+      PrefetchHooks Function({bool sensorSamplesRefs})
+    >;
+typedef $$SensorSamplesTableCreateCompanionBuilder =
+    SensorSamplesCompanion Function({
+      Value<int> id,
+      required int recordingId,
+      required int timestampUs,
+      Value<double?> accelX,
+      Value<double?> accelY,
+      Value<double?> accelZ,
+      Value<double?> linearAccelX,
+      Value<double?> linearAccelY,
+      Value<double?> linearAccelZ,
+      Value<double?> gyroX,
+      Value<double?> gyroY,
+      Value<double?> gyroZ,
+      Value<double?> forwardAccel,
+      Value<double?> gpsSpeed,
+      Value<double?> gpsLat,
+      Value<double?> gpsLon,
+      Value<double?> gpsHeading,
+      Value<double?> gpsAltitude,
+      Value<double?> gpsAccuracy,
+    });
+typedef $$SensorSamplesTableUpdateCompanionBuilder =
+    SensorSamplesCompanion Function({
+      Value<int> id,
+      Value<int> recordingId,
+      Value<int> timestampUs,
+      Value<double?> accelX,
+      Value<double?> accelY,
+      Value<double?> accelZ,
+      Value<double?> linearAccelX,
+      Value<double?> linearAccelY,
+      Value<double?> linearAccelZ,
+      Value<double?> gyroX,
+      Value<double?> gyroY,
+      Value<double?> gyroZ,
+      Value<double?> forwardAccel,
+      Value<double?> gpsSpeed,
+      Value<double?> gpsLat,
+      Value<double?> gpsLon,
+      Value<double?> gpsHeading,
+      Value<double?> gpsAltitude,
+      Value<double?> gpsAccuracy,
+    });
+
+final class $$SensorSamplesTableReferences
+    extends BaseReferences<_$AppDatabase, $SensorSamplesTable, SensorSample> {
+  $$SensorSamplesTableReferences(
+    super.$_db,
+    super.$_table,
+    super.$_typedResult,
+  );
+
+  static $RecordingsTable _recordingIdTable(_$AppDatabase db) =>
+      db.recordings.createAlias(
+        $_aliasNameGenerator(db.sensorSamples.recordingId, db.recordings.id),
+      );
+
+  $$RecordingsTableProcessedTableManager get recordingId {
+    final $_column = $_itemColumn<int>('recording_id')!;
+
+    final manager = $$RecordingsTableTableManager(
+      $_db,
+      $_db.recordings,
+    ).filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_recordingIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: [item]),
+    );
+  }
+}
+
+class $$SensorSamplesTableFilterComposer
+    extends Composer<_$AppDatabase, $SensorSamplesTable> {
+  $$SensorSamplesTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get timestampUs => $composableBuilder(
+    column: $table.timestampUs,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<double> get accelX => $composableBuilder(
+    column: $table.accelX,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<double> get accelY => $composableBuilder(
+    column: $table.accelY,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<double> get accelZ => $composableBuilder(
+    column: $table.accelZ,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<double> get linearAccelX => $composableBuilder(
+    column: $table.linearAccelX,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<double> get linearAccelY => $composableBuilder(
+    column: $table.linearAccelY,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<double> get linearAccelZ => $composableBuilder(
+    column: $table.linearAccelZ,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<double> get gyroX => $composableBuilder(
+    column: $table.gyroX,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<double> get gyroY => $composableBuilder(
+    column: $table.gyroY,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<double> get gyroZ => $composableBuilder(
+    column: $table.gyroZ,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<double> get forwardAccel => $composableBuilder(
+    column: $table.forwardAccel,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<double> get gpsSpeed => $composableBuilder(
+    column: $table.gpsSpeed,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<double> get gpsLat => $composableBuilder(
+    column: $table.gpsLat,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<double> get gpsLon => $composableBuilder(
+    column: $table.gpsLon,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<double> get gpsHeading => $composableBuilder(
+    column: $table.gpsHeading,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<double> get gpsAltitude => $composableBuilder(
+    column: $table.gpsAltitude,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<double> get gpsAccuracy => $composableBuilder(
+    column: $table.gpsAccuracy,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  $$RecordingsTableFilterComposer get recordingId {
+    final $$RecordingsTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.recordingId,
+      referencedTable: $db.recordings,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$RecordingsTableFilterComposer(
+            $db: $db,
+            $table: $db.recordings,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$SensorSamplesTableOrderingComposer
+    extends Composer<_$AppDatabase, $SensorSamplesTable> {
+  $$SensorSamplesTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get timestampUs => $composableBuilder(
+    column: $table.timestampUs,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<double> get accelX => $composableBuilder(
+    column: $table.accelX,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<double> get accelY => $composableBuilder(
+    column: $table.accelY,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<double> get accelZ => $composableBuilder(
+    column: $table.accelZ,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<double> get linearAccelX => $composableBuilder(
+    column: $table.linearAccelX,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<double> get linearAccelY => $composableBuilder(
+    column: $table.linearAccelY,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<double> get linearAccelZ => $composableBuilder(
+    column: $table.linearAccelZ,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<double> get gyroX => $composableBuilder(
+    column: $table.gyroX,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<double> get gyroY => $composableBuilder(
+    column: $table.gyroY,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<double> get gyroZ => $composableBuilder(
+    column: $table.gyroZ,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<double> get forwardAccel => $composableBuilder(
+    column: $table.forwardAccel,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<double> get gpsSpeed => $composableBuilder(
+    column: $table.gpsSpeed,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<double> get gpsLat => $composableBuilder(
+    column: $table.gpsLat,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<double> get gpsLon => $composableBuilder(
+    column: $table.gpsLon,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<double> get gpsHeading => $composableBuilder(
+    column: $table.gpsHeading,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<double> get gpsAltitude => $composableBuilder(
+    column: $table.gpsAltitude,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<double> get gpsAccuracy => $composableBuilder(
+    column: $table.gpsAccuracy,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  $$RecordingsTableOrderingComposer get recordingId {
+    final $$RecordingsTableOrderingComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.recordingId,
+      referencedTable: $db.recordings,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$RecordingsTableOrderingComposer(
+            $db: $db,
+            $table: $db.recordings,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$SensorSamplesTableAnnotationComposer
+    extends Composer<_$AppDatabase, $SensorSamplesTable> {
+  $$SensorSamplesTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<int> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<int> get timestampUs => $composableBuilder(
+    column: $table.timestampUs,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<double> get accelX =>
+      $composableBuilder(column: $table.accelX, builder: (column) => column);
+
+  GeneratedColumn<double> get accelY =>
+      $composableBuilder(column: $table.accelY, builder: (column) => column);
+
+  GeneratedColumn<double> get accelZ =>
+      $composableBuilder(column: $table.accelZ, builder: (column) => column);
+
+  GeneratedColumn<double> get linearAccelX => $composableBuilder(
+    column: $table.linearAccelX,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<double> get linearAccelY => $composableBuilder(
+    column: $table.linearAccelY,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<double> get linearAccelZ => $composableBuilder(
+    column: $table.linearAccelZ,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<double> get gyroX =>
+      $composableBuilder(column: $table.gyroX, builder: (column) => column);
+
+  GeneratedColumn<double> get gyroY =>
+      $composableBuilder(column: $table.gyroY, builder: (column) => column);
+
+  GeneratedColumn<double> get gyroZ =>
+      $composableBuilder(column: $table.gyroZ, builder: (column) => column);
+
+  GeneratedColumn<double> get forwardAccel => $composableBuilder(
+    column: $table.forwardAccel,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<double> get gpsSpeed =>
+      $composableBuilder(column: $table.gpsSpeed, builder: (column) => column);
+
+  GeneratedColumn<double> get gpsLat =>
+      $composableBuilder(column: $table.gpsLat, builder: (column) => column);
+
+  GeneratedColumn<double> get gpsLon =>
+      $composableBuilder(column: $table.gpsLon, builder: (column) => column);
+
+  GeneratedColumn<double> get gpsHeading => $composableBuilder(
+    column: $table.gpsHeading,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<double> get gpsAltitude => $composableBuilder(
+    column: $table.gpsAltitude,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<double> get gpsAccuracy => $composableBuilder(
+    column: $table.gpsAccuracy,
+    builder: (column) => column,
+  );
+
+  $$RecordingsTableAnnotationComposer get recordingId {
+    final $$RecordingsTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.recordingId,
+      referencedTable: $db.recordings,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$RecordingsTableAnnotationComposer(
+            $db: $db,
+            $table: $db.recordings,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$SensorSamplesTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $SensorSamplesTable,
+          SensorSample,
+          $$SensorSamplesTableFilterComposer,
+          $$SensorSamplesTableOrderingComposer,
+          $$SensorSamplesTableAnnotationComposer,
+          $$SensorSamplesTableCreateCompanionBuilder,
+          $$SensorSamplesTableUpdateCompanionBuilder,
+          (SensorSample, $$SensorSamplesTableReferences),
+          SensorSample,
+          PrefetchHooks Function({bool recordingId})
+        > {
+  $$SensorSamplesTableTableManager(_$AppDatabase db, $SensorSamplesTable table)
+    : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$SensorSamplesTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$SensorSamplesTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$SensorSamplesTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                Value<int> recordingId = const Value.absent(),
+                Value<int> timestampUs = const Value.absent(),
+                Value<double?> accelX = const Value.absent(),
+                Value<double?> accelY = const Value.absent(),
+                Value<double?> accelZ = const Value.absent(),
+                Value<double?> linearAccelX = const Value.absent(),
+                Value<double?> linearAccelY = const Value.absent(),
+                Value<double?> linearAccelZ = const Value.absent(),
+                Value<double?> gyroX = const Value.absent(),
+                Value<double?> gyroY = const Value.absent(),
+                Value<double?> gyroZ = const Value.absent(),
+                Value<double?> forwardAccel = const Value.absent(),
+                Value<double?> gpsSpeed = const Value.absent(),
+                Value<double?> gpsLat = const Value.absent(),
+                Value<double?> gpsLon = const Value.absent(),
+                Value<double?> gpsHeading = const Value.absent(),
+                Value<double?> gpsAltitude = const Value.absent(),
+                Value<double?> gpsAccuracy = const Value.absent(),
+              }) => SensorSamplesCompanion(
+                id: id,
+                recordingId: recordingId,
+                timestampUs: timestampUs,
+                accelX: accelX,
+                accelY: accelY,
+                accelZ: accelZ,
+                linearAccelX: linearAccelX,
+                linearAccelY: linearAccelY,
+                linearAccelZ: linearAccelZ,
+                gyroX: gyroX,
+                gyroY: gyroY,
+                gyroZ: gyroZ,
+                forwardAccel: forwardAccel,
+                gpsSpeed: gpsSpeed,
+                gpsLat: gpsLat,
+                gpsLon: gpsLon,
+                gpsHeading: gpsHeading,
+                gpsAltitude: gpsAltitude,
+                gpsAccuracy: gpsAccuracy,
+              ),
+          createCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                required int recordingId,
+                required int timestampUs,
+                Value<double?> accelX = const Value.absent(),
+                Value<double?> accelY = const Value.absent(),
+                Value<double?> accelZ = const Value.absent(),
+                Value<double?> linearAccelX = const Value.absent(),
+                Value<double?> linearAccelY = const Value.absent(),
+                Value<double?> linearAccelZ = const Value.absent(),
+                Value<double?> gyroX = const Value.absent(),
+                Value<double?> gyroY = const Value.absent(),
+                Value<double?> gyroZ = const Value.absent(),
+                Value<double?> forwardAccel = const Value.absent(),
+                Value<double?> gpsSpeed = const Value.absent(),
+                Value<double?> gpsLat = const Value.absent(),
+                Value<double?> gpsLon = const Value.absent(),
+                Value<double?> gpsHeading = const Value.absent(),
+                Value<double?> gpsAltitude = const Value.absent(),
+                Value<double?> gpsAccuracy = const Value.absent(),
+              }) => SensorSamplesCompanion.insert(
+                id: id,
+                recordingId: recordingId,
+                timestampUs: timestampUs,
+                accelX: accelX,
+                accelY: accelY,
+                accelZ: accelZ,
+                linearAccelX: linearAccelX,
+                linearAccelY: linearAccelY,
+                linearAccelZ: linearAccelZ,
+                gyroX: gyroX,
+                gyroY: gyroY,
+                gyroZ: gyroZ,
+                forwardAccel: forwardAccel,
+                gpsSpeed: gpsSpeed,
+                gpsLat: gpsLat,
+                gpsLon: gpsLon,
+                gpsHeading: gpsHeading,
+                gpsAltitude: gpsAltitude,
+                gpsAccuracy: gpsAccuracy,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable(table),
+                  $$SensorSamplesTableReferences(db, table, e),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback: ({recordingId = false}) {
+            return PrefetchHooks(
+              db: db,
+              explicitlyWatchedTables: [],
+              addJoins:
+                  <
+                    T extends TableManagerState<
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic
+                    >
+                  >(state) {
+                    if (recordingId) {
+                      state =
+                          state.withJoin(
+                                currentTable: table,
+                                currentColumn: table.recordingId,
+                                referencedTable: $$SensorSamplesTableReferences
+                                    ._recordingIdTable(db),
+                                referencedColumn: $$SensorSamplesTableReferences
+                                    ._recordingIdTable(db)
+                                    .id,
+                              )
+                              as T;
+                    }
+
+                    return state;
+                  },
+              getPrefetchedDataCallback: (items) async {
+                return [];
+              },
+            );
+          },
+        ),
+      );
+}
+
+typedef $$SensorSamplesTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $SensorSamplesTable,
+      SensorSample,
+      $$SensorSamplesTableFilterComposer,
+      $$SensorSamplesTableOrderingComposer,
+      $$SensorSamplesTableAnnotationComposer,
+      $$SensorSamplesTableCreateCompanionBuilder,
+      $$SensorSamplesTableUpdateCompanionBuilder,
+      (SensorSample, $$SensorSamplesTableReferences),
+      SensorSample,
+      PrefetchHooks Function({bool recordingId})
+    >;
+
+class $AppDatabaseManager {
+  final _$AppDatabase _db;
+  $AppDatabaseManager(this._db);
+  $$RecordingsTableTableManager get recordings =>
+      $$RecordingsTableTableManager(_db, _db.recordings);
+  $$SensorSamplesTableTableManager get sensorSamples =>
+      $$SensorSamplesTableTableManager(_db, _db.sensorSamples);
+}
