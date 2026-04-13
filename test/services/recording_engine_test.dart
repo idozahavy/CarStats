@@ -179,7 +179,10 @@ void main() {
 
         expect(engine.latestSnapshot, isNotNull);
         expect(engine.latestSnapshot!.headingCalibrated, isFalse);
-        expect(engine.latestSnapshot!.forwardAccelG, isNull);
+        // Before heading calibration, the arbitrary world-frame axes are not
+        // aligned with the car's heading, so forward accel is unreliable
+        // (reads ~0 here because worldX is perpendicular to actual forward).
+        expect(engine.latestSnapshot!.forwardAccelG, closeTo(0.0, 0.05));
 
         var speed = 5.0;
         for (var index = 0; index < 8; index++) {
