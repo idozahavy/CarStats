@@ -431,6 +431,7 @@ class RecordingEngine extends ChangeNotifier {
       gyroY: Value(_lastGyro?.y),
       gyroZ: Value(_lastGyro?.z),
       forwardAccel: Value(forwardAccel),
+      lateralAccel: Value(lateralAccel),
       gpsSpeed: Value(effectiveSpeedMps),
       gpsLat: Value(_lastGps?.latitude),
       gpsLon: Value(_lastGps?.longitude),
@@ -473,12 +474,12 @@ class RecordingEngine extends ChangeNotifier {
         _currentRecordingId != null && _recordingStartTime != null;
 
     _calibrationTimer?.cancel();
-    _accelSub?.cancel();
-    _linearAccelSub?.cancel();
-    _gyroSub?.cancel();
-    _gpsSub?.cancel();
-    _barometerSub?.cancel();
     _flushTimer?.cancel();
+    await _accelSub?.cancel();
+    await _linearAccelSub?.cancel();
+    await _gyroSub?.cancel();
+    await _gpsSub?.cancel();
+    await _barometerSub?.cancel();
 
     _sensorService.stopListening();
     _gpsService.stopListening();

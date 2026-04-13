@@ -42,7 +42,7 @@ class ExportService {
     return File(savePath);
   }
 
-  static Future<int?> importRecording() async {
+  static Future<int?> importRecording(AppDatabase db) async {
     final result = await FilePicker.platform.pickFiles(
       dialogTitle: 'Import Recording',
       type: FileType.custom,
@@ -58,8 +58,6 @@ class ExportService {
 
     final rec = data['recording'] as Map<String, dynamic>;
     final samples = data['samples'] as List<dynamic>;
-
-    final db = AppDatabase();
 
     final recordingId = await db.insertRecording(
       RecordingsCompanion.insert(
@@ -89,6 +87,7 @@ class ExportService {
             gyroY: Value(s['gyroY'] as double?),
             gyroZ: Value(s['gyroZ'] as double?),
             forwardAccel: Value(s['forwardAccel'] as double?),
+            lateralAccel: Value(s['lateralAccel'] as double?),
             gpsSpeed: Value(s['gpsSpeed'] as double?),
             gpsLat: Value(s['gpsLat'] as double?),
             gpsLon: Value(s['gpsLon'] as double?),
@@ -119,7 +118,7 @@ class ExportService {
       'timestampUs,accelX,accelY,accelZ,'
       'linearAccelX,linearAccelY,linearAccelZ,'
       'gyroX,gyroY,gyroZ,'
-      'forwardAccel,'
+      'forwardAccel,lateralAccel,'
       'gpsSpeed,gpsLat,gpsLon,gpsHeading,gpsAltitude,gpsAccuracy,gpsBearing,'
       'gravX,gravY,gravZ,'
       'pressure,'
@@ -132,7 +131,7 @@ class ExportService {
         '${s.accelX ?? ''},${s.accelY ?? ''},${s.accelZ ?? ''},'
         '${s.linearAccelX ?? ''},${s.linearAccelY ?? ''},${s.linearAccelZ ?? ''},'
         '${s.gyroX ?? ''},${s.gyroY ?? ''},${s.gyroZ ?? ''},'
-        '${s.forwardAccel ?? ''},'
+        '${s.forwardAccel ?? ''},${s.lateralAccel ?? ''},'
         '${s.gpsSpeed ?? ''},${s.gpsLat ?? ''},${s.gpsLon ?? ''},'
         '${s.gpsHeading ?? ''},${s.gpsAltitude ?? ''},${s.gpsAccuracy ?? ''},${s.gpsBearing ?? ''},'
         '${s.gravX ?? ''},${s.gravY ?? ''},${s.gravZ ?? ''},'
@@ -168,6 +167,7 @@ class ExportService {
               'gyroY': s.gyroY,
               'gyroZ': s.gyroZ,
               'forwardAccel': s.forwardAccel,
+              'lateralAccel': s.lateralAccel,
               'gpsSpeed': s.gpsSpeed,
               'gpsLat': s.gpsLat,
               'gpsLon': s.gpsLon,

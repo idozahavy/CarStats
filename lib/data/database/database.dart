@@ -45,8 +45,9 @@ class SensorSamples extends Table {
   RealColumn get gyroY => real().nullable()();
   RealColumn get gyroZ => real().nullable()();
 
-  // Calculated forward acceleration
+  // Calculated forward/lateral acceleration
   RealColumn get forwardAccel => real().nullable()();
+  RealColumn get lateralAccel => real().nullable()();
 
   // GPS data
   RealColumn get gpsSpeed => real().nullable()(); // m/s
@@ -84,7 +85,7 @@ class AppDatabase extends _$AppDatabase implements RecordingStore {
   }
 
   @override
-  int get schemaVersion => 3;
+  int get schemaVersion => 4;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -118,6 +119,11 @@ class AppDatabase extends _$AppDatabase implements RecordingStore {
         );
         await customStatement(
           'ALTER TABLE sensor_samples ADD COLUMN quat_z REAL',
+        );
+      }
+      if (from < 4) {
+        await customStatement(
+          'ALTER TABLE sensor_samples ADD COLUMN lateral_accel REAL',
         );
       }
     },

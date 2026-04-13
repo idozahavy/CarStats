@@ -604,6 +604,17 @@ class $SensorSamplesTable extends SensorSamples
     type: DriftSqlType.double,
     requiredDuringInsert: false,
   );
+  static const VerificationMeta _lateralAccelMeta = const VerificationMeta(
+    'lateralAccel',
+  );
+  @override
+  late final GeneratedColumn<double> lateralAccel = GeneratedColumn<double>(
+    'lateral_accel',
+    aliasedName,
+    true,
+    type: DriftSqlType.double,
+    requiredDuringInsert: false,
+  );
   static const VerificationMeta _gpsSpeedMeta = const VerificationMeta(
     'gpsSpeed',
   );
@@ -766,6 +777,7 @@ class $SensorSamplesTable extends SensorSamples
     gyroY,
     gyroZ,
     forwardAccel,
+    lateralAccel,
     gpsSpeed,
     gpsLat,
     gpsLon,
@@ -888,6 +900,15 @@ class $SensorSamplesTable extends SensorSamples
         forwardAccel.isAcceptableOrUnknown(
           data['forward_accel']!,
           _forwardAccelMeta,
+        ),
+      );
+    }
+    if (data.containsKey('lateral_accel')) {
+      context.handle(
+        _lateralAccelMeta,
+        lateralAccel.isAcceptableOrUnknown(
+          data['lateral_accel']!,
+          _lateralAccelMeta,
         ),
       );
     }
@@ -1048,6 +1069,10 @@ class $SensorSamplesTable extends SensorSamples
         DriftSqlType.double,
         data['${effectivePrefix}forward_accel'],
       ),
+      lateralAccel: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}lateral_accel'],
+      ),
       gpsSpeed: attachedDatabase.typeMapping.read(
         DriftSqlType.double,
         data['${effectivePrefix}gps_speed'],
@@ -1131,6 +1156,7 @@ class SensorSample extends DataClass implements Insertable<SensorSample> {
   final double? gyroY;
   final double? gyroZ;
   final double? forwardAccel;
+  final double? lateralAccel;
   final double? gpsSpeed;
   final double? gpsLat;
   final double? gpsLon;
@@ -1160,6 +1186,7 @@ class SensorSample extends DataClass implements Insertable<SensorSample> {
     this.gyroY,
     this.gyroZ,
     this.forwardAccel,
+    this.lateralAccel,
     this.gpsSpeed,
     this.gpsLat,
     this.gpsLon,
@@ -1211,6 +1238,9 @@ class SensorSample extends DataClass implements Insertable<SensorSample> {
     }
     if (!nullToAbsent || forwardAccel != null) {
       map['forward_accel'] = Variable<double>(forwardAccel);
+    }
+    if (!nullToAbsent || lateralAccel != null) {
+      map['lateral_accel'] = Variable<double>(lateralAccel);
     }
     if (!nullToAbsent || gpsSpeed != null) {
       map['gps_speed'] = Variable<double>(gpsSpeed);
@@ -1295,6 +1325,9 @@ class SensorSample extends DataClass implements Insertable<SensorSample> {
       forwardAccel: forwardAccel == null && nullToAbsent
           ? const Value.absent()
           : Value(forwardAccel),
+      lateralAccel: lateralAccel == null && nullToAbsent
+          ? const Value.absent()
+          : Value(lateralAccel),
       gpsSpeed: gpsSpeed == null && nullToAbsent
           ? const Value.absent()
           : Value(gpsSpeed),
@@ -1362,6 +1395,7 @@ class SensorSample extends DataClass implements Insertable<SensorSample> {
       gyroY: serializer.fromJson<double?>(json['gyroY']),
       gyroZ: serializer.fromJson<double?>(json['gyroZ']),
       forwardAccel: serializer.fromJson<double?>(json['forwardAccel']),
+      lateralAccel: serializer.fromJson<double?>(json['lateralAccel']),
       gpsSpeed: serializer.fromJson<double?>(json['gpsSpeed']),
       gpsLat: serializer.fromJson<double?>(json['gpsLat']),
       gpsLon: serializer.fromJson<double?>(json['gpsLon']),
@@ -1396,6 +1430,7 @@ class SensorSample extends DataClass implements Insertable<SensorSample> {
       'gyroY': serializer.toJson<double?>(gyroY),
       'gyroZ': serializer.toJson<double?>(gyroZ),
       'forwardAccel': serializer.toJson<double?>(forwardAccel),
+      'lateralAccel': serializer.toJson<double?>(lateralAccel),
       'gpsSpeed': serializer.toJson<double?>(gpsSpeed),
       'gpsLat': serializer.toJson<double?>(gpsLat),
       'gpsLon': serializer.toJson<double?>(gpsLon),
@@ -1428,6 +1463,7 @@ class SensorSample extends DataClass implements Insertable<SensorSample> {
     Value<double?> gyroY = const Value.absent(),
     Value<double?> gyroZ = const Value.absent(),
     Value<double?> forwardAccel = const Value.absent(),
+    Value<double?> lateralAccel = const Value.absent(),
     Value<double?> gpsSpeed = const Value.absent(),
     Value<double?> gpsLat = const Value.absent(),
     Value<double?> gpsLon = const Value.absent(),
@@ -1457,6 +1493,7 @@ class SensorSample extends DataClass implements Insertable<SensorSample> {
     gyroY: gyroY.present ? gyroY.value : this.gyroY,
     gyroZ: gyroZ.present ? gyroZ.value : this.gyroZ,
     forwardAccel: forwardAccel.present ? forwardAccel.value : this.forwardAccel,
+    lateralAccel: lateralAccel.present ? lateralAccel.value : this.lateralAccel,
     gpsSpeed: gpsSpeed.present ? gpsSpeed.value : this.gpsSpeed,
     gpsLat: gpsLat.present ? gpsLat.value : this.gpsLat,
     gpsLon: gpsLon.present ? gpsLon.value : this.gpsLon,
@@ -1500,6 +1537,9 @@ class SensorSample extends DataClass implements Insertable<SensorSample> {
       forwardAccel: data.forwardAccel.present
           ? data.forwardAccel.value
           : this.forwardAccel,
+      lateralAccel: data.lateralAccel.present
+          ? data.lateralAccel.value
+          : this.lateralAccel,
       gpsSpeed: data.gpsSpeed.present ? data.gpsSpeed.value : this.gpsSpeed,
       gpsLat: data.gpsLat.present ? data.gpsLat.value : this.gpsLat,
       gpsLon: data.gpsLon.present ? data.gpsLon.value : this.gpsLon,
@@ -1542,6 +1582,7 @@ class SensorSample extends DataClass implements Insertable<SensorSample> {
           ..write('gyroY: $gyroY, ')
           ..write('gyroZ: $gyroZ, ')
           ..write('forwardAccel: $forwardAccel, ')
+          ..write('lateralAccel: $lateralAccel, ')
           ..write('gpsSpeed: $gpsSpeed, ')
           ..write('gpsLat: $gpsLat, ')
           ..write('gpsLon: $gpsLon, ')
@@ -1576,6 +1617,7 @@ class SensorSample extends DataClass implements Insertable<SensorSample> {
     gyroY,
     gyroZ,
     forwardAccel,
+    lateralAccel,
     gpsSpeed,
     gpsLat,
     gpsLon,
@@ -1609,6 +1651,7 @@ class SensorSample extends DataClass implements Insertable<SensorSample> {
           other.gyroY == this.gyroY &&
           other.gyroZ == this.gyroZ &&
           other.forwardAccel == this.forwardAccel &&
+          other.lateralAccel == this.lateralAccel &&
           other.gpsSpeed == this.gpsSpeed &&
           other.gpsLat == this.gpsLat &&
           other.gpsLon == this.gpsLon &&
@@ -1640,6 +1683,7 @@ class SensorSamplesCompanion extends UpdateCompanion<SensorSample> {
   final Value<double?> gyroY;
   final Value<double?> gyroZ;
   final Value<double?> forwardAccel;
+  final Value<double?> lateralAccel;
   final Value<double?> gpsSpeed;
   final Value<double?> gpsLat;
   final Value<double?> gpsLon;
@@ -1669,6 +1713,7 @@ class SensorSamplesCompanion extends UpdateCompanion<SensorSample> {
     this.gyroY = const Value.absent(),
     this.gyroZ = const Value.absent(),
     this.forwardAccel = const Value.absent(),
+    this.lateralAccel = const Value.absent(),
     this.gpsSpeed = const Value.absent(),
     this.gpsLat = const Value.absent(),
     this.gpsLon = const Value.absent(),
@@ -1699,6 +1744,7 @@ class SensorSamplesCompanion extends UpdateCompanion<SensorSample> {
     this.gyroY = const Value.absent(),
     this.gyroZ = const Value.absent(),
     this.forwardAccel = const Value.absent(),
+    this.lateralAccel = const Value.absent(),
     this.gpsSpeed = const Value.absent(),
     this.gpsLat = const Value.absent(),
     this.gpsLon = const Value.absent(),
@@ -1730,6 +1776,7 @@ class SensorSamplesCompanion extends UpdateCompanion<SensorSample> {
     Expression<double>? gyroY,
     Expression<double>? gyroZ,
     Expression<double>? forwardAccel,
+    Expression<double>? lateralAccel,
     Expression<double>? gpsSpeed,
     Expression<double>? gpsLat,
     Expression<double>? gpsLon,
@@ -1760,6 +1807,7 @@ class SensorSamplesCompanion extends UpdateCompanion<SensorSample> {
       if (gyroY != null) 'gyro_y': gyroY,
       if (gyroZ != null) 'gyro_z': gyroZ,
       if (forwardAccel != null) 'forward_accel': forwardAccel,
+      if (lateralAccel != null) 'lateral_accel': lateralAccel,
       if (gpsSpeed != null) 'gps_speed': gpsSpeed,
       if (gpsLat != null) 'gps_lat': gpsLat,
       if (gpsLon != null) 'gps_lon': gpsLon,
@@ -1792,6 +1840,7 @@ class SensorSamplesCompanion extends UpdateCompanion<SensorSample> {
     Value<double?>? gyroY,
     Value<double?>? gyroZ,
     Value<double?>? forwardAccel,
+    Value<double?>? lateralAccel,
     Value<double?>? gpsSpeed,
     Value<double?>? gpsLat,
     Value<double?>? gpsLon,
@@ -1822,6 +1871,7 @@ class SensorSamplesCompanion extends UpdateCompanion<SensorSample> {
       gyroY: gyroY ?? this.gyroY,
       gyroZ: gyroZ ?? this.gyroZ,
       forwardAccel: forwardAccel ?? this.forwardAccel,
+      lateralAccel: lateralAccel ?? this.lateralAccel,
       gpsSpeed: gpsSpeed ?? this.gpsSpeed,
       gpsLat: gpsLat ?? this.gpsLat,
       gpsLon: gpsLon ?? this.gpsLon,
@@ -1881,6 +1931,9 @@ class SensorSamplesCompanion extends UpdateCompanion<SensorSample> {
     }
     if (forwardAccel.present) {
       map['forward_accel'] = Variable<double>(forwardAccel.value);
+    }
+    if (lateralAccel.present) {
+      map['lateral_accel'] = Variable<double>(lateralAccel.value);
     }
     if (gpsSpeed.present) {
       map['gps_speed'] = Variable<double>(gpsSpeed.value);
@@ -1946,6 +1999,7 @@ class SensorSamplesCompanion extends UpdateCompanion<SensorSample> {
           ..write('gyroY: $gyroY, ')
           ..write('gyroZ: $gyroZ, ')
           ..write('forwardAccel: $forwardAccel, ')
+          ..write('lateralAccel: $lateralAccel, ')
           ..write('gpsSpeed: $gpsSpeed, ')
           ..write('gpsLat: $gpsLat, ')
           ..write('gpsLon: $gpsLon, ')
@@ -2340,6 +2394,7 @@ typedef $$SensorSamplesTableCreateCompanionBuilder =
       Value<double?> gyroY,
       Value<double?> gyroZ,
       Value<double?> forwardAccel,
+      Value<double?> lateralAccel,
       Value<double?> gpsSpeed,
       Value<double?> gpsLat,
       Value<double?> gpsLon,
@@ -2371,6 +2426,7 @@ typedef $$SensorSamplesTableUpdateCompanionBuilder =
       Value<double?> gyroY,
       Value<double?> gyroZ,
       Value<double?> forwardAccel,
+      Value<double?> lateralAccel,
       Value<double?> gpsSpeed,
       Value<double?> gpsLat,
       Value<double?> gpsLon,
@@ -2482,6 +2538,11 @@ class $$SensorSamplesTableFilterComposer
 
   ColumnFilters<double> get forwardAccel => $composableBuilder(
     column: $table.forwardAccel,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<double> get lateralAccel => $composableBuilder(
+    column: $table.lateralAccel,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -2653,6 +2714,11 @@ class $$SensorSamplesTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<double> get lateralAccel => $composableBuilder(
+    column: $table.lateralAccel,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<double> get gpsSpeed => $composableBuilder(
     column: $table.gpsSpeed,
     builder: (column) => ColumnOrderings(column),
@@ -2807,6 +2873,11 @@ class $$SensorSamplesTableAnnotationComposer
     builder: (column) => column,
   );
 
+  GeneratedColumn<double> get lateralAccel => $composableBuilder(
+    column: $table.lateralAccel,
+    builder: (column) => column,
+  );
+
   GeneratedColumn<double> get gpsSpeed =>
       $composableBuilder(column: $table.gpsSpeed, builder: (column) => column);
 
@@ -2925,6 +2996,7 @@ class $$SensorSamplesTableTableManager
                 Value<double?> gyroY = const Value.absent(),
                 Value<double?> gyroZ = const Value.absent(),
                 Value<double?> forwardAccel = const Value.absent(),
+                Value<double?> lateralAccel = const Value.absent(),
                 Value<double?> gpsSpeed = const Value.absent(),
                 Value<double?> gpsLat = const Value.absent(),
                 Value<double?> gpsLon = const Value.absent(),
@@ -2954,6 +3026,7 @@ class $$SensorSamplesTableTableManager
                 gyroY: gyroY,
                 gyroZ: gyroZ,
                 forwardAccel: forwardAccel,
+                lateralAccel: lateralAccel,
                 gpsSpeed: gpsSpeed,
                 gpsLat: gpsLat,
                 gpsLon: gpsLon,
@@ -2985,6 +3058,7 @@ class $$SensorSamplesTableTableManager
                 Value<double?> gyroY = const Value.absent(),
                 Value<double?> gyroZ = const Value.absent(),
                 Value<double?> forwardAccel = const Value.absent(),
+                Value<double?> lateralAccel = const Value.absent(),
                 Value<double?> gpsSpeed = const Value.absent(),
                 Value<double?> gpsLat = const Value.absent(),
                 Value<double?> gpsLon = const Value.absent(),
@@ -3014,6 +3088,7 @@ class $$SensorSamplesTableTableManager
                 gyroY: gyroY,
                 gyroZ: gyroZ,
                 forwardAccel: forwardAccel,
+                lateralAccel: lateralAccel,
                 gpsSpeed: gpsSpeed,
                 gpsLat: gpsLat,
                 gpsLon: gpsLon,

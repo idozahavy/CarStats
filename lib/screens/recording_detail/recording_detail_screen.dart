@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
+import 'package:provider/provider.dart';
 import '../../core/chart_utils.dart';
 import '../../data/database/database.dart';
 import '../../services/export_service.dart';
@@ -13,7 +14,7 @@ class RecordingDetailScreen extends StatefulWidget {
 }
 
 class _RecordingDetailScreenState extends State<RecordingDetailScreen> {
-  final _db = AppDatabase();
+  late final AppDatabase _db;
   Recording? _recording;
   List<SensorSample> _samples = [];
   bool _loading = true;
@@ -21,6 +22,7 @@ class _RecordingDetailScreenState extends State<RecordingDetailScreen> {
   @override
   void initState() {
     super.initState();
+    _db = context.read<AppDatabase>();
     _load();
   }
 

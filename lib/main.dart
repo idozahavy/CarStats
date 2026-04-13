@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'core/providers.dart';
@@ -48,6 +49,7 @@ class _AccelStatsAppState extends State<AccelStatsApp> {
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
+        Provider<AppDatabase>.value(value: _db),
         ChangeNotifierProvider(create: (_) => ThemeProvider(widget.prefs)),
         ChangeNotifierProvider(create: (_) => SettingsProvider(widget.prefs)),
         ChangeNotifierProvider(
@@ -92,10 +94,18 @@ class _PermissionGateState extends State<_PermissionGate> {
   }
 
   Future<void> _checkPermission() async {
-    final gps = GpsService();
-    final result = await gps.checkAndRequestPermission();
+    bool granted = false;
+    final serviceEnabled = await Geolocator.isLocationServiceEnabled();
+    if (serviceEnabled) {
+      var permission = await Geolocator.checkPermission();
+      if (permission == LocationPermission.denied) {
+        permission = await Geolocator.requestPermission();
+      }
+      granted = permission == LocationPermission.whileInUse ||
+          permission == LocationPermission.always;
+    }
     setState(() {
-      _granted = result;
+      _granted = granted;
       _checking = false;
     });
   }

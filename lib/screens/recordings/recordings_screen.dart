@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
 import '../../data/database/database.dart';
 import '../../services/export_service.dart';
 import '../recording_detail/recording_detail_screen.dart';
@@ -14,7 +15,7 @@ class RecordingsScreen extends StatefulWidget {
 enum _RecordingFilter { all, user, dev }
 
 class _RecordingsScreenState extends State<RecordingsScreen> {
-  final _db = AppDatabase();
+  late final AppDatabase _db;
   List<Recording> _recordings = [];
   bool _loading = true;
   _RecordingFilter _filter = _RecordingFilter.all;
@@ -22,6 +23,7 @@ class _RecordingsScreenState extends State<RecordingsScreen> {
   @override
   void initState() {
     super.initState();
+    _db = context.read<AppDatabase>();
     _load();
   }
 
@@ -153,7 +155,7 @@ class _RecordingsScreenState extends State<RecordingsScreen> {
 
   Future<void> _importRecording(BuildContext context) async {
     try {
-      final recordingId = await ExportService.importRecording();
+      final recordingId = await ExportService.importRecording(_db);
       if (recordingId == null) return;
       _load();
       if (context.mounted) {

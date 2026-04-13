@@ -70,7 +70,9 @@ class RecordingScreen extends StatelessWidget {
       case RecordingState.recording:
         return _RecordingView(engine: engine);
       case RecordingState.stopped:
-        return _StoppedView(recordingId: engine.currentRecordingId!);
+        final id = engine.currentRecordingId;
+        if (id == null) return const Center(child: Text('Recording not found'));
+        return _StoppedView(recordingId: id);
       case RecordingState.idle:
         return const Center(child: Text('Ready'));
     }

@@ -10,7 +10,9 @@
       "Bash(dart analyze:*)",
       "Bash(mkdir -p android/app/src/main/kotlin/com/accelstats/accel_stats)",
       "Bash(mv android/app/src/main/kotlin/com/carstats/car_stats/MainActivity.kt android/app/src/main/kotlin/com/accelstats/accel_stats/)",
-      "Bash(rm -rf android/app/src/main/kotlin/com/carstats)"
+      "Bash(rm -rf android/app/src/main/kotlin/com/carstats)",
+      "Bash(dart test:*)",
+      "Bash(flutter test:*)"
     ]
   }
 }
