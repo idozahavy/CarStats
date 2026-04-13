@@ -1,7 +1,7 @@
 import 'dart:math';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:car_stats/services/calibration_service.dart';
-import 'package:car_stats/services/sensor_service.dart';
+import 'package:accel_stats/services/calibration_service.dart';
+import 'package:accel_stats/services/sensor_service.dart';
 
 /// Helper: build a CalibrationResult for phone flat on table (gravity along Z).
 CalibrationResult _flatCalibration() {

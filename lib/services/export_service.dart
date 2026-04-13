@@ -16,22 +16,30 @@ class ExportService {
     final ext = format == ExportFormat.csv ? 'csv' : 'json';
     final defaultName = '${safeName}_${recording.id}.$ext';
 
-    final savePath = await FilePicker.platform.saveFile(
-      dialogTitle: 'Export Recording',
-      fileName: defaultName,
-      type: FileType.custom,
-      allowedExtensions: [ext],
-    );
-    if (savePath == null) return null;
-
     final content = switch (format) {
       ExportFormat.csv => _toCsv(recording, samples),
       ExportFormat.json => _toJson(recording, samples),
     };
 
-    final file = File(savePath);
-    await file.writeAsString(content);
-    return file;
+    final bytes = utf8.encode(content);
+
+    final savePath = await FilePicker.platform.saveFile(
+      dialogTitle: 'Export Recording',
+      fileName: defaultName,
+      type: FileType.custom,
+      allowedExtensions: [ext],
+      bytes: Uint8List.fromList(bytes),
+    );
+    if (savePath == null) return null;
+
+    // On desktop, FilePicker doesn't write bytes — write manually.
+    if (Platform.isWindows || Platform.isLinux || Platform.isMacOS) {
+      final file = File(savePath);
+      await file.writeAsString(content);
+      return file;
+    }
+
+    return File(savePath);
   }
 
   static Future<int?> importRecording() async {
@@ -92,6 +100,10 @@ class ExportService {
             gravY: Value(s['gravY'] as double?),
             gravZ: Value(s['gravZ'] as double?),
             pressure: Value(s['pressure'] as double?),
+            quatW: Value(s['quatW'] as double?),
+            quatX: Value(s['quatX'] as double?),
+            quatY: Value(s['quatY'] as double?),
+            quatZ: Value(s['quatZ'] as double?),
           ),
         )
         .toList();
@@ -110,7 +122,8 @@ class ExportService {
       'forwardAccel,'
       'gpsSpeed,gpsLat,gpsLon,gpsHeading,gpsAltitude,gpsAccuracy,gpsBearing,'
       'gravX,gravY,gravZ,'
-      'pressure',
+      'pressure,'
+      'quatW,quatX,quatY,quatZ',
     );
 
     for (final s in samples) {
@@ -123,7 +136,8 @@ class ExportService {
         '${s.gpsSpeed ?? ''},${s.gpsLat ?? ''},${s.gpsLon ?? ''},'
         '${s.gpsHeading ?? ''},${s.gpsAltitude ?? ''},${s.gpsAccuracy ?? ''},${s.gpsBearing ?? ''},'
         '${s.gravX ?? ''},${s.gravY ?? ''},${s.gravZ ?? ''},'
-        '${s.pressure ?? ''}',
+        '${s.pressure ?? ''},'
+        '${s.quatW ?? ''},${s.quatX ?? ''},${s.quatY ?? ''},${s.quatZ ?? ''}',
       );
     }
 
@@ -165,6 +179,10 @@ class ExportService {
               'gravY': s.gravY,
               'gravZ': s.gravZ,
               'pressure': s.pressure,
+              'quatW': s.quatW,
+              'quatX': s.quatX,
+              'quatY': s.quatY,
+              'quatZ': s.quatZ,
             },
           )
           .toList(),

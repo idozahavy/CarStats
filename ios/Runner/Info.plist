@@ -5,7 +5,7 @@
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
 	<key>CFBundleDisplayName</key>
-	<string>Car Stats</string>
+	<string>AccelStats</string>
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
 	<key>CFBundleIdentifier</key>
@@ -13,7 +13,7 @@
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundleName</key>
-	<string>car_stats</string>
+	<string>accel_stats</string>
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>
@@ -42,11 +42,11 @@
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
 	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>CarStats needs GPS access to measure your car's speed during acceleration tests.</string>
+	<string>AccelStats needs GPS access to measure your car's speed during acceleration tests.</string>
 	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
-	<string>CarStats needs GPS access to measure your car's speed during acceleration tests.</string>
+	<string>AccelStats needs GPS access to measure your car's speed during acceleration tests.</string>
 	<key>NSMotionUsageDescription</key>
-	<string>CarStats uses motion sensors to measure your car's acceleration.</string>
+	<string>AccelStats uses motion sensors to measure your car's acceleration.</string>
 	<key>CADisableMinimumFrameDurationOnPhone</key>
 	<true/>
 	<key>UIApplicationSupportsIndirectInputEvents</key>

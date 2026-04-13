@@ -6,7 +6,7 @@ plugins {
 }
 
 android {
-    namespace = "com.carstats.car_stats"
+    namespace = "com.accelstats.accel_stats"
     compileSdk = flutter.compileSdkVersion
     ndkVersion = flutter.ndkVersion
 
@@ -21,7 +21,7 @@ android {
 
     defaultConfig {
         // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
-        applicationId = "com.carstats.car_stats"
+        applicationId = "com.accelstats.accel_stats"
         // You can update the following values to match your application needs.
         // For more information, see: https://flutter.dev/to/review-gradle-config.
         minSdk = flutter.minSdkVersion

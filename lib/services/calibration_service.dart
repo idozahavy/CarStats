@@ -399,4 +399,43 @@ class AccelerationDecomposer {
     _rotationMatrix[7],
     _rotationMatrix[8],
   ];
+
+  /// Returns the current orientation as a unit quaternion [w, x, y, z].
+  /// Converts from the 3x3 rotation matrix using Shepperd's method.
+  List<double> get quaternion {
+    final r = _rotationMatrix;
+    final trace = r[0] + r[4] + r[8];
+    double w, x, y, z;
+
+    if (trace > 0) {
+      final s = 0.5 / sqrt(trace + 1.0);
+      w = 0.25 / s;
+      x = (r[7] - r[5]) * s;
+      y = (r[2] - r[6]) * s;
+      z = (r[3] - r[1]) * s;
+    } else if (r[0] > r[4] && r[0] > r[8]) {
+      final s = 2.0 * sqrt(1.0 + r[0] - r[4] - r[8]);
+      w = (r[7] - r[5]) / s;
+      x = 0.25 * s;
+      y = (r[1] + r[3]) / s;
+      z = (r[2] + r[6]) / s;
+    } else if (r[4] > r[8]) {
+      final s = 2.0 * sqrt(1.0 + r[4] - r[0] - r[8]);
+      w = (r[2] - r[6]) / s;
+      x = (r[1] + r[3]) / s;
+      y = 0.25 * s;
+      z = (r[5] + r[7]) / s;
+    } else {
+      final s = 2.0 * sqrt(1.0 + r[8] - r[0] - r[4]);
+      w = (r[3] - r[1]) / s;
+      x = (r[2] + r[6]) / s;
+      y = (r[5] + r[7]) / s;
+      z = 0.25 * s;
+    }
+
+    // Normalize to guard against rotation matrix drift
+    final norm = sqrt(w * w + x * x + y * y + z * z);
+    if (norm < 1e-9) return [1.0, 0.0, 0.0, 0.0];
+    return [w / norm, x / norm, y / norm, z / norm];
+  }
 }

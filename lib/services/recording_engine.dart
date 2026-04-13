@@ -417,6 +417,7 @@ class RecordingEngine extends ChangeNotifier {
 
     // Build DB entry
     final gravVec = _decomposer?.gravityVector;
+    final quat = _decomposer?.quaternion;
     final sample = SensorSamplesCompanion(
       recordingId: Value(_currentRecordingId!),
       timestampUs: Value(elapsedUs),
@@ -441,6 +442,10 @@ class RecordingEngine extends ChangeNotifier {
       gravY: Value(gravVec?[1]),
       gravZ: Value(gravVec?[2]),
       pressure: Value(_lastBaroPressure),
+      quatW: Value(quat?[0]),
+      quatX: Value(quat?[1]),
+      quatY: Value(quat?[2]),
+      quatZ: Value(quat?[3]),
     );
     _sampleBuffer.add(sample);
 
@@ -460,8 +465,9 @@ class RecordingEngine extends ChangeNotifier {
 
   Future<void> stopRecording() async {
     if (_state != RecordingState.recording &&
-        _state != RecordingState.calibrating)
+        _state != RecordingState.calibrating) {
       return;
+    }
 
     final hadRecording =
         _currentRecordingId != null && _recordingStartTime != null;

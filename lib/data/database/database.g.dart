@@ -715,6 +715,42 @@ class $SensorSamplesTable extends SensorSamples
     type: DriftSqlType.double,
     requiredDuringInsert: false,
   );
+  static const VerificationMeta _quatWMeta = const VerificationMeta('quatW');
+  @override
+  late final GeneratedColumn<double> quatW = GeneratedColumn<double>(
+    'quat_w',
+    aliasedName,
+    true,
+    type: DriftSqlType.double,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _quatXMeta = const VerificationMeta('quatX');
+  @override
+  late final GeneratedColumn<double> quatX = GeneratedColumn<double>(
+    'quat_x',
+    aliasedName,
+    true,
+    type: DriftSqlType.double,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _quatYMeta = const VerificationMeta('quatY');
+  @override
+  late final GeneratedColumn<double> quatY = GeneratedColumn<double>(
+    'quat_y',
+    aliasedName,
+    true,
+    type: DriftSqlType.double,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _quatZMeta = const VerificationMeta('quatZ');
+  @override
+  late final GeneratedColumn<double> quatZ = GeneratedColumn<double>(
+    'quat_z',
+    aliasedName,
+    true,
+    type: DriftSqlType.double,
+    requiredDuringInsert: false,
+  );
   @override
   List<GeneratedColumn> get $columns => [
     id,
@@ -741,6 +777,10 @@ class $SensorSamplesTable extends SensorSamples
     gravY,
     gravZ,
     pressure,
+    quatW,
+    quatX,
+    quatY,
+    quatZ,
   ];
   @override
   String get aliasedName => _alias ?? actualTableName;
@@ -923,6 +963,30 @@ class $SensorSamplesTable extends SensorSamples
         pressure.isAcceptableOrUnknown(data['pressure']!, _pressureMeta),
       );
     }
+    if (data.containsKey('quat_w')) {
+      context.handle(
+        _quatWMeta,
+        quatW.isAcceptableOrUnknown(data['quat_w']!, _quatWMeta),
+      );
+    }
+    if (data.containsKey('quat_x')) {
+      context.handle(
+        _quatXMeta,
+        quatX.isAcceptableOrUnknown(data['quat_x']!, _quatXMeta),
+      );
+    }
+    if (data.containsKey('quat_y')) {
+      context.handle(
+        _quatYMeta,
+        quatY.isAcceptableOrUnknown(data['quat_y']!, _quatYMeta),
+      );
+    }
+    if (data.containsKey('quat_z')) {
+      context.handle(
+        _quatZMeta,
+        quatZ.isAcceptableOrUnknown(data['quat_z']!, _quatZMeta),
+      );
+    }
     return context;
   }
 
@@ -1028,6 +1092,22 @@ class $SensorSamplesTable extends SensorSamples
         DriftSqlType.double,
         data['${effectivePrefix}pressure'],
       ),
+      quatW: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}quat_w'],
+      ),
+      quatX: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}quat_x'],
+      ),
+      quatY: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}quat_y'],
+      ),
+      quatZ: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}quat_z'],
+      ),
     );
   }
 
@@ -1062,6 +1142,10 @@ class SensorSample extends DataClass implements Insertable<SensorSample> {
   final double? gravY;
   final double? gravZ;
   final double? pressure;
+  final double? quatW;
+  final double? quatX;
+  final double? quatY;
+  final double? quatZ;
   const SensorSample({
     required this.id,
     required this.recordingId,
@@ -1087,6 +1171,10 @@ class SensorSample extends DataClass implements Insertable<SensorSample> {
     this.gravY,
     this.gravZ,
     this.pressure,
+    this.quatW,
+    this.quatX,
+    this.quatY,
+    this.quatZ,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -1156,6 +1244,18 @@ class SensorSample extends DataClass implements Insertable<SensorSample> {
     }
     if (!nullToAbsent || pressure != null) {
       map['pressure'] = Variable<double>(pressure);
+    }
+    if (!nullToAbsent || quatW != null) {
+      map['quat_w'] = Variable<double>(quatW);
+    }
+    if (!nullToAbsent || quatX != null) {
+      map['quat_x'] = Variable<double>(quatX);
+    }
+    if (!nullToAbsent || quatY != null) {
+      map['quat_y'] = Variable<double>(quatY);
+    }
+    if (!nullToAbsent || quatZ != null) {
+      map['quat_z'] = Variable<double>(quatZ);
     }
     return map;
   }
@@ -1228,6 +1328,18 @@ class SensorSample extends DataClass implements Insertable<SensorSample> {
       pressure: pressure == null && nullToAbsent
           ? const Value.absent()
           : Value(pressure),
+      quatW: quatW == null && nullToAbsent
+          ? const Value.absent()
+          : Value(quatW),
+      quatX: quatX == null && nullToAbsent
+          ? const Value.absent()
+          : Value(quatX),
+      quatY: quatY == null && nullToAbsent
+          ? const Value.absent()
+          : Value(quatY),
+      quatZ: quatZ == null && nullToAbsent
+          ? const Value.absent()
+          : Value(quatZ),
     );
   }
 
@@ -1261,6 +1373,10 @@ class SensorSample extends DataClass implements Insertable<SensorSample> {
       gravY: serializer.fromJson<double?>(json['gravY']),
       gravZ: serializer.fromJson<double?>(json['gravZ']),
       pressure: serializer.fromJson<double?>(json['pressure']),
+      quatW: serializer.fromJson<double?>(json['quatW']),
+      quatX: serializer.fromJson<double?>(json['quatX']),
+      quatY: serializer.fromJson<double?>(json['quatY']),
+      quatZ: serializer.fromJson<double?>(json['quatZ']),
     );
   }
   @override
@@ -1291,6 +1407,10 @@ class SensorSample extends DataClass implements Insertable<SensorSample> {
       'gravY': serializer.toJson<double?>(gravY),
       'gravZ': serializer.toJson<double?>(gravZ),
       'pressure': serializer.toJson<double?>(pressure),
+      'quatW': serializer.toJson<double?>(quatW),
+      'quatX': serializer.toJson<double?>(quatX),
+      'quatY': serializer.toJson<double?>(quatY),
+      'quatZ': serializer.toJson<double?>(quatZ),
     };
   }
 
@@ -1319,6 +1439,10 @@ class SensorSample extends DataClass implements Insertable<SensorSample> {
     Value<double?> gravY = const Value.absent(),
     Value<double?> gravZ = const Value.absent(),
     Value<double?> pressure = const Value.absent(),
+    Value<double?> quatW = const Value.absent(),
+    Value<double?> quatX = const Value.absent(),
+    Value<double?> quatY = const Value.absent(),
+    Value<double?> quatZ = const Value.absent(),
   }) => SensorSample(
     id: id ?? this.id,
     recordingId: recordingId ?? this.recordingId,
@@ -1344,6 +1468,10 @@ class SensorSample extends DataClass implements Insertable<SensorSample> {
     gravY: gravY.present ? gravY.value : this.gravY,
     gravZ: gravZ.present ? gravZ.value : this.gravZ,
     pressure: pressure.present ? pressure.value : this.pressure,
+    quatW: quatW.present ? quatW.value : this.quatW,
+    quatX: quatX.present ? quatX.value : this.quatX,
+    quatY: quatY.present ? quatY.value : this.quatY,
+    quatZ: quatZ.present ? quatZ.value : this.quatZ,
   );
   SensorSample copyWithCompanion(SensorSamplesCompanion data) {
     return SensorSample(
@@ -1391,6 +1519,10 @@ class SensorSample extends DataClass implements Insertable<SensorSample> {
       gravY: data.gravY.present ? data.gravY.value : this.gravY,
       gravZ: data.gravZ.present ? data.gravZ.value : this.gravZ,
       pressure: data.pressure.present ? data.pressure.value : this.pressure,
+      quatW: data.quatW.present ? data.quatW.value : this.quatW,
+      quatX: data.quatX.present ? data.quatX.value : this.quatX,
+      quatY: data.quatY.present ? data.quatY.value : this.quatY,
+      quatZ: data.quatZ.present ? data.quatZ.value : this.quatZ,
     );
   }
 
@@ -1420,7 +1552,11 @@ class SensorSample extends DataClass implements Insertable<SensorSample> {
           ..write('gravX: $gravX, ')
           ..write('gravY: $gravY, ')
           ..write('gravZ: $gravZ, ')
-          ..write('pressure: $pressure')
+          ..write('pressure: $pressure, ')
+          ..write('quatW: $quatW, ')
+          ..write('quatX: $quatX, ')
+          ..write('quatY: $quatY, ')
+          ..write('quatZ: $quatZ')
           ..write(')'))
         .toString();
   }
@@ -1451,6 +1587,10 @@ class SensorSample extends DataClass implements Insertable<SensorSample> {
     gravY,
     gravZ,
     pressure,
+    quatW,
+    quatX,
+    quatY,
+    quatZ,
   ]);
   @override
   bool operator ==(Object other) =>
@@ -1479,7 +1619,11 @@ class SensorSample extends DataClass implements Insertable<SensorSample> {
           other.gravX == this.gravX &&
           other.gravY == this.gravY &&
           other.gravZ == this.gravZ &&
-          other.pressure == this.pressure);
+          other.pressure == this.pressure &&
+          other.quatW == this.quatW &&
+          other.quatX == this.quatX &&
+          other.quatY == this.quatY &&
+          other.quatZ == this.quatZ);
 }
 
 class SensorSamplesCompanion extends UpdateCompanion<SensorSample> {
@@ -1507,6 +1651,10 @@ class SensorSamplesCompanion extends UpdateCompanion<SensorSample> {
   final Value<double?> gravY;
   final Value<double?> gravZ;
   final Value<double?> pressure;
+  final Value<double?> quatW;
+  final Value<double?> quatX;
+  final Value<double?> quatY;
+  final Value<double?> quatZ;
   const SensorSamplesCompanion({
     this.id = const Value.absent(),
     this.recordingId = const Value.absent(),
@@ -1532,6 +1680,10 @@ class SensorSamplesCompanion extends UpdateCompanion<SensorSample> {
     this.gravY = const Value.absent(),
     this.gravZ = const Value.absent(),
     this.pressure = const Value.absent(),
+    this.quatW = const Value.absent(),
+    this.quatX = const Value.absent(),
+    this.quatY = const Value.absent(),
+    this.quatZ = const Value.absent(),
   });
   SensorSamplesCompanion.insert({
     this.id = const Value.absent(),
@@ -1558,6 +1710,10 @@ class SensorSamplesCompanion extends UpdateCompanion<SensorSample> {
     this.gravY = const Value.absent(),
     this.gravZ = const Value.absent(),
     this.pressure = const Value.absent(),
+    this.quatW = const Value.absent(),
+    this.quatX = const Value.absent(),
+    this.quatY = const Value.absent(),
+    this.quatZ = const Value.absent(),
   }) : recordingId = Value(recordingId),
        timestampUs = Value(timestampUs);
   static Insertable<SensorSample> custom({
@@ -1585,6 +1741,10 @@ class SensorSamplesCompanion extends UpdateCompanion<SensorSample> {
     Expression<double>? gravY,
     Expression<double>? gravZ,
     Expression<double>? pressure,
+    Expression<double>? quatW,
+    Expression<double>? quatX,
+    Expression<double>? quatY,
+    Expression<double>? quatZ,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
@@ -1611,6 +1771,10 @@ class SensorSamplesCompanion extends UpdateCompanion<SensorSample> {
       if (gravY != null) 'grav_y': gravY,
       if (gravZ != null) 'grav_z': gravZ,
       if (pressure != null) 'pressure': pressure,
+      if (quatW != null) 'quat_w': quatW,
+      if (quatX != null) 'quat_x': quatX,
+      if (quatY != null) 'quat_y': quatY,
+      if (quatZ != null) 'quat_z': quatZ,
     });
   }
 
@@ -1639,6 +1803,10 @@ class SensorSamplesCompanion extends UpdateCompanion<SensorSample> {
     Value<double?>? gravY,
     Value<double?>? gravZ,
     Value<double?>? pressure,
+    Value<double?>? quatW,
+    Value<double?>? quatX,
+    Value<double?>? quatY,
+    Value<double?>? quatZ,
   }) {
     return SensorSamplesCompanion(
       id: id ?? this.id,
@@ -1665,6 +1833,10 @@ class SensorSamplesCompanion extends UpdateCompanion<SensorSample> {
       gravY: gravY ?? this.gravY,
       gravZ: gravZ ?? this.gravZ,
       pressure: pressure ?? this.pressure,
+      quatW: quatW ?? this.quatW,
+      quatX: quatX ?? this.quatX,
+      quatY: quatY ?? this.quatY,
+      quatZ: quatZ ?? this.quatZ,
     );
   }
 
@@ -1743,6 +1915,18 @@ class SensorSamplesCompanion extends UpdateCompanion<SensorSample> {
     if (pressure.present) {
       map['pressure'] = Variable<double>(pressure.value);
     }
+    if (quatW.present) {
+      map['quat_w'] = Variable<double>(quatW.value);
+    }
+    if (quatX.present) {
+      map['quat_x'] = Variable<double>(quatX.value);
+    }
+    if (quatY.present) {
+      map['quat_y'] = Variable<double>(quatY.value);
+    }
+    if (quatZ.present) {
+      map['quat_z'] = Variable<double>(quatZ.value);
+    }
     return map;
   }
 
@@ -1772,7 +1956,11 @@ class SensorSamplesCompanion extends UpdateCompanion<SensorSample> {
           ..write('gravX: $gravX, ')
           ..write('gravY: $gravY, ')
           ..write('gravZ: $gravZ, ')
-          ..write('pressure: $pressure')
+          ..write('pressure: $pressure, ')
+          ..write('quatW: $quatW, ')
+          ..write('quatX: $quatX, ')
+          ..write('quatY: $quatY, ')
+          ..write('quatZ: $quatZ')
           ..write(')'))
         .toString();
   }
@@ -2163,6 +2351,10 @@ typedef $$SensorSamplesTableCreateCompanionBuilder =
       Value<double?> gravY,
       Value<double?> gravZ,
       Value<double?> pressure,
+      Value<double?> quatW,
+      Value<double?> quatX,
+      Value<double?> quatY,
+      Value<double?> quatZ,
     });
 typedef $$SensorSamplesTableUpdateCompanionBuilder =
     SensorSamplesCompanion Function({
@@ -2190,6 +2382,10 @@ typedef $$SensorSamplesTableUpdateCompanionBuilder =
       Value<double?> gravY,
       Value<double?> gravZ,
       Value<double?> pressure,
+      Value<double?> quatW,
+      Value<double?> quatX,
+      Value<double?> quatY,
+      Value<double?> quatZ,
     });
 
 final class $$SensorSamplesTableReferences
@@ -2344,6 +2540,26 @@ class $$SensorSamplesTableFilterComposer
     builder: (column) => ColumnFilters(column),
   );
 
+  ColumnFilters<double> get quatW => $composableBuilder(
+    column: $table.quatW,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<double> get quatX => $composableBuilder(
+    column: $table.quatX,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<double> get quatY => $composableBuilder(
+    column: $table.quatY,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<double> get quatZ => $composableBuilder(
+    column: $table.quatZ,
+    builder: (column) => ColumnFilters(column),
+  );
+
   $$RecordingsTableFilterComposer get recordingId {
     final $$RecordingsTableFilterComposer composer = $composerBuilder(
       composer: this,
@@ -2492,6 +2708,26 @@ class $$SensorSamplesTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<double> get quatW => $composableBuilder(
+    column: $table.quatW,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<double> get quatX => $composableBuilder(
+    column: $table.quatX,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<double> get quatY => $composableBuilder(
+    column: $table.quatY,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<double> get quatZ => $composableBuilder(
+    column: $table.quatZ,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   $$RecordingsTableOrderingComposer get recordingId {
     final $$RecordingsTableOrderingComposer composer = $composerBuilder(
       composer: this,
@@ -2612,6 +2848,18 @@ class $$SensorSamplesTableAnnotationComposer
   GeneratedColumn<double> get pressure =>
       $composableBuilder(column: $table.pressure, builder: (column) => column);
 
+  GeneratedColumn<double> get quatW =>
+      $composableBuilder(column: $table.quatW, builder: (column) => column);
+
+  GeneratedColumn<double> get quatX =>
+      $composableBuilder(column: $table.quatX, builder: (column) => column);
+
+  GeneratedColumn<double> get quatY =>
+      $composableBuilder(column: $table.quatY, builder: (column) => column);
+
+  GeneratedColumn<double> get quatZ =>
+      $composableBuilder(column: $table.quatZ, builder: (column) => column);
+
   $$RecordingsTableAnnotationComposer get recordingId {
     final $$RecordingsTableAnnotationComposer composer = $composerBuilder(
       composer: this,
@@ -2688,6 +2936,10 @@ class $$SensorSamplesTableTableManager
                 Value<double?> gravY = const Value.absent(),
                 Value<double?> gravZ = const Value.absent(),
                 Value<double?> pressure = const Value.absent(),
+                Value<double?> quatW = const Value.absent(),
+                Value<double?> quatX = const Value.absent(),
+                Value<double?> quatY = const Value.absent(),
+                Value<double?> quatZ = const Value.absent(),
               }) => SensorSamplesCompanion(
                 id: id,
                 recordingId: recordingId,
@@ -2713,6 +2965,10 @@ class $$SensorSamplesTableTableManager
                 gravY: gravY,
                 gravZ: gravZ,
                 pressure: pressure,
+                quatW: quatW,
+                quatX: quatX,
+                quatY: quatY,
+                quatZ: quatZ,
               ),
           createCompanionCallback:
               ({
@@ -2740,6 +2996,10 @@ class $$SensorSamplesTableTableManager
                 Value<double?> gravY = const Value.absent(),
                 Value<double?> gravZ = const Value.absent(),
                 Value<double?> pressure = const Value.absent(),
+                Value<double?> quatW = const Value.absent(),
+                Value<double?> quatX = const Value.absent(),
+                Value<double?> quatY = const Value.absent(),
+                Value<double?> quatZ = const Value.absent(),
               }) => SensorSamplesCompanion.insert(
                 id: id,
                 recordingId: recordingId,
@@ -2765,6 +3025,10 @@ class $$SensorSamplesTableTableManager
                 gravY: gravY,
                 gravZ: gravZ,
                 pressure: pressure,
+                quatW: quatW,
+                quatX: quatX,
+                quatY: quatY,
+                quatZ: quatZ,
               ),
           withReferenceMapper: (p0) => p0
               .map(

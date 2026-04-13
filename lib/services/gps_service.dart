@@ -53,7 +53,7 @@ class GpsService {
         accuracy: LocationAccuracy.bestForNavigation,
         distanceFilter: 0,
         foregroundNotificationConfig: const ForegroundNotificationConfig(
-          notificationTitle: 'CarStats Recording',
+          notificationTitle: 'AccelStats Recording',
           notificationText: 'Recording GPS data in background',
           enableWakeLock: true,
         ),

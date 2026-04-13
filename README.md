@@ -1,4 +1,4 @@
-# car_stats
+# accel_stats
 
 A new Flutter project.
 

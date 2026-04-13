@@ -64,6 +64,12 @@ class SensorSamples extends Table {
 
   // Barometric pressure (hPa)
   RealColumn get pressure => real().nullable()();
+
+  // Phone orientation quaternion (world-from-phone rotation)
+  RealColumn get quatW => real().nullable()();
+  RealColumn get quatX => real().nullable()();
+  RealColumn get quatY => real().nullable()();
+  RealColumn get quatZ => real().nullable()();
 }
 
 @DriftDatabase(tables: [Recordings, SensorSamples])
@@ -78,7 +84,7 @@ class AppDatabase extends _$AppDatabase implements RecordingStore {
   }
 
   @override
-  int get schemaVersion => 2;
+  int get schemaVersion => 3;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -100,6 +106,20 @@ class AppDatabase extends _$AppDatabase implements RecordingStore {
           'ALTER TABLE sensor_samples ADD COLUMN pressure REAL',
         );
       }
+      if (from < 3) {
+        await customStatement(
+          'ALTER TABLE sensor_samples ADD COLUMN quat_w REAL',
+        );
+        await customStatement(
+          'ALTER TABLE sensor_samples ADD COLUMN quat_x REAL',
+        );
+        await customStatement(
+          'ALTER TABLE sensor_samples ADD COLUMN quat_y REAL',
+        );
+        await customStatement(
+          'ALTER TABLE sensor_samples ADD COLUMN quat_z REAL',
+        );
+      }
     },
   );
 
@@ -115,16 +135,19 @@ class AppDatabase extends _$AppDatabase implements RecordingStore {
     return (select(recordings)..where((t) => t.id.equals(id))).getSingle();
   }
 
+  @override
   Future<int> insertRecording(RecordingsCompanion entry) {
     return into(recordings).insert(entry);
   }
 
+  @override
   Future<void> updateRecording(RecordingsCompanion entry) {
     return (update(
       recordings,
     )..where((t) => t.id.equals(entry.id.value))).write(entry);
   }
 
+  @override
   Future<void> deleteRecording(int id) {
     return transaction(() async {
       await (delete(
@@ -136,6 +159,7 @@ class AppDatabase extends _$AppDatabase implements RecordingStore {
 
   // --- Sensor sample queries ---
 
+  @override
   Future<void> insertSensorSamplesBatch(List<SensorSamplesCompanion> entries) {
     return batch((b) => b.insertAll(sensorSamples, entries));
   }
@@ -158,7 +182,16 @@ class AppDatabase extends _$AppDatabase implements RecordingStore {
 LazyDatabase _openConnection() {
   return LazyDatabase(() async {
     final dbFolder = await getApplicationDocumentsDirectory();
-    final file = File(p.join(dbFolder.path, 'car_stats.sqlite'));
+    final file = File(p.join(dbFolder.path, 'accel_stats.sqlite'));
+
+    // Migrate old database file name if it exists.
+    if (!file.existsSync()) {
+      final oldFile = File(p.join(dbFolder.path, 'car_stats.sqlite'));
+      if (oldFile.existsSync()) {
+        oldFile.renameSync(file.path);
+      }
+    }
+
     return NativeDatabase.createInBackground(file);
   });
 }

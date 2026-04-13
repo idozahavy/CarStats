@@ -1,7 +1,7 @@
 import 'dart:math';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:car_stats/services/calibration_service.dart';
-import 'package:car_stats/services/sensor_service.dart';
+import 'package:accel_stats/services/calibration_service.dart';
+import 'package:accel_stats/services/sensor_service.dart';
 
 /// Full integration-style test: calibrate → car moves at GPS speed →
 /// phone rotates mid-drive → verify forward acceleration decomposition

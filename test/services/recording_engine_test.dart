@@ -1,9 +1,9 @@
 import 'dart:async';
 
-import 'package:car_stats/data/database/database.dart';
-import 'package:car_stats/services/gps_service.dart';
-import 'package:car_stats/services/recording_engine.dart';
-import 'package:car_stats/services/sensor_service.dart';
+import 'package:accel_stats/data/database/database.dart';
+import 'package:accel_stats/services/gps_service.dart';
+import 'package:accel_stats/services/recording_engine.dart';
+import 'package:accel_stats/services/sensor_service.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 class FakeRecordingStore implements RecordingStore {

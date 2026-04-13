@@ -13,18 +13,18 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   final prefs = await SharedPreferences.getInstance();
 
-  runApp(CarStatsApp(prefs: prefs));
+  runApp(AccelStatsApp(prefs: prefs));
 }
 
-class CarStatsApp extends StatefulWidget {
+class AccelStatsApp extends StatefulWidget {
   final SharedPreferences prefs;
-  const CarStatsApp({super.key, required this.prefs});
+  const AccelStatsApp({super.key, required this.prefs});
 
   @override
-  State<CarStatsApp> createState() => _CarStatsAppState();
+  State<AccelStatsApp> createState() => _AccelStatsAppState();
 }
 
-class _CarStatsAppState extends State<CarStatsApp> {
+class _AccelStatsAppState extends State<AccelStatsApp> {
   late final SensorService _sensorService;
   late final GpsService _gpsService;
   late final AppDatabase _db;
@@ -61,7 +61,7 @@ class _CarStatsAppState extends State<CarStatsApp> {
       child: Consumer<ThemeProvider>(
         builder: (context, themeProvider, _) {
           return MaterialApp(
-            title: 'CarStats',
+            title: 'AccelStats',
             debugShowCheckedModeBanner: false,
             theme: AppTheme.light(),
             darkTheme: AppTheme.dark(),
@@ -126,7 +126,7 @@ class _PermissionGateState extends State<_PermissionGate> {
                   ),
                   const SizedBox(height: 8),
                   const Text(
-                    'CarStats needs GPS access to measure speed. Please grant location permission.',
+                    'AccelStats needs GPS access to measure speed. Please grant location permission.',
                     textAlign: TextAlign.center,
                   ),
                   const SizedBox(height: 24),

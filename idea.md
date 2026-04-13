@@ -1,4 +1,4 @@
-# CarStats
+# AccelStats
 
 Native Flutter app that records phone sensors to measure a car's acceleration at specific speeds.
 
@@ -6,13 +6,11 @@ The user mounts the phone anywhere in the car (dashboard, mount, cupholder — a
 
 **GPS is the only viable speed source.** The speed vs. acceleration graph uses GPS speed as the x-axis. Accelerometer data provides the high-frequency acceleration values, but speed comes from GPS.
 
-
 ## Platform
 
 - **Framework:** Flutter (native Android/iOS)
 - **Sensors:** Accelerometer (raw + `TYPE_LINEAR_ACCELERATION`), gyroscope, magnetometer, GPS
 - **Storage:** Local SQLite for recordings, JSON export
-
 
 ## Calibration
 
@@ -22,7 +20,6 @@ The app must handle any arbitrary phone orientation and rotation during a sessio
 2. **Continuous rotation tracking** — Gyroscope integration tracks any phone orientation changes mid-recording and adjusts the acceleration decomposition in real time.
 3. **GPS heading correction** — Use GPS-derived heading (direction between consecutive GPS points) to validate and correct the forward-axis mapping. This compensates for drift in gyroscope integration over time.
 4. **No mount constraint** — The phone can be in any orientation: flat, vertical, angled, portrait, landscape.
-
 
 ## Acceleration Calculation
 
@@ -34,18 +31,20 @@ The car's forward acceleration is extracted by:
 4. Using GPS heading to confirm which axis is "forward."
 
 **Dev mode shows both side by side:**
+
 - Custom calculation (raw accelerometer → orientation decomposition → gravity subtraction → forward acceleration)
 - `TYPE_LINEAR_ACCELERATION` / platform-provided linear acceleration
 
 This allows comparing and validating the custom pipeline against the OS sensor fusion.
-
 
 ## Recordings
 
 Two recording types, with benchmarks derived as a view:
 
 ### Dev Recording
+
 All raw sensor data for development and analysis:
+
 - Raw accelerometer (x, y, z)
 - `TYPE_LINEAR_ACCELERATION` (x, y, z) — platform sensor fusion result
 - Custom calculated forward acceleration (side by side with above)
@@ -59,13 +58,16 @@ All raw sensor data for development and analysis:
 - Timestamp (high resolution)
 
 ### User Recording
+
 Clean recording for end users:
+
 - GPS speed
 - Calculated car forward acceleration
 - Timestamp
 - Session metadata (see below)
 
 ### Benchmark View (derived from User Recording)
+
 Processed summary computed post-run from a user recording. Not a separate capture — a computed analysis.
 
 **Two benchmark types:**
@@ -74,14 +76,15 @@ Processed summary computed post-run from a user recording. Not a separate captur
 2. **Sudden acceleration at speed** — The car is cruising at a steady speed (e.g., 60 km/h), then the driver floors it. Measures the acceleration response: how quickly the car responds and the g-force produced from a semi-resting state. Shows real-world overtaking / merging capability.
 
 **Standard benchmarks (computed when enough data exists):**
+
 - 0–100 km/h time
 - 0–60 mph time
 - 80–120 km/h time (in-gear pull)
 - Quarter mile (400m) time and trap speed
 
 ### Export
-The user can export any recording to a JSON file.
 
+The user can export any recording to a JSON file.
 
 ## Session Metadata
 
@@ -103,16 +106,15 @@ Every recording captures as much context as possible:
 - Date, time, location name
 - Device model and OS version
 
-
 ## Overlay Comparison
 
 Users can select two recordings and overlay them on the same graph:
+
 - Speed vs. acceleration curves plotted together
 - Aligned by speed (x-axis = speed) or by time (x-axis = elapsed time)
 - Visual diff highlighting where one run outperforms another
 - **Sudden acceleration comparison** — Compare sudden acceleration events at the same starting speed across recordings. Shows how the car responds differently under different conditions (temperature, load, drive mode, modifications).
 - Use case: compare runs before/after modification, different weather, different drive modes
-
 
 ## Implementation Status
 

@@ -15,7 +15,7 @@ class HomeScreen extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('CarStats'),
+        title: const Text('AccelStats'),
         actions: [
           IconButton(
             icon: const Icon(Icons.settings),
