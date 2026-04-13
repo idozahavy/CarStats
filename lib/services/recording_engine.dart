@@ -337,10 +337,8 @@ class RecordingEngine extends ChangeNotifier {
         _lastAccel!.y,
         _lastAccel!.z,
       );
-      if (headingCalibrated) {
-        forwardAccel = decomposed[0];
-        lateralAccel = decomposed[1];
-      }
+      forwardAccel = decomposed[0];
+      lateralAccel = decomposed[1];
     }
 
     final gpsSpeedMps = _lastGps?.speed;

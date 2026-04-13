@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:flutter/foundation.dart' show defaultTargetPlatform, TargetPlatform;
 import 'package:geolocator/geolocator.dart';
 
 class GpsReading {
@@ -46,10 +47,23 @@ class GpsService {
     // Guard against double-subscription
     if (_positionSub != null) return;
 
-    const locationSettings = LocationSettings(
-      accuracy: LocationAccuracy.bestForNavigation,
-      distanceFilter: 0,
-    );
+    final LocationSettings locationSettings;
+    if (defaultTargetPlatform == TargetPlatform.android) {
+      locationSettings = AndroidSettings(
+        accuracy: LocationAccuracy.bestForNavigation,
+        distanceFilter: 0,
+        foregroundNotificationConfig: const ForegroundNotificationConfig(
+          notificationTitle: 'CarStats Recording',
+          notificationText: 'Recording GPS data in background',
+          enableWakeLock: true,
+        ),
+      );
+    } else {
+      locationSettings = const LocationSettings(
+        accuracy: LocationAccuracy.bestForNavigation,
+        distanceFilter: 0,
+      );
+    }
 
     _positionSub = Geolocator.getPositionStream(locationSettings: locationSettings).listen((position) {
       _gpsController.add(GpsReading(

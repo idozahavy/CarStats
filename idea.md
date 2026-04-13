@@ -134,6 +134,13 @@ Users can select two recordings and overlay them on the same graph:
 - [x] Dev mode: shows platform linear acceleration magnitude alongside custom calculation during recording
 - [x] Android + iOS permissions configured (location, sensors)
 - [x] Provider-based state management
+- [x] Continuous rotation tracking (gyroscope integration mid-recording)
+- [x] JSON export (+ CSV export via file_picker save dialog)
+- [x] GPS-derived direction (bearing between consecutive GPS points via haversine)
+- [x] Gravity vector storage per sample (from AccelerationDecomposer rotation matrix)
+- [x] Barometric pressure sensor (via sensors_plus barometerEventStream)
+- [x] Separate dev vs user recording types in UI (filter chips on recordings list)
+- [x] Recording import from JSON file
 
 ### Not Yet Implemented
 
