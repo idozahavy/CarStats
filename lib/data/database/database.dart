@@ -11,6 +11,9 @@ abstract interface class RecordingStore {
   Future<void> updateRecording(RecordingsCompanion entry);
   Future<void> deleteRecording(int id);
   Future<void> insertSensorSamplesBatch(List<SensorSamplesCompanion> entries);
+  Future<List<Recording>> getAllRecordings();
+  Future<Recording> getRecording(int id);
+  Future<List<SensorSample>> getSamplesForRecording(int recordingId);
 }
 
 class Recordings extends Table {
@@ -131,12 +134,14 @@ class AppDatabase extends _$AppDatabase implements RecordingStore {
 
   // --- Recording queries ---
 
+  @override
   Future<List<Recording>> getAllRecordings() {
     return (select(
       recordings,
     )..orderBy([(t) => OrderingTerm.desc(t.startedAt)])).get();
   }
 
+  @override
   Future<Recording> getRecording(int id) {
     return (select(recordings)..where((t) => t.id.equals(id))).getSingle();
   }
@@ -170,6 +175,7 @@ class AppDatabase extends _$AppDatabase implements RecordingStore {
     return batch((b) => b.insertAll(sensorSamples, entries));
   }
 
+  @override
   Future<List<SensorSample>> getSamplesForRecording(int recordingId) {
     return (select(sensorSamples)
           ..where((t) => t.recordingId.equals(recordingId))

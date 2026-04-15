@@ -42,7 +42,7 @@ class ExportService {
     return File(savePath);
   }
 
-  static Future<int?> importRecording(AppDatabase db) async {
+  static Future<int?> importRecording(RecordingStore db) async {
     final result = await FilePicker.platform.pickFiles(
       dialogTitle: 'Import Recording',
       type: FileType.custom,

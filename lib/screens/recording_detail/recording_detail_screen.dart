@@ -14,7 +14,7 @@ class RecordingDetailScreen extends StatefulWidget {
 }
 
 class _RecordingDetailScreenState extends State<RecordingDetailScreen> {
-  late final AppDatabase _db;
+  late final RecordingStore _db;
   Recording? _recording;
   List<SensorSample> _samples = [];
   bool _loading = true;
@@ -22,7 +22,7 @@ class _RecordingDetailScreenState extends State<RecordingDetailScreen> {
   @override
   void initState() {
     super.initState();
-    _db = context.read<AppDatabase>();
+    _db = context.read<RecordingStore>();
     _load();
   }
 

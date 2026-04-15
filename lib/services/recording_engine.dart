@@ -101,6 +101,14 @@ class RecordingEngine extends ChangeNotifier {
   DateTime _lastNotify = DateTime(0);
   static const _notifyInterval = Duration(milliseconds: 100);
 
+  /// Set to Duration.zero in tests to disable the periodic flush timer.
+  @visibleForTesting
+  Duration flushInterval = const Duration(seconds: 2);
+
+  /// Set to false in tests to skip the calibration countdown timer.
+  @visibleForTesting
+  bool useCalibrationTimer = true;
+
   RecordingEngine({
     required RecordingStore db,
     required SensorService sensorService,
@@ -153,14 +161,16 @@ class RecordingEngine extends ChangeNotifier {
     );
 
     // Countdown timer
-    _calibrationTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
-      _calibrationCountdown--;
-      notifyListeners();
-      if (_calibrationCountdown <= 0) {
-        timer.cancel();
-        unawaited(_finishCalibration());
-      }
-    });
+    if (useCalibrationTimer) {
+      _calibrationTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
+        _calibrationCountdown--;
+        notifyListeners();
+        if (_calibrationCountdown <= 0) {
+          timer.cancel();
+          unawaited(_finishCalibration());
+        }
+      });
+    }
   }
 
   void _onCalibrationAccel(AccelerometerReading reading) {
@@ -176,7 +186,7 @@ class RecordingEngine extends ChangeNotifier {
     _calibrationTimer?.cancel();
     _calibrationTimer = null;
 
-    await _accelSub?.cancel();
+    _accelSub?.cancel();
     _accelSub = null;
 
     _calibration = _calibrationService.compute();
@@ -236,11 +246,13 @@ class RecordingEngine extends ChangeNotifier {
       onError: (_) {},
     );
 
-    // Flush buffer periodically
-    _flushTimer = Timer.periodic(
-      const Duration(seconds: 2),
-      (_) => _flushBuffer(),
-    );
+    // Flush buffer periodically (disabled when flushInterval is zero)
+    if (flushInterval > Duration.zero) {
+      _flushTimer = Timer.periodic(
+        flushInterval,
+        (_) => _flushBuffer(),
+      );
+    }
   }
 
   void _onRecordingAccel(AccelerometerReading r) {
@@ -475,11 +487,11 @@ class RecordingEngine extends ChangeNotifier {
 
     _calibrationTimer?.cancel();
     _flushTimer?.cancel();
-    await _accelSub?.cancel();
-    await _linearAccelSub?.cancel();
-    await _gyroSub?.cancel();
-    await _gpsSub?.cancel();
-    await _barometerSub?.cancel();
+    _accelSub?.cancel();
+    _linearAccelSub?.cancel();
+    _gyroSub?.cancel();
+    _gpsSub?.cancel();
+    _barometerSub?.cancel();
 
     _sensorService.stopListening();
     _gpsService.stopListening();

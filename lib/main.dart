@@ -49,7 +49,7 @@ class _AccelStatsAppState extends State<AccelStatsApp> {
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
-        Provider<AppDatabase>.value(value: _db),
+        Provider<RecordingStore>.value(value: _db),
         ChangeNotifierProvider(create: (_) => ThemeProvider(widget.prefs)),
         ChangeNotifierProvider(create: (_) => SettingsProvider(widget.prefs)),
         ChangeNotifierProvider(

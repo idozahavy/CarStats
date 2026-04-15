@@ -15,7 +15,7 @@ class RecordingsScreen extends StatefulWidget {
 enum _RecordingFilter { all, user, dev }
 
 class _RecordingsScreenState extends State<RecordingsScreen> {
-  late final AppDatabase _db;
+  late final RecordingStore _db;
   List<Recording> _recordings = [];
   bool _loading = true;
   _RecordingFilter _filter = _RecordingFilter.all;
@@ -23,7 +23,7 @@ class _RecordingsScreenState extends State<RecordingsScreen> {
   @override
   void initState() {
     super.initState();
-    _db = context.read<AppDatabase>();
+    _db = context.read<RecordingStore>();
     _load();
   }
 
