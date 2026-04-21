@@ -1,13 +1,13 @@
-### Conventions
+# Conventions
 
 > How this codebase is organised and the rules that keep it consistent.
 
 **Scope:** [lib/](lib/), [test/](test/), [analysis_options.yaml](analysis_options.yaml)
-**Last verified:** 2026-04-18
+**Last verified:** 2026-04-21
 
 ---
 
-### Folder layout
+## Folder layout
 
 ```
 lib/
@@ -21,7 +21,7 @@ lib/
 └── widgets/                 # Reserved for shared widgets (currently empty)
 ```
 
-### Naming
+## Naming
 
 | Thing | Convention | Example |
 |---|---|---|
@@ -31,7 +31,7 @@ lib/
 | Private members | leading `_` | `_sampleBuffer`, `_onRecordingGps` |
 | Test-only setters | annotated `@visibleForTesting` | `flushInterval`, `useCalibrationTimer` |
 
-### Layer responsibilities
+## Layer responsibilities
 
 | Layer | May depend on | May not depend on |
 |---|---|---|
@@ -41,7 +41,7 @@ lib/
 | `services/sensor_service.dart`, `gps_service.dart` | `sensors_plus` / `geolocator` | Engine, UI |
 | `data/database/database.dart` | `drift` | UI, services |
 
-### State management
+## State management
 
 - `Provider` at app root in [lib/main.dart](lib/main.dart).
 - Global state lives in `ChangeNotifier`s:
@@ -50,32 +50,32 @@ lib/
 - `RecordingStore` is provided as a plain `Provider<RecordingStore>.value` — screens read the interface, not the concrete DB class.
 - UI rebuilds inside an active recording are throttled to ~10 Hz (sensor streams fire ~50 Hz).
 
-### Database conventions
+## Database conventions
 
 - One `AppDatabase` instance, guarded by a factory singleton.
 - Schema is defined with Drift's declarative tables; run codegen (`build_runner`) after edits.
 - Migrations are additive `ALTER TABLE ADD COLUMN` — never drop or rename.
 - Always bump `schemaVersion` and append an `if (from < N)` block.
 
-### Sensor + GPS conventions
+## Sensor + GPS conventions
 
 - Sampling: 20 ms period (≈ 50 Hz) for accelerometer / gyroscope / linear accel; 1 s for barometer; 1 Hz natural rate for GPS (set via `LocationAccuracy.bestForNavigation`).
 - All numeric sensor columns are nullable — never assume a sample has every field.
 - Speeds below `SensorConstants.gpsStationarySpeed` (0.5 m/s) snap to 0 in the display pipeline.
 - Small accelerations below `SensorConstants.accelNoiseFloor` (0.05 g) are clamped to 0 while stationary.
 
-### Error handling
+## Error handling
 
 - Sensor and GPS stream errors are swallowed with `onError: (_) {}` — dropouts (tunnels, device quirks) are expected.
 - GPS permission is checked once at app start by `_PermissionGate` in [lib/main.dart](lib/main.dart).
 - Export/import failures surface as `SnackBar` messages, not thrown to the UI layer.
 
-### Testing
+## Testing
 
 - Tests live in [test/](test/) and use `flutter_test`.
 - Engine tests set `flushInterval = Duration.zero` and `useCalibrationTimer = false` to avoid real timers.
 
-### Related pages
+## Related pages
 
 - [architecture](architecture.md) — the components these rules govern
 - [data-model](data-model.md) — database specifics

@@ -1,20 +1,20 @@
-### Stack
+# Stack
 
 > Flutter (Dart SDK ^3.10.4) targeting Android + iOS. SQLite via Drift, Provider for state, fl_chart for plots.
 
 **Scope:** [pubspec.yaml](pubspec.yaml), [android/](android/), [ios/](ios/), [analysis_options.yaml](analysis_options.yaml)
-**Last verified:** 2026-04-18
+**Last verified:** 2026-04-21
 
 ---
 
-### Runtime
+## Runtime
 
 | Tech | Version | Purpose |
 |---|---|---|
 | Dart SDK | ^3.10.4 | Language runtime |
 | Flutter | (from SDK) | UI framework |
 
-### Dependencies
+## Dependencies
 
 | Package | Version | Purpose |
 |---|---|---|
@@ -33,7 +33,7 @@
 | `file_picker` | ^8.3.7 | Save/pick files for export and import |
 | `cupertino_icons` | ^1.0.8 | iOS-style icons |
 
-### Dev dependencies
+## Dev dependencies
 
 | Package | Purpose |
 |---|---|
@@ -41,7 +41,7 @@
 | `drift_dev` ^2.25.0 | Codegen for Drift tables |
 | `build_runner` ^2.4.15 | Runs the codegen |
 
-### Commands
+## Commands
 
 | Command | Purpose |
 |---|---|
@@ -51,12 +51,12 @@
 | `flutter test` | Run the widget/unit test suite under [test/](test/) |
 | `flutter build apk` / `flutter build ios` | Platform builds |
 
-### Platform setup
+## Platform setup
 
 - **Android:** location + foreground-service permissions are declared in [android/app/src/main/AndroidManifest.xml](android/app/src/main/AndroidManifest.xml). The GPS service uses a `ForegroundNotificationConfig` with wake lock to keep streaming when the screen is off.
 - **iOS:** location usage description strings in [ios/Runner/Info.plist](ios/Runner/Info.plist).
 
-### Related pages
+## Related pages
 
 - [architecture](architecture.md) — how these components connect
 - [conventions](conventions.md) — how code is organised

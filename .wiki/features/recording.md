@@ -1,28 +1,28 @@
-### Recording
+# Recording
 
 > Captures a single driving session: 5 s calibration countdown, then continuous sensor + GPS sampling while computing forward / lateral acceleration live.
 
 **Scope:** [lib/screens/home/home_screen.dart](lib/screens/home/home_screen.dart), [lib/screens/recording/recording_screen.dart](lib/screens/recording/recording_screen.dart), [lib/services/recording_engine.dart](lib/services/recording_engine.dart), [lib/services/sensor_service.dart](lib/services/sensor_service.dart), [lib/services/gps_service.dart](lib/services/gps_service.dart), [lib/services/calibration_service.dart](lib/services/calibration_service.dart)
-**Last verified:** 2026-04-18
+**Last verified:** 2026-04-21
 
 ---
 
-### Summary
+## Summary
 
 A recording runs in three engine states: `calibrating` → `recording` → `stopped` (or back to `idle` if stopped before calibration ends).
 
-### User-facing behavior
+## User-facing behavior
 
 - Home screen: *Start Recording* button → immediately navigates to the recording screen.
 - Recording screen:
   - During calibration, shows a 5 → 0 countdown.
-  - Live cards: current speed (km/h), forward accel (g), lateral accel (g), peak forward / brake / lateral.
+  - Live cards: speed (km/h), forward acceleration (g), phone pitch and roll (°), and peak forward / brake / lateral (g).
+  - Heading-lock indicator: `Calibrating heading...` until the horizontal offset is learned, then `Heading locked`.
   - Live speed-vs-accel chart (throttled to ~10 Hz).
   - *Close* (X) button stops recording and returns home.
-  - Dev mode (toggled in Settings) additionally shows platform linear-acceleration magnitude alongside the custom forward-accel calculation.
-- Recording is persisted as a `Recordings` row flagged `isDevRecording = devMode`.
+- Recording is persisted as a `Recordings` row flagged `isDevRecording = devMode` (dev-mode is only consumed at recording-create time, not in the live UI).
 
-### Data flow
+## Data flow
 
 1. `HomeScreen._startRecording` reads `SettingsProvider.devMode` and calls `RecordingEngine.startRecording(name, isDev)`.
 2. Engine state → `calibrating`. `SensorService` + `GpsService` start. An accelerometer subscription feeds `CalibrationService`.
@@ -37,7 +37,7 @@ A recording runs in three engine states: `calibrating` → `recording` → `stop
 7. Flush timer fires every 2 s → batch insert buffered samples.
 8. On *stop*: cancel subscriptions, flush buffer, update `endedAt` + `durationMs`. If calibration never produced a recording row, engine returns to `idle` instead of `stopped`.
 
-### Sensor sampling rates
+## Sensor sampling rates
 
 | Stream | Rate |
 |---|---|
@@ -47,7 +47,7 @@ A recording runs in three engine states: `calibrating` → `recording` → `stop
 | Barometer | 1 Hz |
 | GPS | ~1 Hz (driven by `bestForNavigation` accuracy) |
 
-### Business rules
+## Business rules
 
 - Engine guards against re-entry: `startRecording` is a no-op unless state is `idle`; state flips to `calibrating` immediately to prevent rapid double-taps.
 - If the user stops during calibration, no `Recordings` row is written (the `_finishCalibration` path rolls back by deleting the just-inserted row if state changed mid-await).
@@ -56,19 +56,19 @@ A recording runs in three engine states: `calibrating` → `recording` → `stop
 - Live chart buffer is capped at 3000 snapshots (oldest dropped).
 - UI is rebuilt at most every 100 ms regardless of incoming sensor rate.
 
-### Gotchas
+## Gotchas
 
 - GPS heading from the OS is unreliable below ~2 m/s; the engine deliberately only feeds it into the decomposer above that threshold.
 - Barometer is optional — `sensors_plus` errors are swallowed, `pressure` will stay null on devices without one.
 - `_recordingStartTime` is the wall-clock time set when the `Recordings` row is inserted — not when calibration started. `timestampUs` on samples is therefore measured from end-of-calibration.
-- The `Recordings` row is created **before** the state flips to `recording`; if the user closes mid-`await`, the engine deletes the orphan row. See [recording_engine.dart:215-218](lib/services/recording_engine.dart#L215-L218).
-- On Android, a persistent notification is shown while GPS is streaming (required for background location). See [gps_service.dart:55](lib/services/gps_service.dart#L55).
+- The `Recordings` row is created **before** the state flips to `recording`; if the user closes mid-`await`, `RecordingEngine._finishCalibration` detects the state change and deletes the orphan row.
+- On Android, a persistent notification is shown while GPS is streaming (required for background location). Configured in `GpsService.startListening` via `ForegroundNotificationConfig`.
 
-### Status
+## Status
 
 Complete (MVP).
 
-### Related pages
+## Related pages
 
 - [acceleration-calculation](../concepts/acceleration-calculation.md) — math behind forward/lateral decomposition
 - [data-model](../data-model.md) — where samples land

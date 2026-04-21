@@ -54,11 +54,17 @@ One page per cohesive feature. A feature = a set of functionality a user would r
 | Scope | Which files implement this feature (paths relative to project root) |
 | User-facing behavior | What the user sees/does |
 | Data flow | How a request moves through the layers for this feature |
-| API endpoints | Method, path, purpose, request/response shapes (if applicable) |
 | Business rules | Validation, constraints, edge cases |
 | Gotchas | Non-obvious behavior, known issues, things that break assumptions |
 | Status | Complete / partial / planned |
 | Related pages | Links to other wiki pages this feature connects to |
+
+**Optional sections (include only when applicable):**
+| Section | When to include |
+|---|---|
+| API endpoints | Feature exposes HTTP/RPC endpoints — document method, path, purpose, request/response shapes. Skip for pure-UI and client-only features. |
+
+**Planned features:** pages marked `Status: Planned` still follow the shape above. Unknown content goes under its section as `_TBD._` or a short note explaining what is undecided. Do not invent sections — keep open questions inside `Gotchas` or a section-level `_TBD._` marker.
 
 ### 3.2 Concept Pages (`concepts/<concept>.md`)
 

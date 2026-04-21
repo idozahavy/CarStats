@@ -1,17 +1,25 @@
-### Session Metadata (planned)
+# Session Metadata (planned)
 
 > Capture car, tyre, weather, load, and drive-mode context per recording so benchmarks can be interpreted correctly.
 
-**Scope:** Not yet implemented. The `Recordings.notes` text column exists as a placeholder.
-**Last verified:** 2026-04-18
+**Scope:** _TBD._ Not yet implemented. The `Recordings.notes` text column exists as a placeholder.
+**Last verified:** 2026-04-21
 
 ---
 
-### Summary
+## Summary
 
 Every recording should travel with enough context to explain why it performed the way it did. None of the fields below are captured today.
 
-### Planned fields
+## User-facing behavior
+
+Planned:
+
+- A metadata panel on the recording detail screen (or a pre-recording step) prompts for vehicle, state, environment, and context fields.
+- A reusable car profile (make / model / year) is stored once and referenced by new recordings — the user picks from existing profiles or creates a new one.
+- Filtering and benchmark comparisons can use metadata to group comparable runs.
+
+Planned fields:
 
 | Group | Fields |
 |---|---|
@@ -20,28 +28,32 @@ Every recording should travel with enough context to explain why it performed th
 | Environment | air temperature, weather, road surface, altitude (barometer + GPS) |
 | Context | date, time, location name, device model + OS version |
 
-### Car profile
+## Data flow
 
-A reusable car profile (make / model / year) should be stored once and referenced by new recordings. Intended as a separate table with a `recordingId` → `carProfileId` FK, or embedded as JSON in `Recordings.notes`. Not yet decided.
+_TBD._ Two storage options under consideration:
 
-### Why it matters
+1. Normalised tables — `car_profiles` with FK from `Recordings`, plus a `recording_metadata` table for per-run fields.
+2. A JSON blob in the existing `Recordings.notes` column (no schema change).
 
-- Benchmarks (e.g. 0–100 km/h time) are only comparable between runs with similar load, fuel, and drive mode.
-- Altitude + temperature affect naturally-aspirated engine power measurably.
-- Tyre brand/size affects grip and therefore peak lateral / longitudinal g.
+The decision rides on whether any field needs to be indexed/queried independently (option 1) or whether bulk read-back inside the app is sufficient (option 2).
 
-### Open questions
+## Business rules
 
-- Normalised tables vs a single JSON blob in `notes`.
-- Which fields are mandatory vs optional.
-- Whether any values can be auto-detected (e.g. altitude from barometer + GPS, temperature from a weather API).
+- Which fields are mandatory vs optional: _TBD_.
+- Whether any values can be auto-detected (altitude from barometer + GPS, temperature from a weather API): _TBD_.
+- Metadata must be preserved across export / import (both CSV and JSON paths need to round-trip it).
 
-### Status
+## Gotchas
+
+- **Why it matters:** benchmarks (e.g. 0–100 km/h time) are only comparable between runs with similar load, fuel, and drive mode. Altitude + temperature affect naturally-aspirated engine power measurably. Tyre brand/size affects grip.
+- Auto-detected values (weather API) require the user to be online at recording time — offline fallback behaviour is _TBD_.
+
+## Status
 
 Planned.
 
-### Related pages
+## Related pages
 
 - [recording](recording.md) — capture point
-- [benchmarks](benchmarks.md) — consumer
+- [benchmarks](benchmarks.md) — primary consumer
 - [data-model](../data-model.md) — where these fields will land

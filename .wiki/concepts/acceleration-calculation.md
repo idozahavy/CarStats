@@ -1,17 +1,17 @@
-### Acceleration Calculation
+# Acceleration Calculation
 
 > The math pipeline that turns raw phone accelerometer + gyroscope + GPS into the car's forward / lateral / vertical acceleration in a world frame, independent of phone orientation.
 
 **Scope:** [lib/services/calibration_service.dart](lib/services/calibration_service.dart), [lib/services/recording_engine.dart](lib/services/recording_engine.dart)
-**Last verified:** 2026-04-18
+**Last verified:** 2026-04-21
 
 ---
 
-### Summary
+## Summary
 
 The phone may be mounted in any arbitrary orientation. The app establishes a gravity-aligned world frame at the start, tracks orientation changes continuously, subtracts gravity, and uses GPS heading to lock the forward axis to the car's actual direction of travel.
 
-### Pipeline
+## Pipeline
 
 ```
                     (during 5 s countdown)
@@ -31,7 +31,7 @@ The phone may be mounted in any arbitrary orientation. The app establishes a gra
             [forward, lateral, vertical]
 ```
 
-### Step 1 — Gravity calibration (5 s countdown)
+## Step 1 — Gravity calibration (5 s countdown)
 
 `CalibrationService` accumulates raw accelerometer samples. `compute()` averages them to find the gravity direction **in phone coordinates**, then builds a 3×3 rotation matrix:
 
@@ -43,7 +43,7 @@ This frame has a real vertical axis but **arbitrary horizontal rotation** — wh
 
 Note: only the accelerometer participates in calibration. Gyroscope is not sampled during the countdown.
 
-### Step 2 — Continuous orientation tracking
+## Step 2 — Continuous orientation tracking
 
 While recording, `AccelerationDecomposer` keeps the rotation matrix live:
 
@@ -52,7 +52,7 @@ While recording, `AccelerationDecomposer` keeps the rotation matrix live:
 
 Together: gyroscope provides responsive short-term tracking, accelerometer corrects long-term drift.
 
-### Step 3 — Heading auto-calibration
+## Step 3 — Heading auto-calibration
 
 After calibration, the horizontal `worldX`/`worldY` axes are arbitrary — they don't yet correspond to "forward along the car". `HeadingCalibrator` learns the offset between `worldX` and geographic north by correlating horizontal acceleration direction with GPS heading during clear acceleration/braking events:
 
@@ -63,7 +63,7 @@ After calibration, the horizontal `worldX`/`worldY` axes are arbitrary — they 
 
 Once locked, `decompose()` rotates the horizontal plane by `gpsHeading - offset` so the first returned axis is car-forward.
 
-### Step 4 — Decomposition
+## Step 4 — Decomposition
 
 `decompose(ax, ay, az)` per accel sample:
 
@@ -72,25 +72,25 @@ Once locked, `decompose()` rotates the horizontal plane by `gpsHeading - offset`
 3. If GPS heading is available and the calibrator has converged, rotate the horizontal components by `-(gpsHeading - offset)` so axis 0 = forward along direction of travel, axis 1 = lateral.
 4. Return `[forward, lateral, vertical]` (m/s²).
 
-### GPS thresholds
+## GPS thresholds
 
 | Constant | Value | Meaning |
 |---|---|---|
 | `gpsMinSpeedForHeading` | 2.0 m/s | Below this, OS GPS heading is too noisy to feed into the decomposer |
 | `gpsStationarySpeed` | 0.5 m/s | Below this, the car is treated as stopped (display snaps speed to 0) |
-| `accelNoiseFloor` | 0.05 g | When stopped, displayed |accel| below this is snapped to 0 |
+| `accelNoiseFloor` | 0.05 g | When stopped, displayed \|accel\| below this is snapped to 0 |
 
-### Stored orientation per sample
+## Stored orientation per sample
 
 Each `SensorSamples` row carries the current gravity vector (`gravX/Y/Z`, the Z row of R) and the world-from-phone quaternion (`quatW/X/Y/Z`, Shepperd's method). This lets a future analysis replay or transform the data without re-running the filter.
 
-### Why
+## Why
 
 - **No mount constraint** — the user can drop the phone anywhere. Calibration + GPS-heading correction make it work.
 - **Gyro + accel complementary filter** — robust against both short-term jitter (gravity-only would be noisy) and long-term drift (gyro-only integrates error).
 - **Heading EMA refinement** — lets the forward axis keep tracking if the initial lock was imperfect (calibrating while the car was slightly moving, for example).
 
-### Related pages
+## Related pages
 
 - [recording](../features/recording.md) — the engine that drives this pipeline
 - [data-model](../data-model.md) — where the outputs are stored

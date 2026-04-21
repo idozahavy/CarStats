@@ -1,13 +1,13 @@
-### Architecture
+# Architecture
 
 > System-level view of AccelStats: a native Flutter app that records phone sensors + GPS to derive a car's forward acceleration.
 
 **Scope:** [lib/main.dart](lib/main.dart), [lib/services/](lib/services/), [lib/data/](lib/data/), [lib/screens/](lib/screens/), [lib/core/](lib/core/)
-**Last verified:** 2026-04-18
+**Last verified:** 2026-04-21
 
 ---
 
-### Components
+## Components
 
 ```
 ┌─────────────────────────────────────────────┐
@@ -31,7 +31,7 @@
 └────────┘  └──────────┘ └───────────┘ └─────────┘
 ```
 
-### Layers
+## Layers
 
 | Layer | Purpose | Key files |
 |---|---|---|
@@ -44,14 +44,14 @@
 | Persistence | Drift database (SQLite) with migrations | [lib/data/database/database.dart](lib/data/database/database.dart) |
 | I/O | CSV/JSON export, JSON import via file picker | [lib/services/export_service.dart](lib/services/export_service.dart) |
 
-### Deployment
+## Deployment
 
 - Single Flutter codebase targeting Android + iOS.
 - No backend — all data lives on-device in an SQLite file under the app documents directory (`accel_stats.sqlite`).
 - Android uses a `ForegroundNotificationConfig` so GPS keeps streaming when the screen is off during recording.
-- Location permission is gated at startup by `_PermissionGate` in [lib/main.dart:79](lib/main.dart#L79).
+- Location permission is gated at startup by `_PermissionGate` in [lib/main.dart](lib/main.dart).
 
-### Data flow — recording session
+## Data flow — recording session
 
 1. User taps *Start Recording* → `HomeScreen._startRecording` asks `RecordingEngine.startRecording`.
 2. Engine transitions to `calibrating`, starts `SensorService` + `GpsService`, and collects accelerometer samples for 5 s.
@@ -61,7 +61,7 @@
 6. Samples are buffered and batch-inserted every 2 s; UI rebuilds are throttled to ~10 Hz.
 7. On stop: flush buffer, update `endedAt` + `durationMs` on the recording row.
 
-### Related pages
+## Related pages
 
 - [recording](features/recording.md) — feature page for the recording flow
 - [acceleration-calculation](concepts/acceleration-calculation.md) — the math pipeline

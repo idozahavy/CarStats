@@ -1,46 +1,51 @@
-### Benchmarks (planned)
+# Benchmarks (planned)
 
 > Derived view over user recordings: max acceleration at speed, sudden-acceleration response at speed, and standard benchmarks (0–100 km/h, ¼ mile, etc.).
 
-**Scope:** Not yet implemented. Future consumer of [lib/data/database/database.dart](lib/data/database/database.dart) sample data.
-**Last verified:** 2026-04-18
+**Scope:** _TBD._ Not yet implemented. Future consumer of samples stored by [lib/data/database/database.dart](lib/data/database/database.dart).
+**Last verified:** 2026-04-21
 
 ---
 
-### Summary
+## Summary
 
 Benchmarks are **not a separate capture** — they are a computed analysis derived from an existing user recording's samples.
 
-### Planned behaviour
+## User-facing behavior
 
-Two benchmark types over a single recording:
+Planned:
 
-1. **Max acceleration at speed** — peak forward acceleration available at discrete speed buckets (e.g. 60, 80, 100 km/h). Visualises the car's real-world power curve.
-2. **Sudden acceleration at speed** — isolates segments where the car cruises at a steady speed and the driver floors it. Reports response time and peak g-force from semi-rest — the real-world overtaking / merging measure.
+- Entry point lives on a recording's detail view (screen location _TBD_).
+- Two on-demand computed views over a single recording:
+  1. **Max acceleration at speed** — peak forward acceleration at discrete speed buckets (e.g. 60, 80, 100 km/h).
+  2. **Sudden acceleration at speed** — isolates segments where the car cruises at a steady speed and the driver floors it; reports response time and peak g.
+- Standard benchmarks computed when enough data exists:
+  - 0–100 km/h time
+  - 0–60 mph time
+  - 80–120 km/h time (in-gear pull)
+  - ¼ mile (400 m) time and trap speed
 
-Standard benchmarks computed when enough data exists:
+## Data flow
 
-- 0–100 km/h time
-- 0–60 mph time
-- 80–120 km/h time (in-gear pull)
-- ¼ mile (400 m) time and trap speed
+_TBD._ Expected shape: detail screen → benchmarks screen → reads already-loaded `List<SensorSample>` → segment detector → per-benchmark computation → render. No DB writes; results re-derived on open.
 
-### Business rules (intended)
+## Business rules
 
-- Input is a **user recording** (though dev recordings have the same column set and should work identically).
+- Input is a **user recording** (dev recordings share the same column set and should work identically).
 - The view is read-only and re-derived on demand — no denormalised storage.
 - A benchmark is only emitted when the recording contains a qualifying segment (e.g. a contiguous 0 → 100 km/h stretch).
+- Speed-bucket granularity, segment-detection thresholds, and unit toggle (km/h vs mph) are _TBD_.
 
-### Open questions
+## Gotchas
 
-- Where does the benchmark UI live? Likely a new screen reachable from a recording's detail view.
-- Speed-bucket granularity, segment detection thresholds, and unit toggles (km/h vs mph) are not yet specified.
+- Open question: whether the view lives in the detail screen or a dedicated comparison screen.
+- Open question: tolerance for GPS gaps inside a candidate segment — tunnels can void an otherwise-clean 0–100 run.
 
-### Status
+## Status
 
 Planned.
 
-### Related pages
+## Related pages
 
 - [recording-history](recording-history.md) — entry point will sit here
 - [data-model](../data-model.md) — source columns

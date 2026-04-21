@@ -26,4 +26,24 @@ Logical errors corrected vs. idea.md:
 - idea.md described the 5 s countdown as sampling gravity **and** gyroscope. Actual `CalibrationService` only averages accelerometer readings; gyroscope is used for mid-recording orientation tracking, not calibration. Corrected in the acceleration-calculation concept page.
 - idea.md said "JSON export" — both CSV export and JSON import exist too. Corrected in stack.md and features/export-import.md.
 - idea.md described "User Recording" as a reduced data shape. Actual schema is identical for dev and user recordings; `isDevRecording` is only a filter flag. Corrected in data-model.md and features/recording-history.md.
-- Magnetometer is listed as a planned sensor in idea.md and remains not implemented; captured only where relevant (not as a separate page).
+
+## [2026-04-21] lint | Full-wiki source verification + schema normalisation
+
+Drift fixed:
+- features/recording.md — live cards list corrected: actual UI shows Speed, forward Acceleration, Pitch, Roll, and the Peak trio, plus a heading-lock indicator. The prior "lateral accel live card" and "dev-mode shows linear-accel magnitude" claims were wrong — `linearAccelMagnitude` is computed but never rendered.
+- features/settings.md — consumer list corrected: only `HomeScreen._startRecording` reads live `SettingsProvider.devMode`. The "Dev" filter chip in `RecordingsScreen` reads the persisted `Recordings.isDevRecording` column, not the live setting.
+- data-model.md — added missing `AppDatabase.getRecording` row to the Access patterns table.
+
+Structural:
+- SCHEMA.md — moved "API endpoints" from required to optional (conditional on the feature exposing an API). Added planned-feature guidance: keep the standard shape, mark unknown sections with `_TBD._`.
+- All pages — title promoted to H1 and subsections to H2 (were all H3). `index.md`/`log.md` unchanged.
+- features/benchmarks.md, features/overlay-comparison.md, features/session-metadata.md — rewritten to the standard feature-page shape with `_TBD._` markers for undecided details.
+- concepts/state-management.md — `Scope` expanded to include `lib/data/database/database.dart` (file hosts `RecordingStore` which the page discusses).
+- All prose line-number anchors (`lib/main.dart#L79`, `recording_engine.dart#L215-L218`, `gps_service.dart#L55`, `export_service.dart#L36`) replaced with symbol names (`_PermissionGate`, `_finishCalibration`, `GpsService.startListening`, `ExportService.exportRecording`).
+- concepts/acceleration-calculation.md — escaped `|accel|` in GPS-thresholds table (broke the column count).
+
+Maintenance:
+- `Last verified` bumped to 2026-04-21 on every page.
+- Removed the magnetometer carve-out from the 2026-04-18 build entry (feature was never implemented and does not merit a wiki footprint).
+
+No `[FLABBERGASTED]` markers outstanding. No broken cross-references found.

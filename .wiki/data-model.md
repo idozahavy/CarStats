@@ -1,22 +1,22 @@
-### Data Model
+# Data Model
 
 > Two-table SQLite schema managed by Drift: one `Recordings` row per session, many `SensorSamples` rows per recording.
 
 **Scope:** [lib/data/database/database.dart](lib/data/database/database.dart), [lib/data/database/database.g.dart](lib/data/database/database.g.dart)
-**Last verified:** 2026-04-18
+**Last verified:** 2026-04-21
 
 ---
 
-### Database
+## Database
 
 - Engine: SQLite via `drift` + `sqlite3_flutter_libs`.
 - File: `accel_stats.sqlite` in the app documents directory. An older `car_stats.sqlite` is auto-renamed on first run.
 - Access is abstracted behind `RecordingStore` (interface) so screens receive an interface, not the concrete `AppDatabase`.
 - Singleton: `AppDatabase()` factory caches a single instance.
 
-### Tables
+## Tables
 
-#### `Recordings`
+### `Recordings`
 
 | Column | Type | Notes |
 |---|---|---|
@@ -28,7 +28,7 @@
 | `isDevRecording` | bool, default false | Drives filter chips on the recordings list |
 | `notes` | text, default '' | Reserved for future session metadata |
 
-#### `SensorSamples`
+### `SensorSamples`
 
 | Group | Columns | Notes |
 |---|---|---|
@@ -44,7 +44,7 @@
 
 All sensor columns are nullable — any sensor may drop samples, and GPS is absent until the first fix.
 
-### Access patterns
+## Access patterns
 
 | Operation | Site | Notes |
 |---|---|---|
@@ -53,10 +53,11 @@ All sensor columns are nullable — any sensor may drop samples, and GPS is abse
 | Delete recording | `AppDatabase.deleteRecording` | Transactional: deletes samples then the row |
 | Batch insert samples | `AppDatabase.insertSensorSamplesBatch` | Flushed every 2 s by the engine (configurable in tests) |
 | List recordings | `AppDatabase.getAllRecordings` | Ordered by `startedAt` desc |
+| Get recording | `AppDatabase.getRecording` | Single row by id; used by the detail screen |
 | Get samples | `AppDatabase.getSamplesForRecording` | Ordered by `timestampUs` asc |
 | Watch samples | `AppDatabase.watchSamplesForRecording` | Not currently used from UI |
 
-### Migrations
+## Migrations
 
 Current `schemaVersion = 4`. All upgrades are additive `ALTER TABLE ADD COLUMN` statements.
 
@@ -66,7 +67,7 @@ Current `schemaVersion = 4`. All upgrades are additive `ALTER TABLE ADD COLUMN` 
 | 2 → 3 | `quat_w/x/y/z` |
 | 3 → 4 | `lateral_accel` |
 
-### Related pages
+## Related pages
 
 - [recording](features/recording.md) — producer of sample rows
 - [export-import](features/export-import.md) — consumer of both tables
