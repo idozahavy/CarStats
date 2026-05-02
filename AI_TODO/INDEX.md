@@ -9,9 +9,9 @@
 | 01 | [phase_01_cleanup.md](phase_01_cleanup.md) | Cleanup & dependencies | Small | [x] |
 | 02 | [phase_02_robustness.md](phase_02_robustness.md) | Robustness pass | Medium | [x] |
 | 03 | [phase_03_charts_polish.md](phase_03_charts_polish.md) | Charts polish + flaky-test investigation | Small | [x] |
-| 04 | [phase_04_ux_polish.md](phase_04_ux_polish.md) | UX polish (name, rename, share, empty states) | Medium | [ ] |
-| 05 | [phase_05_i18n.md](phase_05_i18n.md) | i18n scaffolding (English + Hebrew, RTL) | Medium | [ ] |
-| 06 | [phase_06_session_metadata.md](phase_06_session_metadata.md) | Session metadata + car profiles (schema v5) | Large | [ ] |
+| 04 | [phase_04_ux_polish.md](phase_04_ux_polish.md) | UX polish (name, rename, share, empty states) | Medium | [x] |
+| 05 | [phase_05_i18n.md](phase_05_i18n.md) | i18n scaffolding (English + Hebrew, RTL) | Medium | [x] |
+| 06 | [phase_06_session_metadata.md](phase_06_session_metadata.md) | Session metadata + car profiles (schema v5) | Large | [x] |
 | 07 | [phase_07_recording_validation.md](phase_07_recording_validation.md) | Recording-pipeline validation against synthetic inputs + data-quality badge | Medium-Large | [ ] |
 | 08 | [phase_08_benchmarks.md](phase_08_benchmarks.md) | Benchmarks (0–100, ¼ mile, max-accel-at-speed, sudden-accel) | Large | [ ] |
 | 09 | [phase_09_overlay_comparison.md](phase_09_overlay_comparison.md) | Overlay comparison of two recordings | Medium-Large | [ ] |

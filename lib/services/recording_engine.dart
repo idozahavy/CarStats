@@ -10,6 +10,8 @@ import 'sensor_service.dart';
 
 enum RecordingState { idle, calibrating, recording, stopped }
 
+enum RecordingWarning { gpsServiceLost }
+
 class RecordingSnapshot {
   final double? gpsSpeedKmh;
   final double? forwardAccelG;
@@ -74,10 +76,10 @@ class RecordingEngine extends ChangeNotifier {
   Timer? _calibrationTimer;
 
   /// Set when recording is auto-stopped due to a transient failure (e.g. GPS
-  /// permission revoked mid-session). The UI reads this once and clears it
-  /// via [clearLastWarning].
-  String? _lastWarning;
-  String? get lastWarning => _lastWarning;
+  /// permission revoked mid-session). The UI reads this once, maps it to a
+  /// localised message, then clears it via [clearLastWarning].
+  RecordingWarning? _lastWarning;
+  RecordingWarning? get lastWarning => _lastWarning;
 
   // Latest raw values (for assembling combined samples)
   AccelerometerReading? _lastAccel;
@@ -327,7 +329,7 @@ class RecordingEngine extends ChangeNotifier {
         _state != RecordingState.calibrating) {
       return;
     }
-    _lastWarning = 'GPS permission lost — recording saved early.';
+    _lastWarning = RecordingWarning.gpsServiceLost;
     await stopRecording();
     notifyListeners();
   }

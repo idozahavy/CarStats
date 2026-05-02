@@ -3,25 +3,35 @@ import 'dart:io';
 import 'package:drift/drift.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/foundation.dart' show visibleForTesting;
+import 'package:path/path.dart' as p;
+import 'package:path_provider/path_provider.dart';
+import 'package:share_plus/share_plus.dart';
 import '../data/database/database.dart';
 
 enum ExportFormat { csv, json }
 
 class ExportService {
-  static const int exportVersion = 1;
+  static const int exportVersion = 2;
 
   static Future<File?> exportRecording(
     Recording recording,
     List<SensorSample> samples,
-    ExportFormat format,
-  ) async {
+    ExportFormat format, {
+    RecordingMetadataData? metadata,
+    CarProfile? carProfile,
+  }) async {
     final safeName = recording.name.replaceAll(RegExp(r'[^\w\s\-]'), '_');
     final ext = format == ExportFormat.csv ? 'csv' : 'json';
     final defaultName = '${safeName}_${recording.id}.$ext';
 
     final content = switch (format) {
       ExportFormat.csv => _toCsv(recording, samples),
-      ExportFormat.json => _toJson(recording, samples),
+      ExportFormat.json => _toJson(
+          recording,
+          samples,
+          metadata: metadata,
+          carProfile: carProfile,
+        ),
     };
 
     final bytes = utf8.encode(content);
@@ -45,6 +55,41 @@ class ExportService {
     return File(savePath);
   }
 
+  /// Writes the recording to a temp file and invokes the system share sheet.
+  /// File name follows the same `<safeName>_<id>.<ext>` shape as save.
+  static Future<void> shareRecording(
+    Recording recording,
+    List<SensorSample> samples,
+    ExportFormat format, {
+    RecordingMetadataData? metadata,
+    CarProfile? carProfile,
+  }) async {
+    final safeName = recording.name.replaceAll(RegExp(r'[^\w\s\-]'), '_');
+    final ext = format == ExportFormat.csv ? 'csv' : 'json';
+    final fileName = '${safeName}_${recording.id}.$ext';
+
+    final content = switch (format) {
+      ExportFormat.csv => _toCsv(recording, samples),
+      ExportFormat.json => _toJson(
+          recording,
+          samples,
+          metadata: metadata,
+          carProfile: carProfile,
+        ),
+    };
+
+    final tempDir = await getTemporaryDirectory();
+    final file = File(p.join(tempDir.path, fileName));
+    await file.writeAsString(content);
+
+    await SharePlus.instance.share(
+      ShareParams(
+        files: [XFile(file.path)],
+        subject: recording.name,
+      ),
+    );
+  }
+
   static Future<int?> importRecording(RecordingStore db) async {
     final result = await FilePicker.platform.pickFiles(
       dialogTitle: 'Import Recording',
@@ -62,6 +107,9 @@ class ExportService {
 
   /// Parses [jsonContent] and inserts a new recording + samples into [db].
   /// Throws [FormatException] for missing/wrong version or malformed shape.
+  ///
+  /// Accepts both `exportVersion: 1` (no metadata) and `exportVersion: 2`
+  /// (with optional `carProfile` and `metadata` blocks).
   static Future<int> importRecordingFromJson(
     RecordingStore db,
     String jsonContent,
@@ -69,9 +117,9 @@ class ExportService {
     final data = jsonDecode(jsonContent) as Map<String, dynamic>;
 
     final foundVersion = data['exportVersion'];
-    if (foundVersion != exportVersion) {
+    if (foundVersion is! int || foundVersion < 1 || foundVersion > exportVersion) {
       throw FormatException(
-        'Unsupported export version: $foundVersion. Expected: $exportVersion.',
+        'Unsupported export version: $foundVersion. Expected: 1..$exportVersion.',
       );
     }
 
@@ -134,16 +182,59 @@ class ExportService {
         .toList();
 
     await db.insertSensorSamplesBatch(batch);
+
+    if (foundVersion >= 2) {
+      int? newCarProfileId;
+      final carProfileJson = data['carProfile'];
+      if (carProfileJson is Map<String, dynamic>) {
+        newCarProfileId = await db.insertCarProfile(
+          CarProfilesCompanion.insert(
+            name: carProfileJson['name'] as String? ?? 'Imported car',
+            make: Value(carProfileJson['make'] as String? ?? ''),
+            model: Value(carProfileJson['model'] as String? ?? ''),
+            year: Value(carProfileJson['year'] as int?),
+            fuelType: Value(carProfileJson['fuelType'] as String? ?? ''),
+            transmission:
+                Value(carProfileJson['transmission'] as String? ?? ''),
+          ),
+        );
+      }
+      final metadataJson = data['metadata'];
+      if (metadataJson is Map<String, dynamic>) {
+        await db.upsertMetadata(
+          RecordingMetadataCompanion.insert(
+            recordingId: recordingId,
+            carProfileId: Value(newCarProfileId),
+            driveMode: Value(metadataJson['driveMode'] as String? ?? ''),
+            passengerCount: Value(metadataJson['passengerCount'] as int?),
+            fuelLevelPercent:
+                Value(metadataJson['fuelLevelPercent'] as int?),
+            tyreType: Value(metadataJson['tyreType'] as String? ?? ''),
+            weatherNote: Value(metadataJson['weatherNote'] as String? ?? ''),
+            freeText: Value(metadataJson['freeText'] as String? ?? ''),
+          ),
+        );
+      }
+    }
+
     return recordingId;
   }
 
   @visibleForTesting
-  static String toJsonString(Recording recording, List<SensorSample> samples) =>
-      _toJson(recording, samples);
+  static String toJsonString(
+    Recording recording,
+    List<SensorSample> samples, {
+    RecordingMetadataData? metadata,
+    CarProfile? carProfile,
+  }) =>
+      _toJson(recording, samples, metadata: metadata, carProfile: carProfile);
 
   static String _toCsv(Recording recording, List<SensorSample> samples) {
     final buf = StringBuffer();
 
+    buf.writeln(
+      '# Metadata not included in CSV; export as JSON for full round-trip.',
+    );
     buf.writeln(
       'timestampUs,accelX,accelY,accelZ,'
       'linearAccelX,linearAccelY,linearAccelZ,'
@@ -173,7 +264,12 @@ class ExportService {
     return buf.toString();
   }
 
-  static String _toJson(Recording recording, List<SensorSample> samples) {
+  static String _toJson(
+    Recording recording,
+    List<SensorSample> samples, {
+    RecordingMetadataData? metadata,
+    CarProfile? carProfile,
+  }) {
     final data = {
       'exportVersion': exportVersion,
       'recording': {
@@ -184,6 +280,26 @@ class ExportService {
         'durationMs': recording.durationMs,
         'notes': recording.notes,
       },
+      'carProfile': carProfile == null
+          ? null
+          : {
+              'name': carProfile.name,
+              'make': carProfile.make,
+              'model': carProfile.model,
+              'year': carProfile.year,
+              'fuelType': carProfile.fuelType,
+              'transmission': carProfile.transmission,
+            },
+      'metadata': metadata == null
+          ? null
+          : {
+              'driveMode': metadata.driveMode,
+              'passengerCount': metadata.passengerCount,
+              'fuelLevelPercent': metadata.fuelLevelPercent,
+              'tyreType': metadata.tyreType,
+              'weatherNote': metadata.weatherNote,
+              'freeText': metadata.freeText,
+            },
       'samples': samples
           .map(
             (s) => {

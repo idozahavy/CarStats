@@ -84,5 +84,40 @@ void main() {
 
       expect(harness.prefs.getString('theme_mode'), 'light');
     });
+
+    testWidgets('renders language section with system default', (tester) async {
+      await pumpApp(tester, const SettingsScreen());
+
+      expect(find.text('Language'), findsAtLeastNWidgets(1));
+      expect(find.text('Follow device language'), findsOneWidget);
+    });
+
+    testWidgets('language picker switches to Hebrew', (tester) async {
+      final harness = await pumpApp(tester, const SettingsScreen());
+
+      // Open the picker by tapping the Language tile.
+      await tester.tap(find.byIcon(Icons.language));
+      await tester.pumpAndSettle();
+
+      expect(find.text('Choose Language'), findsOneWidget);
+      expect(find.text('English'), findsOneWidget);
+      expect(find.text('עברית'), findsAtLeastNWidgets(1));
+
+      await tester.tap(find.text('עברית').last);
+      await tester.pumpAndSettle();
+
+      expect(harness.prefs.getString('locale'), 'he');
+    });
+
+    testWidgets('language defaults reload from prefs', (tester) async {
+      await pumpApp(
+        tester,
+        const SettingsScreen(),
+        prefsData: {'locale': 'en'},
+      );
+
+      // English label appears as the current language subtitle.
+      expect(find.text('English'), findsOneWidget);
+    });
   });
 }

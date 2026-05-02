@@ -1,4 +1,6 @@
+import 'package:accel_stats/data/database/database.dart';
 import 'package:accel_stats/screens/recording_detail/recording_detail_screen.dart';
+import 'package:drift/drift.dart' show Value;
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -140,8 +142,10 @@ void main() {
       await tester.tap(find.byIcon(Icons.file_download));
       await tester.pumpAndSettle();
 
-      expect(find.text('Export as CSV'), findsOneWidget);
-      expect(find.text('Export as JSON'), findsOneWidget);
+      expect(find.text('Save as CSV'), findsOneWidget);
+      expect(find.text('Save as JSON'), findsOneWidget);
+      expect(find.text('Share as CSV'), findsOneWidget);
+      expect(find.text('Share as JSON'), findsOneWidget);
     });
 
     testWidgets('no export button when no samples', (tester) async {
@@ -159,6 +163,56 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(find.byIcon(Icons.file_download), findsNothing);
+    });
+
+    testWidgets('shows Add details button when no metadata', (tester) async {
+      final db = FakeDatabase();
+      db.recordings = [fakeRecording(id: 1, name: 'No meta run')];
+      db.samplesByRecording[1] = [
+        fakeSample(id: 1, recordingId: 1, timestampUs: 0, gpsSpeed: 5.0),
+      ];
+
+      await pumpApp(
+        tester,
+        const RecordingDetailScreen(recordingId: 1),
+        db: db,
+      );
+      await tester.pumpAndSettle();
+
+      expect(find.text('Add details'), findsOneWidget);
+      expect(find.text('Edit details'), findsNothing);
+    });
+
+    testWidgets('shows metadata summary card when metadata exists',
+        (tester) async {
+      final db = FakeDatabase();
+      db.recordings = [fakeRecording(id: 1, name: 'With meta')];
+      db.samplesByRecording[1] = [
+        fakeSample(id: 1, recordingId: 1, timestampUs: 0, gpsSpeed: 5.0),
+      ];
+      final carId = await db.insertCarProfile(
+        CarProfilesCompanion.insert(name: 'Daily'),
+      );
+      await db.upsertMetadata(
+        RecordingMetadataCompanion.insert(
+          recordingId: 1,
+          carProfileId: Value(carId),
+          driveMode: const Value('sport'),
+          passengerCount: const Value(2),
+        ),
+      );
+
+      await pumpApp(
+        tester,
+        const RecordingDetailScreen(recordingId: 1),
+        db: db,
+      );
+      await tester.pumpAndSettle();
+
+      expect(find.text('Edit details'), findsOneWidget);
+      expect(find.text('Add details'), findsNothing);
+      expect(find.textContaining('Daily'), findsOneWidget);
+      expect(find.textContaining('sport'), findsOneWidget);
     });
   });
 }

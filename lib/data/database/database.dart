@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:drift/drift.dart';
 import 'package:drift/native.dart';
+import 'package:flutter/foundation.dart' show visibleForTesting;
 import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart' as p;
 
@@ -9,11 +10,23 @@ part 'database.g.dart';
 abstract interface class RecordingStore {
   Future<int> insertRecording(RecordingsCompanion entry);
   Future<void> updateRecording(RecordingsCompanion entry);
+  Future<void> renameRecording(int id, String newName);
   Future<void> deleteRecording(int id);
   Future<void> insertSensorSamplesBatch(List<SensorSamplesCompanion> entries);
   Future<List<Recording>> getAllRecordings();
   Future<Recording> getRecording(int id);
   Future<List<SensorSample>> getSamplesForRecording(int recordingId);
+
+  // Car profiles
+  Future<List<CarProfile>> getAllCarProfiles();
+  Future<CarProfile?> getCarProfile(int id);
+  Future<int> insertCarProfile(CarProfilesCompanion entry);
+  Future<void> updateCarProfile(CarProfilesCompanion entry);
+  Future<void> deleteCarProfile(int id);
+
+  // Recording metadata
+  Future<RecordingMetadataData?> getMetadataForRecording(int recordingId);
+  Future<int> upsertMetadata(RecordingMetadataCompanion entry);
 }
 
 class Recordings extends Table {
@@ -76,9 +89,35 @@ class SensorSamples extends Table {
   RealColumn get quatZ => real().nullable()();
 }
 
-@DriftDatabase(tables: [Recordings, SensorSamples])
+class CarProfiles extends Table {
+  IntColumn get id => integer().autoIncrement()();
+  TextColumn get name => text().withLength(min: 1, max: 100)();
+  TextColumn get make => text().withDefault(const Constant(''))();
+  TextColumn get model => text().withDefault(const Constant(''))();
+  IntColumn get year => integer().nullable()();
+  TextColumn get fuelType => text().withDefault(const Constant(''))();
+  TextColumn get transmission => text().withDefault(const Constant(''))();
+}
+
+class RecordingMetadata extends Table {
+  IntColumn get id => integer().autoIncrement()();
+  IntColumn get recordingId => integer().references(Recordings, #id)();
+  IntColumn get carProfileId =>
+      integer().nullable().references(CarProfiles, #id)();
+  TextColumn get driveMode => text().withDefault(const Constant(''))();
+  IntColumn get passengerCount => integer().nullable()();
+  IntColumn get fuelLevelPercent => integer().nullable()();
+  TextColumn get tyreType => text().withDefault(const Constant(''))();
+  TextColumn get weatherNote => text().withDefault(const Constant(''))();
+  TextColumn get freeText => text().withDefault(const Constant(''))();
+}
+
+@DriftDatabase(tables: [Recordings, SensorSamples, CarProfiles, RecordingMetadata])
 class AppDatabase extends _$AppDatabase implements RecordingStore {
   AppDatabase._internal(super.e);
+
+  @visibleForTesting
+  AppDatabase.forTesting(super.e);
 
   static AppDatabase? _instance;
 
@@ -88,7 +127,7 @@ class AppDatabase extends _$AppDatabase implements RecordingStore {
   }
 
   @override
-  int get schemaVersion => 4;
+  int get schemaVersion => 5;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -129,6 +168,10 @@ class AppDatabase extends _$AppDatabase implements RecordingStore {
           'ALTER TABLE sensor_samples ADD COLUMN lateral_accel REAL',
         );
       }
+      if (from < 5) {
+        await migrator.createTable(carProfiles);
+        await migrator.createTable(recordingMetadata);
+      }
     },
   );
 
@@ -159,8 +202,17 @@ class AppDatabase extends _$AppDatabase implements RecordingStore {
   }
 
   @override
+  Future<void> renameRecording(int id, String newName) {
+    return (update(recordings)..where((t) => t.id.equals(id)))
+        .write(RecordingsCompanion(name: Value(newName)));
+  }
+
+  @override
   Future<void> deleteRecording(int id) {
     return transaction(() async {
+      await (delete(
+        recordingMetadata,
+      )..where((t) => t.recordingId.equals(id))).go();
       await (delete(
         sensorSamples,
       )..where((t) => t.recordingId.equals(id))).go();
@@ -188,6 +240,66 @@ class AppDatabase extends _$AppDatabase implements RecordingStore {
           ..where((t) => t.recordingId.equals(recordingId))
           ..orderBy([(t) => OrderingTerm.asc(t.timestampUs)]))
         .watch();
+  }
+
+  // --- Car profile queries ---
+
+  @override
+  Future<List<CarProfile>> getAllCarProfiles() {
+    return (select(carProfiles)..orderBy([(t) => OrderingTerm.asc(t.name)]))
+        .get();
+  }
+
+  @override
+  Future<CarProfile?> getCarProfile(int id) {
+    return (select(carProfiles)..where((t) => t.id.equals(id)))
+        .getSingleOrNull();
+  }
+
+  @override
+  Future<int> insertCarProfile(CarProfilesCompanion entry) {
+    return into(carProfiles).insert(entry);
+  }
+
+  @override
+  Future<void> updateCarProfile(CarProfilesCompanion entry) {
+    return (update(carProfiles)
+          ..where((t) => t.id.equals(entry.id.value)))
+        .write(entry);
+  }
+
+  @override
+  Future<void> deleteCarProfile(int id) {
+    return transaction(() async {
+      await (update(recordingMetadata)
+            ..where((t) => t.carProfileId.equals(id)))
+          .write(const RecordingMetadataCompanion(
+            carProfileId: Value(null),
+          ));
+      await (delete(carProfiles)..where((t) => t.id.equals(id))).go();
+    });
+  }
+
+  // --- Recording metadata queries ---
+
+  @override
+  Future<RecordingMetadataData?> getMetadataForRecording(int recordingId) {
+    return (select(recordingMetadata)
+          ..where((t) => t.recordingId.equals(recordingId)))
+        .getSingleOrNull();
+  }
+
+  @override
+  Future<int> upsertMetadata(RecordingMetadataCompanion entry) async {
+    final recordingId = entry.recordingId.value;
+    final existing = await getMetadataForRecording(recordingId);
+    if (existing == null) {
+      return into(recordingMetadata).insert(entry);
+    }
+    await (update(recordingMetadata)
+          ..where((t) => t.id.equals(existing.id)))
+        .write(entry);
+    return existing.id;
   }
 }
 

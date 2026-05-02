@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:fl_chart/fl_chart.dart';
 import '../../core/chart_utils.dart';
+import '../../l10n/app_localizations.dart';
 import '../../services/recording_engine.dart';
 import '../recording_detail/recording_detail_screen.dart';
 
@@ -10,6 +11,7 @@ class RecordingScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context)!;
     return PopScope(
       canPop: false,
       onPopInvokedWithResult: (didPop, _) async {
@@ -33,13 +35,13 @@ class RecordingScreen extends StatelessWidget {
               if (engine.lastWarning != warning) return;
               ScaffoldMessenger.of(
                 context,
-              ).showSnackBar(SnackBar(content: Text(warning)));
+              ).showSnackBar(SnackBar(content: Text(_warningText(l, warning))));
               engine.clearLastWarning();
             });
           }
           return Scaffold(
             appBar: AppBar(
-              title: Text(_title(engine.state)),
+              title: Text(_title(l, engine.state)),
               leading: IconButton(
                 icon: const Icon(Icons.close),
                 onPressed: () async {
@@ -54,27 +56,38 @@ class RecordingScreen extends StatelessWidget {
                 },
               ),
             ),
-            body: SafeArea(top: false, child: _buildBody(context, engine)),
+            body: SafeArea(top: false, child: _buildBody(context, engine, l)),
           );
         },
       ),
     );
   }
 
-  String _title(RecordingState state) {
-    switch (state) {
-      case RecordingState.calibrating:
-        return 'Calibrating...';
-      case RecordingState.recording:
-        return 'Recording';
-      case RecordingState.stopped:
-        return 'Recording Saved';
-      case RecordingState.idle:
-        return 'Ready';
+  String _warningText(AppLocalizations l, RecordingWarning warning) {
+    switch (warning) {
+      case RecordingWarning.gpsServiceLost:
+        return l.recording_warning_gps_lost;
     }
   }
 
-  Widget _buildBody(BuildContext context, RecordingEngine engine) {
+  String _title(AppLocalizations l, RecordingState state) {
+    switch (state) {
+      case RecordingState.calibrating:
+        return l.recording_appbar_calibrating;
+      case RecordingState.recording:
+        return l.recording_appbar_recording;
+      case RecordingState.stopped:
+        return l.recording_appbar_saved;
+      case RecordingState.idle:
+        return l.recording_appbar_ready;
+    }
+  }
+
+  Widget _buildBody(
+    BuildContext context,
+    RecordingEngine engine,
+    AppLocalizations l,
+  ) {
     switch (engine.state) {
       case RecordingState.calibrating:
         return _CalibrationView(countdown: engine.calibrationCountdown);
@@ -82,10 +95,12 @@ class RecordingScreen extends StatelessWidget {
         return _RecordingView(engine: engine);
       case RecordingState.stopped:
         final id = engine.currentRecordingId;
-        if (id == null) return const Center(child: Text('Recording not found'));
+        if (id == null) {
+          return Center(child: Text(l.recording_not_found));
+        }
         return _StoppedView(recordingId: id);
       case RecordingState.idle:
-        return const Center(child: Text('Ready'));
+        return Center(child: Text(l.recording_appbar_ready));
     }
   }
 }
@@ -97,6 +112,7 @@ class _CalibrationView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final l = AppLocalizations.of(context)!;
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -109,10 +125,13 @@ class _CalibrationView extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 16),
-          Text('Hold the phone still...', style: theme.textTheme.titleMedium),
+          Text(
+            l.recording_calibrating_title,
+            style: theme.textTheme.titleMedium,
+          ),
           const SizedBox(height: 8),
           Text(
-            'Calibrating orientation',
+            l.recording_calibrating_hint,
             style: theme.textTheme.bodyMedium?.copyWith(
               color: theme.colorScheme.onSurfaceVariant,
             ),
@@ -132,18 +151,18 @@ class _RecordingView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final l = AppLocalizations.of(context)!;
     final snap = engine.latestSnapshot;
 
     return Padding(
       padding: const EdgeInsets.all(16),
       child: Column(
         children: [
-          // Live stats cards
           Row(
             children: [
               Expanded(
                 child: _StatCard(
-                  label: 'Speed',
+                  label: l.recording_speed_label,
                   value: snap?.gpsSpeedKmh?.toStringAsFixed(1) ?? '--',
                   unit: 'km/h',
                 ),
@@ -151,7 +170,7 @@ class _RecordingView extends StatelessWidget {
               const SizedBox(width: 12),
               Expanded(
                 child: _StatCard(
-                  label: 'Acceleration',
+                  label: l.recording_accel_label,
                   value: snap?.forwardAccelG?.toStringAsFixed(3) ?? '--',
                   unit: 'g',
                 ),
@@ -163,7 +182,7 @@ class _RecordingView extends StatelessWidget {
             children: [
               Expanded(
                 child: _StatCard(
-                  label: 'Pitch',
+                  label: l.recording_pitch_label,
                   value: snap?.pitchDeg?.toStringAsFixed(1) ?? '--',
                   unit: '°',
                 ),
@@ -171,7 +190,7 @@ class _RecordingView extends StatelessWidget {
               const SizedBox(width: 12),
               Expanded(
                 child: _StatCard(
-                  label: 'Roll',
+                  label: l.recording_roll_label,
                   value: snap?.rollDeg?.toStringAsFixed(1) ?? '--',
                   unit: '°',
                 ),
@@ -183,7 +202,7 @@ class _RecordingView extends StatelessWidget {
             children: [
               Expanded(
                 child: _StatCard(
-                  label: 'Peak Accel',
+                  label: l.recording_peak_accel_label,
                   value: snap?.peakForwardG.toStringAsFixed(3) ?? '--',
                   unit: 'g',
                   compact: true,
@@ -192,7 +211,7 @@ class _RecordingView extends StatelessWidget {
               const SizedBox(width: 8),
               Expanded(
                 child: _StatCard(
-                  label: 'Peak Brake',
+                  label: l.recording_peak_brake_label,
                   value: snap?.peakBrakeG.toStringAsFixed(3) ?? '--',
                   unit: 'g',
                   compact: true,
@@ -201,7 +220,7 @@ class _RecordingView extends StatelessWidget {
               const SizedBox(width: 8),
               Expanded(
                 child: _StatCard(
-                  label: 'Peak Lateral',
+                  label: l.recording_peak_lateral_label,
                   value: snap?.peakLateralG.toStringAsFixed(3) ?? '--',
                   unit: 'g',
                   compact: true,
@@ -224,8 +243,8 @@ class _RecordingView extends StatelessWidget {
               const SizedBox(width: 4),
               Text(
                 snap?.headingCalibrated == true
-                    ? 'Heading locked'
-                    : 'Calibrating heading...',
+                    ? l.recording_heading_locked
+                    : l.recording_heading_calibrating,
                 style: theme.textTheme.labelSmall?.copyWith(
                   color: snap?.headingCalibrated == true
                       ? theme.colorScheme.primary
@@ -235,14 +254,17 @@ class _RecordingView extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 8),
-          Text('Speed vs Acceleration', style: theme.textTheme.titleSmall),
+          Text(
+            l.recording_chart_speed_vs_accel,
+            style: theme.textTheme.titleSmall,
+          ),
           const SizedBox(height: 8),
           Expanded(child: _LiveChart(engine: engine)),
           const SizedBox(height: 16),
           FilledButton.icon(
             onPressed: () => engine.stopRecording(),
             icon: const Icon(Icons.stop),
-            label: const Text('Stop Recording'),
+            label: Text(l.recording_stop_button),
             style: FilledButton.styleFrom(
               backgroundColor: theme.colorScheme.error,
               foregroundColor: theme.colorScheme.onError,
@@ -303,7 +325,7 @@ class _LiveChart extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    // Build spots from snapshots where both speed and accel are available
+    final l = AppLocalizations.of(context)!;
     final spots = <FlSpot>[];
     for (final s in engine.snapshots) {
       if (s.gpsSpeedKmh != null && s.forwardAccelG != null) {
@@ -314,7 +336,7 @@ class _LiveChart extends StatelessWidget {
     if (spots.isEmpty) {
       return Center(
         child: Text(
-          'Waiting for GPS data...',
+          l.recording_chart_waiting_gps,
           style: theme.textTheme.bodyMedium?.copyWith(
             color: theme.colorScheme.onSurfaceVariant,
           ),
@@ -333,9 +355,9 @@ class _LiveChart extends StatelessWidget {
         gridData: const FlGridData(show: true),
         titlesData: FlTitlesData(
           bottomTitles: AxisTitles(
-            axisNameWidget: const Text(
-              'Speed (km/h)',
-              style: TextStyle(fontSize: 12),
+            axisNameWidget: Text(
+              l.chart_axis_speed_kmh,
+              style: const TextStyle(fontSize: 12),
             ),
             sideTitles: SideTitles(
               showTitles: true,
@@ -347,9 +369,9 @@ class _LiveChart extends StatelessWidget {
             ),
           ),
           leftTitles: AxisTitles(
-            axisNameWidget: const Text(
-              'Accel (g)',
-              style: TextStyle(fontSize: 12),
+            axisNameWidget: Text(
+              l.chart_axis_accel_g,
+              style: const TextStyle(fontSize: 12),
             ),
             sideTitles: SideTitles(
               showTitles: true,
@@ -393,6 +415,7 @@ class _StoppedView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final l = AppLocalizations.of(context)!;
     return Center(
       child: Padding(
         padding: const EdgeInsets.all(24),
@@ -405,7 +428,7 @@ class _StoppedView extends StatelessWidget {
               color: theme.colorScheme.primary,
             ),
             const SizedBox(height: 16),
-            Text('Recording saved!', style: theme.textTheme.titleLarge),
+            Text(l.recording_saved_title, style: theme.textTheme.titleLarge),
             const SizedBox(height: 32),
             FilledButton(
               onPressed: () {
@@ -419,7 +442,7 @@ class _StoppedView extends StatelessWidget {
                   ),
                 );
               },
-              child: const Text('View Recording'),
+              child: Text(l.recording_view_button),
             ),
             const SizedBox(height: 12),
             OutlinedButton(
@@ -428,7 +451,7 @@ class _StoppedView extends StatelessWidget {
                 engine.reset();
                 Navigator.of(context).pop();
               },
-              child: const Text('Back to Home'),
+              child: Text(l.recording_back_home_button),
             ),
           ],
         ),

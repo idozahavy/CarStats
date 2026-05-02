@@ -9,6 +9,11 @@ class FakeRecordingStore implements RecordingStore {
   final List<RecordingsCompanion> updatedRecordings = [];
   final List<SensorSamplesCompanion> insertedSamples = [];
   final List<int> deletedRecordingIds = [];
+  final List<({int id, String name})> renamedRecordings = [];
+  final List<CarProfile> carProfiles = [];
+  final List<RecordingMetadataData> metadataRows = [];
+  int _nextCarProfileId = 1;
+  int _nextMetadataId = 1;
 
   int _nextId = 1;
 
@@ -21,6 +26,11 @@ class FakeRecordingStore implements RecordingStore {
   @override
   Future<void> updateRecording(RecordingsCompanion entry) async {
     updatedRecordings.add(entry);
+  }
+
+  @override
+  Future<void> renameRecording(int id, String newName) async {
+    renamedRecordings.add((id: id, name: newName));
   }
 
   @override
@@ -45,6 +55,142 @@ class FakeRecordingStore implements RecordingStore {
   @override
   Future<List<SensorSample>> getSamplesForRecording(int recordingId) async =>
       [];
+
+  @override
+  Future<List<CarProfile>> getAllCarProfiles() async =>
+      List.unmodifiable(carProfiles);
+
+  @override
+  Future<CarProfile?> getCarProfile(int id) async {
+    for (final cp in carProfiles) {
+      if (cp.id == id) return cp;
+    }
+    return null;
+  }
+
+  @override
+  Future<int> insertCarProfile(CarProfilesCompanion entry) async {
+    final id = _nextCarProfileId++;
+    carProfiles.add(
+      CarProfile(
+        id: id,
+        name: entry.name.value,
+        make: entry.make.present ? entry.make.value : '',
+        model: entry.model.present ? entry.model.value : '',
+        year: entry.year.present ? entry.year.value : null,
+        fuelType: entry.fuelType.present ? entry.fuelType.value : '',
+        transmission:
+            entry.transmission.present ? entry.transmission.value : '',
+      ),
+    );
+    return id;
+  }
+
+  @override
+  Future<void> updateCarProfile(CarProfilesCompanion entry) async {
+    final id = entry.id.value;
+    for (var i = 0; i < carProfiles.length; i++) {
+      if (carProfiles[i].id == id) {
+        final cur = carProfiles[i];
+        carProfiles[i] = CarProfile(
+          id: cur.id,
+          name: entry.name.present ? entry.name.value : cur.name,
+          make: entry.make.present ? entry.make.value : cur.make,
+          model: entry.model.present ? entry.model.value : cur.model,
+          year: entry.year.present ? entry.year.value : cur.year,
+          fuelType: entry.fuelType.present ? entry.fuelType.value : cur.fuelType,
+          transmission: entry.transmission.present
+              ? entry.transmission.value
+              : cur.transmission,
+        );
+        return;
+      }
+    }
+  }
+
+  @override
+  Future<void> deleteCarProfile(int id) async {
+    carProfiles.removeWhere((cp) => cp.id == id);
+    for (var i = 0; i < metadataRows.length; i++) {
+      if (metadataRows[i].carProfileId == id) {
+        final cur = metadataRows[i];
+        metadataRows[i] = RecordingMetadataData(
+          id: cur.id,
+          recordingId: cur.recordingId,
+          carProfileId: null,
+          driveMode: cur.driveMode,
+          passengerCount: cur.passengerCount,
+          fuelLevelPercent: cur.fuelLevelPercent,
+          tyreType: cur.tyreType,
+          weatherNote: cur.weatherNote,
+          freeText: cur.freeText,
+        );
+      }
+    }
+  }
+
+  @override
+  Future<RecordingMetadataData?> getMetadataForRecording(
+    int recordingId,
+  ) async {
+    for (final m in metadataRows) {
+      if (m.recordingId == recordingId) return m;
+    }
+    return null;
+  }
+
+  @override
+  Future<int> upsertMetadata(RecordingMetadataCompanion entry) async {
+    final recordingId = entry.recordingId.value;
+    for (var i = 0; i < metadataRows.length; i++) {
+      if (metadataRows[i].recordingId == recordingId) {
+        final cur = metadataRows[i];
+        metadataRows[i] = RecordingMetadataData(
+          id: cur.id,
+          recordingId: recordingId,
+          carProfileId: entry.carProfileId.present
+              ? entry.carProfileId.value
+              : cur.carProfileId,
+          driveMode:
+              entry.driveMode.present ? entry.driveMode.value : cur.driveMode,
+          passengerCount: entry.passengerCount.present
+              ? entry.passengerCount.value
+              : cur.passengerCount,
+          fuelLevelPercent: entry.fuelLevelPercent.present
+              ? entry.fuelLevelPercent.value
+              : cur.fuelLevelPercent,
+          tyreType:
+              entry.tyreType.present ? entry.tyreType.value : cur.tyreType,
+          weatherNote: entry.weatherNote.present
+              ? entry.weatherNote.value
+              : cur.weatherNote,
+          freeText:
+              entry.freeText.present ? entry.freeText.value : cur.freeText,
+        );
+        return cur.id;
+      }
+    }
+    final id = _nextMetadataId++;
+    metadataRows.add(
+      RecordingMetadataData(
+        id: id,
+        recordingId: recordingId,
+        carProfileId:
+            entry.carProfileId.present ? entry.carProfileId.value : null,
+        driveMode: entry.driveMode.present ? entry.driveMode.value : '',
+        passengerCount:
+            entry.passengerCount.present ? entry.passengerCount.value : null,
+        fuelLevelPercent: entry.fuelLevelPercent.present
+            ? entry.fuelLevelPercent.value
+            : null,
+        tyreType: entry.tyreType.present ? entry.tyreType.value : '',
+        weatherNote:
+            entry.weatherNote.present ? entry.weatherNote.value : '',
+        freeText: entry.freeText.present ? entry.freeText.value : '',
+      ),
+    );
+    return id;
+  }
 }
 
 class FakeSensorService extends SensorService {
@@ -228,6 +374,26 @@ class FakeDatabase extends FakeRecordingStore {
   Future<void> deleteRecording(int id) async {
     await super.deleteRecording(id);
     _recordings.removeWhere((r) => r.id == id);
+  }
+
+  @override
+  Future<void> renameRecording(int id, String newName) async {
+    await super.renameRecording(id, newName);
+    _recordings = [
+      for (final r in _recordings)
+        if (r.id == id)
+          Recording(
+            id: r.id,
+            name: newName,
+            startedAt: r.startedAt,
+            endedAt: r.endedAt,
+            durationMs: r.durationMs,
+            isDevRecording: r.isDevRecording,
+            notes: r.notes,
+          )
+        else
+          r,
+    ];
   }
 
   @override

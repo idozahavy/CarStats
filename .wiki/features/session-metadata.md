@@ -1,59 +1,63 @@
-# Session Metadata (planned)
+# Session Metadata
 
-> Capture car, tyre, weather, load, and drive-mode context per recording so benchmarks can be interpreted correctly.
+> Per-recording car / drive-mode / passenger / fuel / tyre / weather context, stored in normalised tables and round-tripped through JSON export/import.
 
-**Scope:** _TBD._ Not yet implemented. The `Recordings.notes` text column exists as a placeholder.
-**Last verified:** 2026-04-21
+**Scope:** [lib/data/database/database.dart](lib/data/database/database.dart), [lib/screens/manage_cars/manage_cars_screen.dart](lib/screens/manage_cars/manage_cars_screen.dart), [lib/screens/recording_detail/metadata_sheet.dart](lib/screens/recording_detail/metadata_sheet.dart), [lib/screens/recording_detail/recording_detail_screen.dart](lib/screens/recording_detail/recording_detail_screen.dart), [lib/services/export_service.dart](lib/services/export_service.dart)
+**Last verified:** 2026-05-02 (phase 06)
 
 ---
 
 ## Summary
 
-Every recording should travel with enough context to explain why it performed the way it did. None of the fields below are captured today.
+Recordings can carry an optional metadata row describing the session, plus an optional reference to a reusable car profile. None of it is captured at start time — the user fills it in after stopping, from the recording detail screen.
 
 ## User-facing behavior
 
-Planned:
-
-- A metadata panel on the recording detail screen (or a pre-recording step) prompts for vehicle, state, environment, and context fields.
-- A reusable car profile (make / model / year) is stored once and referenced by new recordings — the user picks from existing profiles or creates a new one.
-- Filtering and benchmark comparisons can use metadata to group comparable runs.
-
-Planned fields:
-
-| Group | Fields |
-|---|---|
-| Vehicle | make, model, year, fuel type (petrol / diesel / electric / hybrid), transmission (auto / manual / DCT) |
-| State | fuel level / battery %, tyre type / brand / size, passenger count / load estimate, drive mode (eco / normal / sport), windows open, AC on/off, gear (if manual) |
-| Environment | air temperature, weather, road surface, altitude (barometer + GPS) |
-| Context | date, time, location name, device model + OS version |
+- **Manage Cars screen** — reachable from `Settings → Vehicles → My Cars`. Lists every `CarProfile`. Tap a row to edit. The FAB opens the same form with empty fields. Swipe a row left to delete (with a confirmation dialog).
+- **Metadata on the recording detail screen** — above the summary mini-cards:
+  - If no metadata row exists for the recording: an outlined `Add details` button.
+  - If metadata exists: a card showing car name, drive mode, passengers, fuel level, tyres, weather (whichever fields are set), with an `Edit details` text button.
+- **Edit Details bottom sheet** — `showModalBottomSheet`. Form fields:
+  - Car (dropdown of profiles + a `+ Add new car…` text button that pushes Manage Cars and reloads on return)
+  - Drive mode (text)
+  - Passenger count (numeric)
+  - Fuel level % (numeric)
+  - Tyre type (text)
+  - Weather (text)
+  - Free text notes (multi-line)
+  - Save / Cancel buttons.
 
 ## Data flow
 
-_TBD._ Two storage options under consideration:
-
-1. Normalised tables — `car_profiles` with FK from `Recordings`, plus a `recording_metadata` table for per-run fields.
-2. A JSON blob in the existing `Recordings.notes` column (no schema change).
-
-The decision rides on whether any field needs to be indexed/queried independently (option 1) or whether bulk read-back inside the app is sufficient (option 2).
+1. User opens a recording → `RecordingDetailScreen._load` calls `getRecording`, `getSamplesForRecording`, `getMetadataForRecording`, and (if `carProfileId != null`) `getCarProfile`.
+2. Tapping `Add details` / `Edit details` calls `showMetadataSheet`. The sheet loads `getAllCarProfiles` for its dropdown.
+3. Save calls `RecordingStore.upsertMetadata` — inserts on first save, updates the same row thereafter (one row per recording).
+4. The detail screen reloads metadata + linked car after the sheet returns `true`.
+5. Manage Cars screen calls `getAllCarProfiles` on init; `insertCarProfile` / `updateCarProfile` / `deleteCarProfile` for CRUD. Delete is transactional and nulls `carProfileId` on any referencing metadata rows before deleting the profile.
 
 ## Business rules
 
-- Which fields are mandatory vs optional: _TBD_.
-- Whether any values can be auto-detected (altitude from barometer + GPS, temperature from a weather API): _TBD_.
-- Metadata must be preserved across export / import (both CSV and JSON paths need to round-trip it).
+- All metadata fields are optional. Saving with everything blank still creates the row (unless the user simply doesn't tap Save).
+- `CarProfile.name` is required (1–100 chars); other car fields are optional.
+- Fuel-type and transmission are populated by dropdowns with fixed option sets (`petrol/diesel/electric/hybrid/''` and `auto/manual/dct/''`) but the underlying column is free-form text — older or imported rows can hold any string.
+- Deleting a car profile preserves recordings: their `carProfileId` becomes `NULL` but the metadata row, including `driveMode`, `passengerCount`, etc., is kept.
+- Deleting a recording cascades to its metadata row (transactional in `deleteRecording`).
+- Metadata is preserved through JSON export/import — see [export-import](export-import.md) for the v2 shape and the v1 backward-compat path.
+- CSV export still emits raw samples only; a `# Metadata not included in CSV; export as JSON for full round-trip.` comment line is prepended.
 
 ## Gotchas
 
-- **Why it matters:** benchmarks (e.g. 0–100 km/h time) are only comparable between runs with similar load, fuel, and drive mode. Altitude + temperature affect naturally-aspirated engine power measurably. Tyre brand/size affects grip.
-- Auto-detected values (weather API) require the user to be online at recording time — offline fallback behaviour is _TBD_.
+- The metadata sheet's car dropdown is the only place a profile can be selected per recording. If no profiles exist, the `+ Add new car…` button is the only path that doesn't require leaving the sheet — it pushes Manage Cars and reloads on return.
+- Imports never deduplicate car profiles by name. Re-importing the same JSON produces another `CarProfile` row; the user cleans up via Manage Cars.
+- Auto-detection of weather, altitude, fuel level, etc. is out of scope and deferred to a later phase.
 
 ## Status
 
-Planned.
+Complete (MVP).
 
 ## Related pages
 
-- [recording](recording.md) — capture point
-- [benchmarks](benchmarks.md) — primary consumer
-- [data-model](../data-model.md) — where these fields will land
+- [recording-history](recording-history.md) — invocation point for the metadata sheet
+- [export-import](export-import.md) — round-trip format
+- [data-model](../data-model.md) — `CarProfiles`, `RecordingMetadata` tables
+- [benchmarks](benchmarks.md) — primary downstream consumer (planned)

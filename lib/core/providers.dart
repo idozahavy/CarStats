@@ -41,3 +41,27 @@ class SettingsProvider extends ChangeNotifier {
     notifyListeners();
   }
 }
+
+class LocaleProvider extends ChangeNotifier {
+  Locale? _locale;
+  final SharedPreferences _prefs;
+
+  LocaleProvider(this._prefs) {
+    final stored = _prefs.getString(StorageKeys.locale);
+    if (stored != null && stored.isNotEmpty) {
+      _locale = Locale(stored);
+    }
+  }
+
+  Locale? get locale => _locale;
+
+  Future<void> setLocale(Locale? value) async {
+    _locale = value;
+    if (value == null) {
+      await _prefs.remove(StorageKeys.locale);
+    } else {
+      await _prefs.setString(StorageKeys.locale, value.languageCode);
+    }
+    notifyListeners();
+  }
+}

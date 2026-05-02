@@ -2020,11 +2020,1035 @@ class SensorSamplesCompanion extends UpdateCompanion<SensorSample> {
   }
 }
 
+class $CarProfilesTable extends CarProfiles
+    with TableInfo<$CarProfilesTable, CarProfile> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $CarProfilesTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
+    'id',
+    aliasedName,
+    false,
+    hasAutoIncrement: true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'PRIMARY KEY AUTOINCREMENT',
+    ),
+  );
+  static const VerificationMeta _nameMeta = const VerificationMeta('name');
+  @override
+  late final GeneratedColumn<String> name = GeneratedColumn<String>(
+    'name',
+    aliasedName,
+    false,
+    additionalChecks: GeneratedColumn.checkTextLength(
+      minTextLength: 1,
+      maxTextLength: 100,
+    ),
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _makeMeta = const VerificationMeta('make');
+  @override
+  late final GeneratedColumn<String> make = GeneratedColumn<String>(
+    'make',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(''),
+  );
+  static const VerificationMeta _modelMeta = const VerificationMeta('model');
+  @override
+  late final GeneratedColumn<String> model = GeneratedColumn<String>(
+    'model',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(''),
+  );
+  static const VerificationMeta _yearMeta = const VerificationMeta('year');
+  @override
+  late final GeneratedColumn<int> year = GeneratedColumn<int>(
+    'year',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _fuelTypeMeta = const VerificationMeta(
+    'fuelType',
+  );
+  @override
+  late final GeneratedColumn<String> fuelType = GeneratedColumn<String>(
+    'fuel_type',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(''),
+  );
+  static const VerificationMeta _transmissionMeta = const VerificationMeta(
+    'transmission',
+  );
+  @override
+  late final GeneratedColumn<String> transmission = GeneratedColumn<String>(
+    'transmission',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(''),
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    name,
+    make,
+    model,
+    year,
+    fuelType,
+    transmission,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'car_profiles';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<CarProfile> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    }
+    if (data.containsKey('name')) {
+      context.handle(
+        _nameMeta,
+        name.isAcceptableOrUnknown(data['name']!, _nameMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_nameMeta);
+    }
+    if (data.containsKey('make')) {
+      context.handle(
+        _makeMeta,
+        make.isAcceptableOrUnknown(data['make']!, _makeMeta),
+      );
+    }
+    if (data.containsKey('model')) {
+      context.handle(
+        _modelMeta,
+        model.isAcceptableOrUnknown(data['model']!, _modelMeta),
+      );
+    }
+    if (data.containsKey('year')) {
+      context.handle(
+        _yearMeta,
+        year.isAcceptableOrUnknown(data['year']!, _yearMeta),
+      );
+    }
+    if (data.containsKey('fuel_type')) {
+      context.handle(
+        _fuelTypeMeta,
+        fuelType.isAcceptableOrUnknown(data['fuel_type']!, _fuelTypeMeta),
+      );
+    }
+    if (data.containsKey('transmission')) {
+      context.handle(
+        _transmissionMeta,
+        transmission.isAcceptableOrUnknown(
+          data['transmission']!,
+          _transmissionMeta,
+        ),
+      );
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  CarProfile map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return CarProfile(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}id'],
+      )!,
+      name: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}name'],
+      )!,
+      make: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}make'],
+      )!,
+      model: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}model'],
+      )!,
+      year: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}year'],
+      ),
+      fuelType: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}fuel_type'],
+      )!,
+      transmission: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}transmission'],
+      )!,
+    );
+  }
+
+  @override
+  $CarProfilesTable createAlias(String alias) {
+    return $CarProfilesTable(attachedDatabase, alias);
+  }
+}
+
+class CarProfile extends DataClass implements Insertable<CarProfile> {
+  final int id;
+  final String name;
+  final String make;
+  final String model;
+  final int? year;
+  final String fuelType;
+  final String transmission;
+  const CarProfile({
+    required this.id,
+    required this.name,
+    required this.make,
+    required this.model,
+    this.year,
+    required this.fuelType,
+    required this.transmission,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<int>(id);
+    map['name'] = Variable<String>(name);
+    map['make'] = Variable<String>(make);
+    map['model'] = Variable<String>(model);
+    if (!nullToAbsent || year != null) {
+      map['year'] = Variable<int>(year);
+    }
+    map['fuel_type'] = Variable<String>(fuelType);
+    map['transmission'] = Variable<String>(transmission);
+    return map;
+  }
+
+  CarProfilesCompanion toCompanion(bool nullToAbsent) {
+    return CarProfilesCompanion(
+      id: Value(id),
+      name: Value(name),
+      make: Value(make),
+      model: Value(model),
+      year: year == null && nullToAbsent ? const Value.absent() : Value(year),
+      fuelType: Value(fuelType),
+      transmission: Value(transmission),
+    );
+  }
+
+  factory CarProfile.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return CarProfile(
+      id: serializer.fromJson<int>(json['id']),
+      name: serializer.fromJson<String>(json['name']),
+      make: serializer.fromJson<String>(json['make']),
+      model: serializer.fromJson<String>(json['model']),
+      year: serializer.fromJson<int?>(json['year']),
+      fuelType: serializer.fromJson<String>(json['fuelType']),
+      transmission: serializer.fromJson<String>(json['transmission']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<int>(id),
+      'name': serializer.toJson<String>(name),
+      'make': serializer.toJson<String>(make),
+      'model': serializer.toJson<String>(model),
+      'year': serializer.toJson<int?>(year),
+      'fuelType': serializer.toJson<String>(fuelType),
+      'transmission': serializer.toJson<String>(transmission),
+    };
+  }
+
+  CarProfile copyWith({
+    int? id,
+    String? name,
+    String? make,
+    String? model,
+    Value<int?> year = const Value.absent(),
+    String? fuelType,
+    String? transmission,
+  }) => CarProfile(
+    id: id ?? this.id,
+    name: name ?? this.name,
+    make: make ?? this.make,
+    model: model ?? this.model,
+    year: year.present ? year.value : this.year,
+    fuelType: fuelType ?? this.fuelType,
+    transmission: transmission ?? this.transmission,
+  );
+  CarProfile copyWithCompanion(CarProfilesCompanion data) {
+    return CarProfile(
+      id: data.id.present ? data.id.value : this.id,
+      name: data.name.present ? data.name.value : this.name,
+      make: data.make.present ? data.make.value : this.make,
+      model: data.model.present ? data.model.value : this.model,
+      year: data.year.present ? data.year.value : this.year,
+      fuelType: data.fuelType.present ? data.fuelType.value : this.fuelType,
+      transmission: data.transmission.present
+          ? data.transmission.value
+          : this.transmission,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('CarProfile(')
+          ..write('id: $id, ')
+          ..write('name: $name, ')
+          ..write('make: $make, ')
+          ..write('model: $model, ')
+          ..write('year: $year, ')
+          ..write('fuelType: $fuelType, ')
+          ..write('transmission: $transmission')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode =>
+      Object.hash(id, name, make, model, year, fuelType, transmission);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is CarProfile &&
+          other.id == this.id &&
+          other.name == this.name &&
+          other.make == this.make &&
+          other.model == this.model &&
+          other.year == this.year &&
+          other.fuelType == this.fuelType &&
+          other.transmission == this.transmission);
+}
+
+class CarProfilesCompanion extends UpdateCompanion<CarProfile> {
+  final Value<int> id;
+  final Value<String> name;
+  final Value<String> make;
+  final Value<String> model;
+  final Value<int?> year;
+  final Value<String> fuelType;
+  final Value<String> transmission;
+  const CarProfilesCompanion({
+    this.id = const Value.absent(),
+    this.name = const Value.absent(),
+    this.make = const Value.absent(),
+    this.model = const Value.absent(),
+    this.year = const Value.absent(),
+    this.fuelType = const Value.absent(),
+    this.transmission = const Value.absent(),
+  });
+  CarProfilesCompanion.insert({
+    this.id = const Value.absent(),
+    required String name,
+    this.make = const Value.absent(),
+    this.model = const Value.absent(),
+    this.year = const Value.absent(),
+    this.fuelType = const Value.absent(),
+    this.transmission = const Value.absent(),
+  }) : name = Value(name);
+  static Insertable<CarProfile> custom({
+    Expression<int>? id,
+    Expression<String>? name,
+    Expression<String>? make,
+    Expression<String>? model,
+    Expression<int>? year,
+    Expression<String>? fuelType,
+    Expression<String>? transmission,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (name != null) 'name': name,
+      if (make != null) 'make': make,
+      if (model != null) 'model': model,
+      if (year != null) 'year': year,
+      if (fuelType != null) 'fuel_type': fuelType,
+      if (transmission != null) 'transmission': transmission,
+    });
+  }
+
+  CarProfilesCompanion copyWith({
+    Value<int>? id,
+    Value<String>? name,
+    Value<String>? make,
+    Value<String>? model,
+    Value<int?>? year,
+    Value<String>? fuelType,
+    Value<String>? transmission,
+  }) {
+    return CarProfilesCompanion(
+      id: id ?? this.id,
+      name: name ?? this.name,
+      make: make ?? this.make,
+      model: model ?? this.model,
+      year: year ?? this.year,
+      fuelType: fuelType ?? this.fuelType,
+      transmission: transmission ?? this.transmission,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<int>(id.value);
+    }
+    if (name.present) {
+      map['name'] = Variable<String>(name.value);
+    }
+    if (make.present) {
+      map['make'] = Variable<String>(make.value);
+    }
+    if (model.present) {
+      map['model'] = Variable<String>(model.value);
+    }
+    if (year.present) {
+      map['year'] = Variable<int>(year.value);
+    }
+    if (fuelType.present) {
+      map['fuel_type'] = Variable<String>(fuelType.value);
+    }
+    if (transmission.present) {
+      map['transmission'] = Variable<String>(transmission.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('CarProfilesCompanion(')
+          ..write('id: $id, ')
+          ..write('name: $name, ')
+          ..write('make: $make, ')
+          ..write('model: $model, ')
+          ..write('year: $year, ')
+          ..write('fuelType: $fuelType, ')
+          ..write('transmission: $transmission')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $RecordingMetadataTable extends RecordingMetadata
+    with TableInfo<$RecordingMetadataTable, RecordingMetadataData> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $RecordingMetadataTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
+    'id',
+    aliasedName,
+    false,
+    hasAutoIncrement: true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'PRIMARY KEY AUTOINCREMENT',
+    ),
+  );
+  static const VerificationMeta _recordingIdMeta = const VerificationMeta(
+    'recordingId',
+  );
+  @override
+  late final GeneratedColumn<int> recordingId = GeneratedColumn<int>(
+    'recording_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'REFERENCES recordings (id)',
+    ),
+  );
+  static const VerificationMeta _carProfileIdMeta = const VerificationMeta(
+    'carProfileId',
+  );
+  @override
+  late final GeneratedColumn<int> carProfileId = GeneratedColumn<int>(
+    'car_profile_id',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'REFERENCES car_profiles (id)',
+    ),
+  );
+  static const VerificationMeta _driveModeMeta = const VerificationMeta(
+    'driveMode',
+  );
+  @override
+  late final GeneratedColumn<String> driveMode = GeneratedColumn<String>(
+    'drive_mode',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(''),
+  );
+  static const VerificationMeta _passengerCountMeta = const VerificationMeta(
+    'passengerCount',
+  );
+  @override
+  late final GeneratedColumn<int> passengerCount = GeneratedColumn<int>(
+    'passenger_count',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _fuelLevelPercentMeta = const VerificationMeta(
+    'fuelLevelPercent',
+  );
+  @override
+  late final GeneratedColumn<int> fuelLevelPercent = GeneratedColumn<int>(
+    'fuel_level_percent',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _tyreTypeMeta = const VerificationMeta(
+    'tyreType',
+  );
+  @override
+  late final GeneratedColumn<String> tyreType = GeneratedColumn<String>(
+    'tyre_type',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(''),
+  );
+  static const VerificationMeta _weatherNoteMeta = const VerificationMeta(
+    'weatherNote',
+  );
+  @override
+  late final GeneratedColumn<String> weatherNote = GeneratedColumn<String>(
+    'weather_note',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(''),
+  );
+  static const VerificationMeta _freeTextMeta = const VerificationMeta(
+    'freeText',
+  );
+  @override
+  late final GeneratedColumn<String> freeText = GeneratedColumn<String>(
+    'free_text',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(''),
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    recordingId,
+    carProfileId,
+    driveMode,
+    passengerCount,
+    fuelLevelPercent,
+    tyreType,
+    weatherNote,
+    freeText,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'recording_metadata';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<RecordingMetadataData> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    }
+    if (data.containsKey('recording_id')) {
+      context.handle(
+        _recordingIdMeta,
+        recordingId.isAcceptableOrUnknown(
+          data['recording_id']!,
+          _recordingIdMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_recordingIdMeta);
+    }
+    if (data.containsKey('car_profile_id')) {
+      context.handle(
+        _carProfileIdMeta,
+        carProfileId.isAcceptableOrUnknown(
+          data['car_profile_id']!,
+          _carProfileIdMeta,
+        ),
+      );
+    }
+    if (data.containsKey('drive_mode')) {
+      context.handle(
+        _driveModeMeta,
+        driveMode.isAcceptableOrUnknown(data['drive_mode']!, _driveModeMeta),
+      );
+    }
+    if (data.containsKey('passenger_count')) {
+      context.handle(
+        _passengerCountMeta,
+        passengerCount.isAcceptableOrUnknown(
+          data['passenger_count']!,
+          _passengerCountMeta,
+        ),
+      );
+    }
+    if (data.containsKey('fuel_level_percent')) {
+      context.handle(
+        _fuelLevelPercentMeta,
+        fuelLevelPercent.isAcceptableOrUnknown(
+          data['fuel_level_percent']!,
+          _fuelLevelPercentMeta,
+        ),
+      );
+    }
+    if (data.containsKey('tyre_type')) {
+      context.handle(
+        _tyreTypeMeta,
+        tyreType.isAcceptableOrUnknown(data['tyre_type']!, _tyreTypeMeta),
+      );
+    }
+    if (data.containsKey('weather_note')) {
+      context.handle(
+        _weatherNoteMeta,
+        weatherNote.isAcceptableOrUnknown(
+          data['weather_note']!,
+          _weatherNoteMeta,
+        ),
+      );
+    }
+    if (data.containsKey('free_text')) {
+      context.handle(
+        _freeTextMeta,
+        freeText.isAcceptableOrUnknown(data['free_text']!, _freeTextMeta),
+      );
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  RecordingMetadataData map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return RecordingMetadataData(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}id'],
+      )!,
+      recordingId: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}recording_id'],
+      )!,
+      carProfileId: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}car_profile_id'],
+      ),
+      driveMode: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}drive_mode'],
+      )!,
+      passengerCount: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}passenger_count'],
+      ),
+      fuelLevelPercent: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}fuel_level_percent'],
+      ),
+      tyreType: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}tyre_type'],
+      )!,
+      weatherNote: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}weather_note'],
+      )!,
+      freeText: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}free_text'],
+      )!,
+    );
+  }
+
+  @override
+  $RecordingMetadataTable createAlias(String alias) {
+    return $RecordingMetadataTable(attachedDatabase, alias);
+  }
+}
+
+class RecordingMetadataData extends DataClass
+    implements Insertable<RecordingMetadataData> {
+  final int id;
+  final int recordingId;
+  final int? carProfileId;
+  final String driveMode;
+  final int? passengerCount;
+  final int? fuelLevelPercent;
+  final String tyreType;
+  final String weatherNote;
+  final String freeText;
+  const RecordingMetadataData({
+    required this.id,
+    required this.recordingId,
+    this.carProfileId,
+    required this.driveMode,
+    this.passengerCount,
+    this.fuelLevelPercent,
+    required this.tyreType,
+    required this.weatherNote,
+    required this.freeText,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<int>(id);
+    map['recording_id'] = Variable<int>(recordingId);
+    if (!nullToAbsent || carProfileId != null) {
+      map['car_profile_id'] = Variable<int>(carProfileId);
+    }
+    map['drive_mode'] = Variable<String>(driveMode);
+    if (!nullToAbsent || passengerCount != null) {
+      map['passenger_count'] = Variable<int>(passengerCount);
+    }
+    if (!nullToAbsent || fuelLevelPercent != null) {
+      map['fuel_level_percent'] = Variable<int>(fuelLevelPercent);
+    }
+    map['tyre_type'] = Variable<String>(tyreType);
+    map['weather_note'] = Variable<String>(weatherNote);
+    map['free_text'] = Variable<String>(freeText);
+    return map;
+  }
+
+  RecordingMetadataCompanion toCompanion(bool nullToAbsent) {
+    return RecordingMetadataCompanion(
+      id: Value(id),
+      recordingId: Value(recordingId),
+      carProfileId: carProfileId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(carProfileId),
+      driveMode: Value(driveMode),
+      passengerCount: passengerCount == null && nullToAbsent
+          ? const Value.absent()
+          : Value(passengerCount),
+      fuelLevelPercent: fuelLevelPercent == null && nullToAbsent
+          ? const Value.absent()
+          : Value(fuelLevelPercent),
+      tyreType: Value(tyreType),
+      weatherNote: Value(weatherNote),
+      freeText: Value(freeText),
+    );
+  }
+
+  factory RecordingMetadataData.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return RecordingMetadataData(
+      id: serializer.fromJson<int>(json['id']),
+      recordingId: serializer.fromJson<int>(json['recordingId']),
+      carProfileId: serializer.fromJson<int?>(json['carProfileId']),
+      driveMode: serializer.fromJson<String>(json['driveMode']),
+      passengerCount: serializer.fromJson<int?>(json['passengerCount']),
+      fuelLevelPercent: serializer.fromJson<int?>(json['fuelLevelPercent']),
+      tyreType: serializer.fromJson<String>(json['tyreType']),
+      weatherNote: serializer.fromJson<String>(json['weatherNote']),
+      freeText: serializer.fromJson<String>(json['freeText']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<int>(id),
+      'recordingId': serializer.toJson<int>(recordingId),
+      'carProfileId': serializer.toJson<int?>(carProfileId),
+      'driveMode': serializer.toJson<String>(driveMode),
+      'passengerCount': serializer.toJson<int?>(passengerCount),
+      'fuelLevelPercent': serializer.toJson<int?>(fuelLevelPercent),
+      'tyreType': serializer.toJson<String>(tyreType),
+      'weatherNote': serializer.toJson<String>(weatherNote),
+      'freeText': serializer.toJson<String>(freeText),
+    };
+  }
+
+  RecordingMetadataData copyWith({
+    int? id,
+    int? recordingId,
+    Value<int?> carProfileId = const Value.absent(),
+    String? driveMode,
+    Value<int?> passengerCount = const Value.absent(),
+    Value<int?> fuelLevelPercent = const Value.absent(),
+    String? tyreType,
+    String? weatherNote,
+    String? freeText,
+  }) => RecordingMetadataData(
+    id: id ?? this.id,
+    recordingId: recordingId ?? this.recordingId,
+    carProfileId: carProfileId.present ? carProfileId.value : this.carProfileId,
+    driveMode: driveMode ?? this.driveMode,
+    passengerCount: passengerCount.present
+        ? passengerCount.value
+        : this.passengerCount,
+    fuelLevelPercent: fuelLevelPercent.present
+        ? fuelLevelPercent.value
+        : this.fuelLevelPercent,
+    tyreType: tyreType ?? this.tyreType,
+    weatherNote: weatherNote ?? this.weatherNote,
+    freeText: freeText ?? this.freeText,
+  );
+  RecordingMetadataData copyWithCompanion(RecordingMetadataCompanion data) {
+    return RecordingMetadataData(
+      id: data.id.present ? data.id.value : this.id,
+      recordingId: data.recordingId.present
+          ? data.recordingId.value
+          : this.recordingId,
+      carProfileId: data.carProfileId.present
+          ? data.carProfileId.value
+          : this.carProfileId,
+      driveMode: data.driveMode.present ? data.driveMode.value : this.driveMode,
+      passengerCount: data.passengerCount.present
+          ? data.passengerCount.value
+          : this.passengerCount,
+      fuelLevelPercent: data.fuelLevelPercent.present
+          ? data.fuelLevelPercent.value
+          : this.fuelLevelPercent,
+      tyreType: data.tyreType.present ? data.tyreType.value : this.tyreType,
+      weatherNote: data.weatherNote.present
+          ? data.weatherNote.value
+          : this.weatherNote,
+      freeText: data.freeText.present ? data.freeText.value : this.freeText,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('RecordingMetadataData(')
+          ..write('id: $id, ')
+          ..write('recordingId: $recordingId, ')
+          ..write('carProfileId: $carProfileId, ')
+          ..write('driveMode: $driveMode, ')
+          ..write('passengerCount: $passengerCount, ')
+          ..write('fuelLevelPercent: $fuelLevelPercent, ')
+          ..write('tyreType: $tyreType, ')
+          ..write('weatherNote: $weatherNote, ')
+          ..write('freeText: $freeText')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    id,
+    recordingId,
+    carProfileId,
+    driveMode,
+    passengerCount,
+    fuelLevelPercent,
+    tyreType,
+    weatherNote,
+    freeText,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is RecordingMetadataData &&
+          other.id == this.id &&
+          other.recordingId == this.recordingId &&
+          other.carProfileId == this.carProfileId &&
+          other.driveMode == this.driveMode &&
+          other.passengerCount == this.passengerCount &&
+          other.fuelLevelPercent == this.fuelLevelPercent &&
+          other.tyreType == this.tyreType &&
+          other.weatherNote == this.weatherNote &&
+          other.freeText == this.freeText);
+}
+
+class RecordingMetadataCompanion
+    extends UpdateCompanion<RecordingMetadataData> {
+  final Value<int> id;
+  final Value<int> recordingId;
+  final Value<int?> carProfileId;
+  final Value<String> driveMode;
+  final Value<int?> passengerCount;
+  final Value<int?> fuelLevelPercent;
+  final Value<String> tyreType;
+  final Value<String> weatherNote;
+  final Value<String> freeText;
+  const RecordingMetadataCompanion({
+    this.id = const Value.absent(),
+    this.recordingId = const Value.absent(),
+    this.carProfileId = const Value.absent(),
+    this.driveMode = const Value.absent(),
+    this.passengerCount = const Value.absent(),
+    this.fuelLevelPercent = const Value.absent(),
+    this.tyreType = const Value.absent(),
+    this.weatherNote = const Value.absent(),
+    this.freeText = const Value.absent(),
+  });
+  RecordingMetadataCompanion.insert({
+    this.id = const Value.absent(),
+    required int recordingId,
+    this.carProfileId = const Value.absent(),
+    this.driveMode = const Value.absent(),
+    this.passengerCount = const Value.absent(),
+    this.fuelLevelPercent = const Value.absent(),
+    this.tyreType = const Value.absent(),
+    this.weatherNote = const Value.absent(),
+    this.freeText = const Value.absent(),
+  }) : recordingId = Value(recordingId);
+  static Insertable<RecordingMetadataData> custom({
+    Expression<int>? id,
+    Expression<int>? recordingId,
+    Expression<int>? carProfileId,
+    Expression<String>? driveMode,
+    Expression<int>? passengerCount,
+    Expression<int>? fuelLevelPercent,
+    Expression<String>? tyreType,
+    Expression<String>? weatherNote,
+    Expression<String>? freeText,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (recordingId != null) 'recording_id': recordingId,
+      if (carProfileId != null) 'car_profile_id': carProfileId,
+      if (driveMode != null) 'drive_mode': driveMode,
+      if (passengerCount != null) 'passenger_count': passengerCount,
+      if (fuelLevelPercent != null) 'fuel_level_percent': fuelLevelPercent,
+      if (tyreType != null) 'tyre_type': tyreType,
+      if (weatherNote != null) 'weather_note': weatherNote,
+      if (freeText != null) 'free_text': freeText,
+    });
+  }
+
+  RecordingMetadataCompanion copyWith({
+    Value<int>? id,
+    Value<int>? recordingId,
+    Value<int?>? carProfileId,
+    Value<String>? driveMode,
+    Value<int?>? passengerCount,
+    Value<int?>? fuelLevelPercent,
+    Value<String>? tyreType,
+    Value<String>? weatherNote,
+    Value<String>? freeText,
+  }) {
+    return RecordingMetadataCompanion(
+      id: id ?? this.id,
+      recordingId: recordingId ?? this.recordingId,
+      carProfileId: carProfileId ?? this.carProfileId,
+      driveMode: driveMode ?? this.driveMode,
+      passengerCount: passengerCount ?? this.passengerCount,
+      fuelLevelPercent: fuelLevelPercent ?? this.fuelLevelPercent,
+      tyreType: tyreType ?? this.tyreType,
+      weatherNote: weatherNote ?? this.weatherNote,
+      freeText: freeText ?? this.freeText,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<int>(id.value);
+    }
+    if (recordingId.present) {
+      map['recording_id'] = Variable<int>(recordingId.value);
+    }
+    if (carProfileId.present) {
+      map['car_profile_id'] = Variable<int>(carProfileId.value);
+    }
+    if (driveMode.present) {
+      map['drive_mode'] = Variable<String>(driveMode.value);
+    }
+    if (passengerCount.present) {
+      map['passenger_count'] = Variable<int>(passengerCount.value);
+    }
+    if (fuelLevelPercent.present) {
+      map['fuel_level_percent'] = Variable<int>(fuelLevelPercent.value);
+    }
+    if (tyreType.present) {
+      map['tyre_type'] = Variable<String>(tyreType.value);
+    }
+    if (weatherNote.present) {
+      map['weather_note'] = Variable<String>(weatherNote.value);
+    }
+    if (freeText.present) {
+      map['free_text'] = Variable<String>(freeText.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('RecordingMetadataCompanion(')
+          ..write('id: $id, ')
+          ..write('recordingId: $recordingId, ')
+          ..write('carProfileId: $carProfileId, ')
+          ..write('driveMode: $driveMode, ')
+          ..write('passengerCount: $passengerCount, ')
+          ..write('fuelLevelPercent: $fuelLevelPercent, ')
+          ..write('tyreType: $tyreType, ')
+          ..write('weatherNote: $weatherNote, ')
+          ..write('freeText: $freeText')
+          ..write(')'))
+        .toString();
+  }
+}
+
 abstract class _$AppDatabase extends GeneratedDatabase {
   _$AppDatabase(QueryExecutor e) : super(e);
   $AppDatabaseManager get managers => $AppDatabaseManager(this);
   late final $RecordingsTable recordings = $RecordingsTable(this);
   late final $SensorSamplesTable sensorSamples = $SensorSamplesTable(this);
+  late final $CarProfilesTable carProfiles = $CarProfilesTable(this);
+  late final $RecordingMetadataTable recordingMetadata =
+      $RecordingMetadataTable(this);
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
@@ -2032,6 +3056,8 @@ abstract class _$AppDatabase extends GeneratedDatabase {
   List<DatabaseSchemaEntity> get allSchemaEntities => [
     recordings,
     sensorSamples,
+    carProfiles,
+    recordingMetadata,
   ];
 }
 
@@ -2076,6 +3102,33 @@ final class $$RecordingsTableReferences
     ).filter((f) => f.recordingId.id.sqlEquals($_itemColumn<int>('id')!));
 
     final cache = $_typedResult.readTableOrNull(_sensorSamplesRefsTable($_db));
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: cache),
+    );
+  }
+
+  static MultiTypedResultKey<
+    $RecordingMetadataTable,
+    List<RecordingMetadataData>
+  >
+  _recordingMetadataRefsTable(_$AppDatabase db) =>
+      MultiTypedResultKey.fromTable(
+        db.recordingMetadata,
+        aliasName: $_aliasNameGenerator(
+          db.recordings.id,
+          db.recordingMetadata.recordingId,
+        ),
+      );
+
+  $$RecordingMetadataTableProcessedTableManager get recordingMetadataRefs {
+    final manager = $$RecordingMetadataTableTableManager(
+      $_db,
+      $_db.recordingMetadata,
+    ).filter((f) => f.recordingId.id.sqlEquals($_itemColumn<int>('id')!));
+
+    final cache = $_typedResult.readTableOrNull(
+      _recordingMetadataRefsTable($_db),
+    );
     return ProcessedTableManager(
       manager.$state.copyWith(prefetchedData: cache),
     );
@@ -2142,6 +3195,31 @@ class $$RecordingsTableFilterComposer
           }) => $$SensorSamplesTableFilterComposer(
             $db: $db,
             $table: $db.sensorSamples,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+
+  Expression<bool> recordingMetadataRefs(
+    Expression<bool> Function($$RecordingMetadataTableFilterComposer f) f,
+  ) {
+    final $$RecordingMetadataTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.recordingMetadata,
+      getReferencedColumn: (t) => t.recordingId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$RecordingMetadataTableFilterComposer(
+            $db: $db,
+            $table: $db.recordingMetadata,
             $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
             joinBuilder: joinBuilder,
             $removeJoinBuilderFromRootComposer:
@@ -2255,6 +3333,32 @@ class $$RecordingsTableAnnotationComposer
     );
     return f(composer);
   }
+
+  Expression<T> recordingMetadataRefs<T extends Object>(
+    Expression<T> Function($$RecordingMetadataTableAnnotationComposer a) f,
+  ) {
+    final $$RecordingMetadataTableAnnotationComposer composer =
+        $composerBuilder(
+          composer: this,
+          getCurrentColumn: (t) => t.id,
+          referencedTable: $db.recordingMetadata,
+          getReferencedColumn: (t) => t.recordingId,
+          builder:
+              (
+                joinBuilder, {
+                $addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer,
+              }) => $$RecordingMetadataTableAnnotationComposer(
+                $db: $db,
+                $table: $db.recordingMetadata,
+                $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+                joinBuilder: joinBuilder,
+                $removeJoinBuilderFromRootComposer:
+                    $removeJoinBuilderFromRootComposer,
+              ),
+        );
+    return f(composer);
+  }
 }
 
 class $$RecordingsTableTableManager
@@ -2270,7 +3374,10 @@ class $$RecordingsTableTableManager
           $$RecordingsTableUpdateCompanionBuilder,
           (Recording, $$RecordingsTableReferences),
           Recording,
-          PrefetchHooks Function({bool sensorSamplesRefs})
+          PrefetchHooks Function({
+            bool sensorSamplesRefs,
+            bool recordingMetadataRefs,
+          })
         > {
   $$RecordingsTableTableManager(_$AppDatabase db, $RecordingsTable table)
     : super(
@@ -2327,40 +3434,63 @@ class $$RecordingsTableTableManager
                 ),
               )
               .toList(),
-          prefetchHooksCallback: ({sensorSamplesRefs = false}) {
-            return PrefetchHooks(
-              db: db,
-              explicitlyWatchedTables: [
-                if (sensorSamplesRefs) db.sensorSamples,
-              ],
-              addJoins: null,
-              getPrefetchedDataCallback: (items) async {
-                return [
-                  if (sensorSamplesRefs)
-                    await $_getPrefetchedData<
-                      Recording,
-                      $RecordingsTable,
-                      SensorSample
-                    >(
-                      currentTable: table,
-                      referencedTable: $$RecordingsTableReferences
-                          ._sensorSamplesRefsTable(db),
-                      managerFromTypedResult: (p0) =>
-                          $$RecordingsTableReferences(
-                            db,
-                            table,
-                            p0,
-                          ).sensorSamplesRefs,
-                      referencedItemsForCurrentItem: (item, referencedItems) =>
-                          referencedItems.where(
-                            (e) => e.recordingId == item.id,
-                          ),
-                      typedResults: items,
-                    ),
-                ];
+          prefetchHooksCallback:
+              ({sensorSamplesRefs = false, recordingMetadataRefs = false}) {
+                return PrefetchHooks(
+                  db: db,
+                  explicitlyWatchedTables: [
+                    if (sensorSamplesRefs) db.sensorSamples,
+                    if (recordingMetadataRefs) db.recordingMetadata,
+                  ],
+                  addJoins: null,
+                  getPrefetchedDataCallback: (items) async {
+                    return [
+                      if (sensorSamplesRefs)
+                        await $_getPrefetchedData<
+                          Recording,
+                          $RecordingsTable,
+                          SensorSample
+                        >(
+                          currentTable: table,
+                          referencedTable: $$RecordingsTableReferences
+                              ._sensorSamplesRefsTable(db),
+                          managerFromTypedResult: (p0) =>
+                              $$RecordingsTableReferences(
+                                db,
+                                table,
+                                p0,
+                              ).sensorSamplesRefs,
+                          referencedItemsForCurrentItem:
+                              (item, referencedItems) => referencedItems.where(
+                                (e) => e.recordingId == item.id,
+                              ),
+                          typedResults: items,
+                        ),
+                      if (recordingMetadataRefs)
+                        await $_getPrefetchedData<
+                          Recording,
+                          $RecordingsTable,
+                          RecordingMetadataData
+                        >(
+                          currentTable: table,
+                          referencedTable: $$RecordingsTableReferences
+                              ._recordingMetadataRefsTable(db),
+                          managerFromTypedResult: (p0) =>
+                              $$RecordingsTableReferences(
+                                db,
+                                table,
+                                p0,
+                              ).recordingMetadataRefs,
+                          referencedItemsForCurrentItem:
+                              (item, referencedItems) => referencedItems.where(
+                                (e) => e.recordingId == item.id,
+                              ),
+                          typedResults: items,
+                        ),
+                    ];
+                  },
+                );
               },
-            );
-          },
         ),
       );
 }
@@ -2377,7 +3507,10 @@ typedef $$RecordingsTableProcessedTableManager =
       $$RecordingsTableUpdateCompanionBuilder,
       (Recording, $$RecordingsTableReferences),
       Recording,
-      PrefetchHooks Function({bool sensorSamplesRefs})
+      PrefetchHooks Function({
+        bool sensorSamplesRefs,
+        bool recordingMetadataRefs,
+      })
     >;
 typedef $$SensorSamplesTableCreateCompanionBuilder =
     SensorSamplesCompanion Function({
@@ -3172,6 +4305,862 @@ typedef $$SensorSamplesTableProcessedTableManager =
       SensorSample,
       PrefetchHooks Function({bool recordingId})
     >;
+typedef $$CarProfilesTableCreateCompanionBuilder =
+    CarProfilesCompanion Function({
+      Value<int> id,
+      required String name,
+      Value<String> make,
+      Value<String> model,
+      Value<int?> year,
+      Value<String> fuelType,
+      Value<String> transmission,
+    });
+typedef $$CarProfilesTableUpdateCompanionBuilder =
+    CarProfilesCompanion Function({
+      Value<int> id,
+      Value<String> name,
+      Value<String> make,
+      Value<String> model,
+      Value<int?> year,
+      Value<String> fuelType,
+      Value<String> transmission,
+    });
+
+final class $$CarProfilesTableReferences
+    extends BaseReferences<_$AppDatabase, $CarProfilesTable, CarProfile> {
+  $$CarProfilesTableReferences(super.$_db, super.$_table, super.$_typedResult);
+
+  static MultiTypedResultKey<
+    $RecordingMetadataTable,
+    List<RecordingMetadataData>
+  >
+  _recordingMetadataRefsTable(_$AppDatabase db) =>
+      MultiTypedResultKey.fromTable(
+        db.recordingMetadata,
+        aliasName: $_aliasNameGenerator(
+          db.carProfiles.id,
+          db.recordingMetadata.carProfileId,
+        ),
+      );
+
+  $$RecordingMetadataTableProcessedTableManager get recordingMetadataRefs {
+    final manager = $$RecordingMetadataTableTableManager(
+      $_db,
+      $_db.recordingMetadata,
+    ).filter((f) => f.carProfileId.id.sqlEquals($_itemColumn<int>('id')!));
+
+    final cache = $_typedResult.readTableOrNull(
+      _recordingMetadataRefsTable($_db),
+    );
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: cache),
+    );
+  }
+}
+
+class $$CarProfilesTableFilterComposer
+    extends Composer<_$AppDatabase, $CarProfilesTable> {
+  $$CarProfilesTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get name => $composableBuilder(
+    column: $table.name,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get make => $composableBuilder(
+    column: $table.make,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get model => $composableBuilder(
+    column: $table.model,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get year => $composableBuilder(
+    column: $table.year,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get fuelType => $composableBuilder(
+    column: $table.fuelType,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get transmission => $composableBuilder(
+    column: $table.transmission,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  Expression<bool> recordingMetadataRefs(
+    Expression<bool> Function($$RecordingMetadataTableFilterComposer f) f,
+  ) {
+    final $$RecordingMetadataTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.recordingMetadata,
+      getReferencedColumn: (t) => t.carProfileId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$RecordingMetadataTableFilterComposer(
+            $db: $db,
+            $table: $db.recordingMetadata,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+}
+
+class $$CarProfilesTableOrderingComposer
+    extends Composer<_$AppDatabase, $CarProfilesTable> {
+  $$CarProfilesTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get name => $composableBuilder(
+    column: $table.name,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get make => $composableBuilder(
+    column: $table.make,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get model => $composableBuilder(
+    column: $table.model,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get year => $composableBuilder(
+    column: $table.year,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get fuelType => $composableBuilder(
+    column: $table.fuelType,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get transmission => $composableBuilder(
+    column: $table.transmission,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$CarProfilesTableAnnotationComposer
+    extends Composer<_$AppDatabase, $CarProfilesTable> {
+  $$CarProfilesTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<int> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get name =>
+      $composableBuilder(column: $table.name, builder: (column) => column);
+
+  GeneratedColumn<String> get make =>
+      $composableBuilder(column: $table.make, builder: (column) => column);
+
+  GeneratedColumn<String> get model =>
+      $composableBuilder(column: $table.model, builder: (column) => column);
+
+  GeneratedColumn<int> get year =>
+      $composableBuilder(column: $table.year, builder: (column) => column);
+
+  GeneratedColumn<String> get fuelType =>
+      $composableBuilder(column: $table.fuelType, builder: (column) => column);
+
+  GeneratedColumn<String> get transmission => $composableBuilder(
+    column: $table.transmission,
+    builder: (column) => column,
+  );
+
+  Expression<T> recordingMetadataRefs<T extends Object>(
+    Expression<T> Function($$RecordingMetadataTableAnnotationComposer a) f,
+  ) {
+    final $$RecordingMetadataTableAnnotationComposer composer =
+        $composerBuilder(
+          composer: this,
+          getCurrentColumn: (t) => t.id,
+          referencedTable: $db.recordingMetadata,
+          getReferencedColumn: (t) => t.carProfileId,
+          builder:
+              (
+                joinBuilder, {
+                $addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer,
+              }) => $$RecordingMetadataTableAnnotationComposer(
+                $db: $db,
+                $table: $db.recordingMetadata,
+                $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+                joinBuilder: joinBuilder,
+                $removeJoinBuilderFromRootComposer:
+                    $removeJoinBuilderFromRootComposer,
+              ),
+        );
+    return f(composer);
+  }
+}
+
+class $$CarProfilesTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $CarProfilesTable,
+          CarProfile,
+          $$CarProfilesTableFilterComposer,
+          $$CarProfilesTableOrderingComposer,
+          $$CarProfilesTableAnnotationComposer,
+          $$CarProfilesTableCreateCompanionBuilder,
+          $$CarProfilesTableUpdateCompanionBuilder,
+          (CarProfile, $$CarProfilesTableReferences),
+          CarProfile,
+          PrefetchHooks Function({bool recordingMetadataRefs})
+        > {
+  $$CarProfilesTableTableManager(_$AppDatabase db, $CarProfilesTable table)
+    : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$CarProfilesTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$CarProfilesTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$CarProfilesTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                Value<String> name = const Value.absent(),
+                Value<String> make = const Value.absent(),
+                Value<String> model = const Value.absent(),
+                Value<int?> year = const Value.absent(),
+                Value<String> fuelType = const Value.absent(),
+                Value<String> transmission = const Value.absent(),
+              }) => CarProfilesCompanion(
+                id: id,
+                name: name,
+                make: make,
+                model: model,
+                year: year,
+                fuelType: fuelType,
+                transmission: transmission,
+              ),
+          createCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                required String name,
+                Value<String> make = const Value.absent(),
+                Value<String> model = const Value.absent(),
+                Value<int?> year = const Value.absent(),
+                Value<String> fuelType = const Value.absent(),
+                Value<String> transmission = const Value.absent(),
+              }) => CarProfilesCompanion.insert(
+                id: id,
+                name: name,
+                make: make,
+                model: model,
+                year: year,
+                fuelType: fuelType,
+                transmission: transmission,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable(table),
+                  $$CarProfilesTableReferences(db, table, e),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback: ({recordingMetadataRefs = false}) {
+            return PrefetchHooks(
+              db: db,
+              explicitlyWatchedTables: [
+                if (recordingMetadataRefs) db.recordingMetadata,
+              ],
+              addJoins: null,
+              getPrefetchedDataCallback: (items) async {
+                return [
+                  if (recordingMetadataRefs)
+                    await $_getPrefetchedData<
+                      CarProfile,
+                      $CarProfilesTable,
+                      RecordingMetadataData
+                    >(
+                      currentTable: table,
+                      referencedTable: $$CarProfilesTableReferences
+                          ._recordingMetadataRefsTable(db),
+                      managerFromTypedResult: (p0) =>
+                          $$CarProfilesTableReferences(
+                            db,
+                            table,
+                            p0,
+                          ).recordingMetadataRefs,
+                      referencedItemsForCurrentItem: (item, referencedItems) =>
+                          referencedItems.where(
+                            (e) => e.carProfileId == item.id,
+                          ),
+                      typedResults: items,
+                    ),
+                ];
+              },
+            );
+          },
+        ),
+      );
+}
+
+typedef $$CarProfilesTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $CarProfilesTable,
+      CarProfile,
+      $$CarProfilesTableFilterComposer,
+      $$CarProfilesTableOrderingComposer,
+      $$CarProfilesTableAnnotationComposer,
+      $$CarProfilesTableCreateCompanionBuilder,
+      $$CarProfilesTableUpdateCompanionBuilder,
+      (CarProfile, $$CarProfilesTableReferences),
+      CarProfile,
+      PrefetchHooks Function({bool recordingMetadataRefs})
+    >;
+typedef $$RecordingMetadataTableCreateCompanionBuilder =
+    RecordingMetadataCompanion Function({
+      Value<int> id,
+      required int recordingId,
+      Value<int?> carProfileId,
+      Value<String> driveMode,
+      Value<int?> passengerCount,
+      Value<int?> fuelLevelPercent,
+      Value<String> tyreType,
+      Value<String> weatherNote,
+      Value<String> freeText,
+    });
+typedef $$RecordingMetadataTableUpdateCompanionBuilder =
+    RecordingMetadataCompanion Function({
+      Value<int> id,
+      Value<int> recordingId,
+      Value<int?> carProfileId,
+      Value<String> driveMode,
+      Value<int?> passengerCount,
+      Value<int?> fuelLevelPercent,
+      Value<String> tyreType,
+      Value<String> weatherNote,
+      Value<String> freeText,
+    });
+
+final class $$RecordingMetadataTableReferences
+    extends
+        BaseReferences<
+          _$AppDatabase,
+          $RecordingMetadataTable,
+          RecordingMetadataData
+        > {
+  $$RecordingMetadataTableReferences(
+    super.$_db,
+    super.$_table,
+    super.$_typedResult,
+  );
+
+  static $RecordingsTable _recordingIdTable(_$AppDatabase db) =>
+      db.recordings.createAlias(
+        $_aliasNameGenerator(
+          db.recordingMetadata.recordingId,
+          db.recordings.id,
+        ),
+      );
+
+  $$RecordingsTableProcessedTableManager get recordingId {
+    final $_column = $_itemColumn<int>('recording_id')!;
+
+    final manager = $$RecordingsTableTableManager(
+      $_db,
+      $_db.recordings,
+    ).filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_recordingIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: [item]),
+    );
+  }
+
+  static $CarProfilesTable _carProfileIdTable(_$AppDatabase db) =>
+      db.carProfiles.createAlias(
+        $_aliasNameGenerator(
+          db.recordingMetadata.carProfileId,
+          db.carProfiles.id,
+        ),
+      );
+
+  $$CarProfilesTableProcessedTableManager? get carProfileId {
+    final $_column = $_itemColumn<int>('car_profile_id');
+    if ($_column == null) return null;
+    final manager = $$CarProfilesTableTableManager(
+      $_db,
+      $_db.carProfiles,
+    ).filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_carProfileIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: [item]),
+    );
+  }
+}
+
+class $$RecordingMetadataTableFilterComposer
+    extends Composer<_$AppDatabase, $RecordingMetadataTable> {
+  $$RecordingMetadataTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get driveMode => $composableBuilder(
+    column: $table.driveMode,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get passengerCount => $composableBuilder(
+    column: $table.passengerCount,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get fuelLevelPercent => $composableBuilder(
+    column: $table.fuelLevelPercent,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get tyreType => $composableBuilder(
+    column: $table.tyreType,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get weatherNote => $composableBuilder(
+    column: $table.weatherNote,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get freeText => $composableBuilder(
+    column: $table.freeText,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  $$RecordingsTableFilterComposer get recordingId {
+    final $$RecordingsTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.recordingId,
+      referencedTable: $db.recordings,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$RecordingsTableFilterComposer(
+            $db: $db,
+            $table: $db.recordings,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  $$CarProfilesTableFilterComposer get carProfileId {
+    final $$CarProfilesTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.carProfileId,
+      referencedTable: $db.carProfiles,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$CarProfilesTableFilterComposer(
+            $db: $db,
+            $table: $db.carProfiles,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$RecordingMetadataTableOrderingComposer
+    extends Composer<_$AppDatabase, $RecordingMetadataTable> {
+  $$RecordingMetadataTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get driveMode => $composableBuilder(
+    column: $table.driveMode,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get passengerCount => $composableBuilder(
+    column: $table.passengerCount,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get fuelLevelPercent => $composableBuilder(
+    column: $table.fuelLevelPercent,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get tyreType => $composableBuilder(
+    column: $table.tyreType,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get weatherNote => $composableBuilder(
+    column: $table.weatherNote,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get freeText => $composableBuilder(
+    column: $table.freeText,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  $$RecordingsTableOrderingComposer get recordingId {
+    final $$RecordingsTableOrderingComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.recordingId,
+      referencedTable: $db.recordings,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$RecordingsTableOrderingComposer(
+            $db: $db,
+            $table: $db.recordings,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  $$CarProfilesTableOrderingComposer get carProfileId {
+    final $$CarProfilesTableOrderingComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.carProfileId,
+      referencedTable: $db.carProfiles,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$CarProfilesTableOrderingComposer(
+            $db: $db,
+            $table: $db.carProfiles,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$RecordingMetadataTableAnnotationComposer
+    extends Composer<_$AppDatabase, $RecordingMetadataTable> {
+  $$RecordingMetadataTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<int> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get driveMode =>
+      $composableBuilder(column: $table.driveMode, builder: (column) => column);
+
+  GeneratedColumn<int> get passengerCount => $composableBuilder(
+    column: $table.passengerCount,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get fuelLevelPercent => $composableBuilder(
+    column: $table.fuelLevelPercent,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get tyreType =>
+      $composableBuilder(column: $table.tyreType, builder: (column) => column);
+
+  GeneratedColumn<String> get weatherNote => $composableBuilder(
+    column: $table.weatherNote,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get freeText =>
+      $composableBuilder(column: $table.freeText, builder: (column) => column);
+
+  $$RecordingsTableAnnotationComposer get recordingId {
+    final $$RecordingsTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.recordingId,
+      referencedTable: $db.recordings,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$RecordingsTableAnnotationComposer(
+            $db: $db,
+            $table: $db.recordings,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  $$CarProfilesTableAnnotationComposer get carProfileId {
+    final $$CarProfilesTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.carProfileId,
+      referencedTable: $db.carProfiles,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$CarProfilesTableAnnotationComposer(
+            $db: $db,
+            $table: $db.carProfiles,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$RecordingMetadataTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $RecordingMetadataTable,
+          RecordingMetadataData,
+          $$RecordingMetadataTableFilterComposer,
+          $$RecordingMetadataTableOrderingComposer,
+          $$RecordingMetadataTableAnnotationComposer,
+          $$RecordingMetadataTableCreateCompanionBuilder,
+          $$RecordingMetadataTableUpdateCompanionBuilder,
+          (RecordingMetadataData, $$RecordingMetadataTableReferences),
+          RecordingMetadataData,
+          PrefetchHooks Function({bool recordingId, bool carProfileId})
+        > {
+  $$RecordingMetadataTableTableManager(
+    _$AppDatabase db,
+    $RecordingMetadataTable table,
+  ) : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$RecordingMetadataTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$RecordingMetadataTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$RecordingMetadataTableAnnotationComposer(
+                $db: db,
+                $table: table,
+              ),
+          updateCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                Value<int> recordingId = const Value.absent(),
+                Value<int?> carProfileId = const Value.absent(),
+                Value<String> driveMode = const Value.absent(),
+                Value<int?> passengerCount = const Value.absent(),
+                Value<int?> fuelLevelPercent = const Value.absent(),
+                Value<String> tyreType = const Value.absent(),
+                Value<String> weatherNote = const Value.absent(),
+                Value<String> freeText = const Value.absent(),
+              }) => RecordingMetadataCompanion(
+                id: id,
+                recordingId: recordingId,
+                carProfileId: carProfileId,
+                driveMode: driveMode,
+                passengerCount: passengerCount,
+                fuelLevelPercent: fuelLevelPercent,
+                tyreType: tyreType,
+                weatherNote: weatherNote,
+                freeText: freeText,
+              ),
+          createCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                required int recordingId,
+                Value<int?> carProfileId = const Value.absent(),
+                Value<String> driveMode = const Value.absent(),
+                Value<int?> passengerCount = const Value.absent(),
+                Value<int?> fuelLevelPercent = const Value.absent(),
+                Value<String> tyreType = const Value.absent(),
+                Value<String> weatherNote = const Value.absent(),
+                Value<String> freeText = const Value.absent(),
+              }) => RecordingMetadataCompanion.insert(
+                id: id,
+                recordingId: recordingId,
+                carProfileId: carProfileId,
+                driveMode: driveMode,
+                passengerCount: passengerCount,
+                fuelLevelPercent: fuelLevelPercent,
+                tyreType: tyreType,
+                weatherNote: weatherNote,
+                freeText: freeText,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable(table),
+                  $$RecordingMetadataTableReferences(db, table, e),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback: ({recordingId = false, carProfileId = false}) {
+            return PrefetchHooks(
+              db: db,
+              explicitlyWatchedTables: [],
+              addJoins:
+                  <
+                    T extends TableManagerState<
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic
+                    >
+                  >(state) {
+                    if (recordingId) {
+                      state =
+                          state.withJoin(
+                                currentTable: table,
+                                currentColumn: table.recordingId,
+                                referencedTable:
+                                    $$RecordingMetadataTableReferences
+                                        ._recordingIdTable(db),
+                                referencedColumn:
+                                    $$RecordingMetadataTableReferences
+                                        ._recordingIdTable(db)
+                                        .id,
+                              )
+                              as T;
+                    }
+                    if (carProfileId) {
+                      state =
+                          state.withJoin(
+                                currentTable: table,
+                                currentColumn: table.carProfileId,
+                                referencedTable:
+                                    $$RecordingMetadataTableReferences
+                                        ._carProfileIdTable(db),
+                                referencedColumn:
+                                    $$RecordingMetadataTableReferences
+                                        ._carProfileIdTable(db)
+                                        .id,
+                              )
+                              as T;
+                    }
+
+                    return state;
+                  },
+              getPrefetchedDataCallback: (items) async {
+                return [];
+              },
+            );
+          },
+        ),
+      );
+}
+
+typedef $$RecordingMetadataTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $RecordingMetadataTable,
+      RecordingMetadataData,
+      $$RecordingMetadataTableFilterComposer,
+      $$RecordingMetadataTableOrderingComposer,
+      $$RecordingMetadataTableAnnotationComposer,
+      $$RecordingMetadataTableCreateCompanionBuilder,
+      $$RecordingMetadataTableUpdateCompanionBuilder,
+      (RecordingMetadataData, $$RecordingMetadataTableReferences),
+      RecordingMetadataData,
+      PrefetchHooks Function({bool recordingId, bool carProfileId})
+    >;
 
 class $AppDatabaseManager {
   final _$AppDatabase _db;
@@ -3180,4 +5169,8 @@ class $AppDatabaseManager {
       $$RecordingsTableTableManager(_db, _db.recordings);
   $$SensorSamplesTableTableManager get sensorSamples =>
       $$SensorSamplesTableTableManager(_db, _db.sensorSamples);
+  $$CarProfilesTableTableManager get carProfiles =>
+      $$CarProfilesTableTableManager(_db, _db.carProfiles);
+  $$RecordingMetadataTableTableManager get recordingMetadata =>
+      $$RecordingMetadataTableTableManager(_db, _db.recordingMetadata);
 }

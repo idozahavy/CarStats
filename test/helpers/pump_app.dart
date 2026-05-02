@@ -1,5 +1,6 @@
 import 'package:accel_stats/core/theme.dart';
 import 'package:accel_stats/data/database/database.dart';
+import 'package:accel_stats/l10n/app_localizations.dart';
 import 'package:accel_stats/services/recording_engine.dart';
 import 'package:accel_stats/core/providers.dart';
 import 'package:flutter/material.dart';
@@ -21,6 +22,7 @@ Future<TestHarness> pumpApp(
   FakeSensorService? sensorService,
   FakeGpsService? gpsService,
   Map<String, Object>? prefsData,
+  Locale? locale,
 }) async {
   SharedPreferences.setMockInitialValues(prefsData ?? {});
   final prefs = await SharedPreferences.getInstance();
@@ -44,10 +46,14 @@ Future<TestHarness> pumpApp(
         Provider<RecordingStore>.value(value: fakeDb),
         ChangeNotifierProvider(create: (_) => ThemeProvider(prefs)),
         ChangeNotifierProvider(create: (_) => SettingsProvider(prefs)),
+        ChangeNotifierProvider(create: (_) => LocaleProvider(prefs)),
         ChangeNotifierProvider<RecordingEngine>.value(value: engine),
       ],
       child: MaterialApp(
         theme: AppTheme.light(),
+        locale: locale ?? const Locale('en'),
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
         home: child,
       ),
     ),

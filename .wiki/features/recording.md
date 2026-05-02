@@ -2,8 +2,8 @@
 
 > Captures a single driving session: 5 s calibration countdown, then continuous sensor + GPS sampling while computing forward / lateral acceleration live.
 
-**Scope:** [lib/screens/home/home_screen.dart](lib/screens/home/home_screen.dart), [lib/screens/recording/recording_screen.dart](lib/screens/recording/recording_screen.dart), [lib/services/recording_engine.dart](lib/services/recording_engine.dart), [lib/services/sensor_service.dart](lib/services/sensor_service.dart), [lib/services/gps_service.dart](lib/services/gps_service.dart), [lib/services/calibration_service.dart](lib/services/calibration_service.dart)
-**Last verified:** 2026-05-02 (phase 03)
+**Scope:** [lib/screens/home/home_screen.dart](lib/screens/home/home_screen.dart), [lib/screens/recording/recording_screen.dart](lib/screens/recording/recording_screen.dart), [lib/services/recording_engine.dart](lib/services/recording_engine.dart), [lib/services/sensor_service.dart](lib/services/sensor_service.dart), [lib/services/gps_service.dart](lib/services/gps_service.dart), [lib/services/calibration_service.dart](lib/services/calibration_service.dart), [lib/widgets/name_dialog.dart](lib/widgets/name_dialog.dart)
+**Last verified:** 2026-05-02 (phase 04)
 
 ---
 
@@ -13,7 +13,7 @@ A recording runs in three engine states: `calibrating` → `recording` → `stop
 
 ## User-facing behavior
 
-- Home screen: *Start Recording* button → immediately navigates to the recording screen.
+- Home screen: *Start Recording* button → opens a name-picker dialog (default `Run <yyyy-MM-dd HH:mm>`, editable, 1–200 chars). *Start* navigates to the recording screen; *Cancel* aborts and the engine stays in `idle`.
 - Recording screen:
   - During calibration, shows a 5 → 0 countdown.
   - Live cards: speed (km/h), forward acceleration (g), phone pitch and roll (°), and peak forward / brake / lateral (g).
@@ -24,7 +24,7 @@ A recording runs in three engine states: `calibrating` → `recording` → `stop
 
 ## Data flow
 
-1. `HomeScreen._startRecording` reads `SettingsProvider.devMode` and calls `RecordingEngine.startRecording(name, isDev)`.
+1. `HomeScreen._startRecording` shows `showNameDialog` (from `lib/widgets/name_dialog.dart`). On confirm, reads `SettingsProvider.devMode` and calls `RecordingEngine.startRecording(name, isDev)`. On cancel, returns without starting.
 2. Engine state → `calibrating`. `SensorService` + `GpsService` start. An accelerometer subscription feeds `CalibrationService`.
 3. Countdown timer ticks every second. Reaching 0 calls `_finishCalibration`:
    - `CalibrationService.compute()` averages accelerometer samples → `CalibrationResult` (gravity vector + rotation matrix).

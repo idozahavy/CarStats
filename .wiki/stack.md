@@ -3,7 +3,7 @@
 > Flutter (Dart SDK ^3.10.4) targeting Android + iOS. SQLite via Drift, Provider for state, fl_chart for plots.
 
 **Scope:** [pubspec.yaml](pubspec.yaml), [android/](android/), [ios/](ios/), [analysis_options.yaml](analysis_options.yaml)
-**Last verified:** 2026-05-02
+**Last verified:** 2026-05-02 (phase 05)
 
 ---
 
@@ -19,6 +19,7 @@
 | Package | Version | Purpose |
 |---|---|---|
 | `provider` | ^6.1.2 | ChangeNotifier-based state management |
+| `flutter_localizations` | (from SDK) | Material/Cupertino/Widgets localization delegates for `AppLocalizations` |
 | `sensors_plus` | ^6.1.1 | Accelerometer, gyroscope, user-accelerometer (linear), barometer streams |
 | `geolocator` | ^13.0.2 | GPS position stream with Android foreground-service config |
 | `drift` | ^2.25.0 | Typed SQLite ORM + code generation |
@@ -27,8 +28,9 @@
 | `path_provider` | ^2.1.5 | Locate app documents directory for DB file |
 | `path` | ^1.9.1 | Path joining |
 | `intl` | ^0.20.2 | Date formatting in recordings list |
-| `shared_preferences` | ^2.5.3 | Theme mode + dev-mode flag persistence |
+| `shared_preferences` | ^2.5.3 | Theme mode, locale, and dev-mode flag persistence |
 | `file_picker` | ^8.3.7 | Save/pick files for export and import |
+| `share_plus` | ^11.0.0 | System share sheet for exporting recordings via OS apps |
 | `cupertino_icons` | ^1.0.8 | iOS-style icons |
 
 ## Dev dependencies
@@ -45,6 +47,7 @@
 |---|---|
 | `flutter pub get` | Install dependencies |
 | `dart run build_runner build --delete-conflicting-outputs` | Regenerate `database.g.dart` after schema edits |
+| `flutter gen-l10n` | Regenerate `lib/l10n/app_localizations*.dart` after editing ARB files (also runs implicitly on `pub get`) |
 | `flutter run` | Run on a connected device/emulator |
 | `flutter test` | Run the widget/unit test suite under [test/](test/) |
 | `flutter build apk` / `flutter build ios` | Platform builds |

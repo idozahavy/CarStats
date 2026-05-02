@@ -104,6 +104,25 @@ void main() {
       );
     });
 
+    test('imports a v1 export (no metadata) successfully', () async {
+      final json = jsonEncode({
+        'exportVersion': 1,
+        'recording': {
+          'name': 'Legacy run',
+          'startedAt': DateTime.utc(2026, 1, 1).toIso8601String(),
+          'durationMs': 1000,
+        },
+        'samples': <Map<String, dynamic>>[
+          {'timestampUs': 0},
+        ],
+      });
+      final store = FakeRecordingStore();
+      final id = await ExportService.importRecordingFromJson(store, json);
+      expect(id, isPositive);
+      expect(store.metadataRows, isEmpty);
+      expect(store.carProfiles, isEmpty);
+    });
+
     test('rejects JSON missing the samples key', () async {
       final json = jsonEncode({
         'exportVersion': ExportService.exportVersion,

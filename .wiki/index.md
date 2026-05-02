@@ -16,7 +16,7 @@
 - [overlay-comparison](features/overlay-comparison.md) — *(planned)* Plot two recordings on the same chart.
 - [recording](features/recording.md) — Captures a driving session with 5 s calibration then continuous sampling.
 - [recording-history](features/recording-history.md) — Browse, filter, delete recordings; detail view with summary + charts.
-- [session-metadata](features/session-metadata.md) — *(planned)* Per-recording car / tyre / weather / load context.
+- [session-metadata](features/session-metadata.md) — Per-recording car / drive-mode / passenger / fuel / tyre / weather context, with reusable car profiles.
 - [settings](features/settings.md) — Theme mode and dev-mode toggle persisted via SharedPreferences.
 
 ## Concepts

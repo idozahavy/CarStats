@@ -5,6 +5,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'core/providers.dart';
 import 'core/theme.dart';
 import 'data/database/database.dart';
+import 'l10n/app_localizations.dart';
 import 'screens/home/home_screen.dart';
 import 'services/gps_service.dart';
 import 'services/recording_engine.dart';
@@ -53,6 +54,7 @@ class _AccelStatsAppState extends State<AccelStatsApp> {
         Provider<RecordingStore>.value(value: _db),
         ChangeNotifierProvider(create: (_) => ThemeProvider(widget.prefs)),
         ChangeNotifierProvider(create: (_) => SettingsProvider(widget.prefs)),
+        ChangeNotifierProvider(create: (_) => LocaleProvider(widget.prefs)),
         ChangeNotifierProvider(
           create: (_) => RecordingEngine(
             db: _db,
@@ -61,14 +63,17 @@ class _AccelStatsAppState extends State<AccelStatsApp> {
           ),
         ),
       ],
-      child: Consumer<ThemeProvider>(
-        builder: (context, themeProvider, _) {
+      child: Consumer2<ThemeProvider, LocaleProvider>(
+        builder: (context, themeProvider, localeProvider, _) {
           return MaterialApp(
             title: 'AccelStats',
             debugShowCheckedModeBanner: false,
             theme: AppTheme.light(),
             darkTheme: AppTheme.dark(),
             themeMode: themeProvider.themeMode,
+            locale: localeProvider.locale,
+            localizationsDelegates: AppLocalizations.localizationsDelegates,
+            supportedLocales: AppLocalizations.supportedLocales,
             home: const _PermissionGate(),
           );
         },
@@ -120,6 +125,7 @@ class _PermissionGateState extends State<_PermissionGate> {
     }
 
     if (!_granted) {
+      final l = AppLocalizations.of(context)!;
       return Scaffold(
         body: SafeArea(
           child: Center(
@@ -130,20 +136,20 @@ class _PermissionGateState extends State<_PermissionGate> {
                 children: [
                   const Icon(Icons.location_off, size: 64),
                   const SizedBox(height: 16),
-                  const Text(
-                    'Location Permission Required',
-                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                  Text(
+                    l.permission_required_title,
+                    style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                     textAlign: TextAlign.center,
                   ),
                   const SizedBox(height: 8),
-                  const Text(
-                    'AccelStats needs GPS access to measure speed. Please grant location permission.',
+                  Text(
+                    l.permission_required_message,
                     textAlign: TextAlign.center,
                   ),
                   const SizedBox(height: 24),
                   FilledButton(
                     onPressed: _checkPermission,
-                    child: const Text('Grant Permission'),
+                    child: Text(l.permission_grant_button),
                   ),
                 ],
               ),

@@ -14,4 +14,5 @@ class SensorConstants {
 class StorageKeys {
   static const String themeMode = 'theme_mode';
   static const String devMode = 'dev_mode';
+  static const String locale = 'locale';
 }

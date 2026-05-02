@@ -7,11 +7,32 @@ import '../helpers/pump_app.dart';
 
 void main() {
   group('RecordingsScreen', () {
-    testWidgets('shows empty state when no recordings', (tester) async {
+    testWidgets('shows empty state with CTA when no recordings',
+        (tester) async {
       await pumpApp(tester, const RecordingsScreen());
       await tester.pumpAndSettle();
 
       expect(find.text('No recordings yet'), findsOneWidget);
+      expect(find.text('Start a recording'), findsOneWidget);
+      expect(find.byIcon(Icons.directions_car_outlined), findsOneWidget);
+    });
+
+    testWidgets('shows filtered-empty state when filter hides everything',
+        (tester) async {
+      final db = FakeDatabase();
+      db.recordings = [
+        fakeRecording(id: 1, name: 'User Run', isDevRecording: false),
+      ];
+
+      await pumpApp(tester, const RecordingsScreen(), db: db);
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.text('Dev'));
+      await tester.pump();
+
+      expect(find.text('No recordings match this filter.'), findsOneWidget);
+      // CTA should not appear in the filtered-empty case
+      expect(find.text('Start a recording'), findsNothing);
     });
 
     testWidgets('lists recordings from database', (tester) async {
@@ -179,6 +200,52 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(find.byIcon(Icons.route), findsOneWidget);
+    });
+
+    testWidgets('long-press opens rename dialog and renames recording',
+        (tester) async {
+      final db = FakeDatabase();
+      db.recordings = [
+        fakeRecording(id: 1, name: 'Old Name'),
+      ];
+
+      await pumpApp(tester, const RecordingsScreen(), db: db);
+      await tester.pumpAndSettle();
+
+      await tester.longPress(find.text('Old Name'));
+      await tester.pumpAndSettle();
+
+      expect(find.text('Rename recording'), findsOneWidget);
+      expect(find.text('Rename'), findsOneWidget);
+
+      await tester.enterText(find.byType(TextField), 'New Name');
+      await tester.tap(find.text('Rename'));
+      await tester.pumpAndSettle();
+
+      expect(db.renamedRecordings, hasLength(1));
+      expect(db.renamedRecordings.first.id, 1);
+      expect(db.renamedRecordings.first.name, 'New Name');
+      expect(find.text('New Name'), findsOneWidget);
+    });
+
+    testWidgets('cancelling rename does not call renameRecording',
+        (tester) async {
+      final db = FakeDatabase();
+      db.recordings = [
+        fakeRecording(id: 1, name: 'Untouched'),
+      ];
+
+      await pumpApp(tester, const RecordingsScreen(), db: db);
+      await tester.pumpAndSettle();
+
+      await tester.longPress(find.text('Untouched'));
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.text('Cancel'));
+      await tester.pumpAndSettle();
+
+      expect(db.renamedRecordings, isEmpty);
+      expect(find.text('Untouched'), findsOneWidget);
     });
 
     testWidgets('tapping a recording navigates to detail screen',
