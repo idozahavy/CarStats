@@ -2,11 +2,14 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:drift/drift.dart';
 import 'package:file_picker/file_picker.dart';
+import 'package:flutter/foundation.dart' show visibleForTesting;
 import '../data/database/database.dart';
 
 enum ExportFormat { csv, json }
 
 class ExportService {
+  static const int exportVersion = 1;
+
   static Future<File?> exportRecording(
     Recording recording,
     List<SensorSample> samples,
@@ -54,7 +57,30 @@ class ExportService {
     if (filePath == null) return null;
 
     final content = await File(filePath).readAsString();
-    final data = jsonDecode(content) as Map<String, dynamic>;
+    return importRecordingFromJson(db, content);
+  }
+
+  /// Parses [jsonContent] and inserts a new recording + samples into [db].
+  /// Throws [FormatException] for missing/wrong version or malformed shape.
+  static Future<int> importRecordingFromJson(
+    RecordingStore db,
+    String jsonContent,
+  ) async {
+    final data = jsonDecode(jsonContent) as Map<String, dynamic>;
+
+    final foundVersion = data['exportVersion'];
+    if (foundVersion != exportVersion) {
+      throw FormatException(
+        'Unsupported export version: $foundVersion. Expected: $exportVersion.',
+      );
+    }
+
+    if (data['recording'] is! Map<String, dynamic> ||
+        data['samples'] is! List<dynamic>) {
+      throw const FormatException(
+        "Malformed export: missing 'recording' or 'samples'",
+      );
+    }
 
     final rec = data['recording'] as Map<String, dynamic>;
     final samples = data['samples'] as List<dynamic>;
@@ -111,6 +137,10 @@ class ExportService {
     return recordingId;
   }
 
+  @visibleForTesting
+  static String toJsonString(Recording recording, List<SensorSample> samples) =>
+      _toJson(recording, samples);
+
   static String _toCsv(Recording recording, List<SensorSample> samples) {
     final buf = StringBuffer();
 
@@ -145,6 +175,7 @@ class ExportService {
 
   static String _toJson(Recording recording, List<SensorSample> samples) {
     final data = {
+      'exportVersion': exportVersion,
       'recording': {
         'id': recording.id,
         'name': recording.name,

@@ -3,7 +3,7 @@
 > Captures a single driving session: 5 s calibration countdown, then continuous sensor + GPS sampling while computing forward / lateral acceleration live.
 
 **Scope:** [lib/screens/home/home_screen.dart](lib/screens/home/home_screen.dart), [lib/screens/recording/recording_screen.dart](lib/screens/recording/recording_screen.dart), [lib/services/recording_engine.dart](lib/services/recording_engine.dart), [lib/services/sensor_service.dart](lib/services/sensor_service.dart), [lib/services/gps_service.dart](lib/services/gps_service.dart), [lib/services/calibration_service.dart](lib/services/calibration_service.dart)
-**Last verified:** 2026-04-21
+**Last verified:** 2026-05-02 (phase 03)
 
 ---
 
@@ -55,10 +55,14 @@ A recording runs in three engine states: `calibrating` → `recording` → `stop
 - Peak G values are tracked across the session: forward (max positive), brake (min negative), lateral (max absolute).
 - Live chart buffer is capped at 3000 snapshots (oldest dropped).
 - UI is rebuilt at most every 100 ms regardless of incoming sensor rate.
+- Live chart uses fixed bounds: `minX: 0, maxX: 300` km/h and `minY: -1.5, maxY: 1.5` g. Lines are not curve-smoothed (`isCurved: false`) so the chart faithfully reflects the noisy 50 Hz samples without phantom oscillations between points.
 
 ## Gotchas
 
 - GPS heading from the OS is unreliable below ~2 m/s; the engine deliberately only feeds it into the decomposer above that threshold.
+- GPS heading sentinel filtering: geolocator may emit `heading < 0` (or out of `[0, 360]`) when the device is stationary or has no compass fix. `RecordingEngine._onRecordingGps` drops those readings before they reach the decomposer or heading auto-calibrator, keeping the heading lock truthful.
+- Mid-recording GPS loss: if location permission is revoked or the system service is disabled while recording, `GpsService` surfaces the stream error via its `serviceLost` broadcast stream. `RecordingEngine` listens, calls `stopRecording()` so already-buffered samples are flushed and `endedAt`/`durationMs` are written, sets `lastWarning = "GPS permission lost — recording saved early."`, and the recording screen surfaces it as a `SnackBar` (then calls `clearLastWarning`).
+- iOS background location: `GpsService.startListening` uses `AppleSettings` with `pauseLocationUpdatesAutomatically: false` and `activityType: ActivityType.otherNavigation` so screen-lock does not kill the GPS stream. `Info.plist` declares `UIBackgroundModes = [location]` plus the two `NSLocation*UsageDescription` keys.
 - Barometer is optional — `sensors_plus` errors are swallowed, `pressure` will stay null on devices without one.
 - `_recordingStartTime` is the wall-clock time set when the `Recordings` row is inserted — not when calibration started. `timestampUs` on samples is therefore measured from end-of-calibration.
 - The `Recordings` row is created **before** the state flips to `recording`; if the user closes mid-`await`, `RecordingEngine._finishCalibration` detects the state change and deletes the orphan row.

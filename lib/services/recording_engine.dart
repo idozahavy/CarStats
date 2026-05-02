@@ -14,7 +14,6 @@ class RecordingSnapshot {
   final double? gpsSpeedKmh;
   final double? forwardAccelG;
   final double? lateralAccelG;
-  final double? linearAccelMagnitude;
   final double? pitchDeg;
   final double? rollDeg;
   final bool headingCalibrated;
@@ -27,7 +26,6 @@ class RecordingSnapshot {
     this.gpsSpeedKmh,
     this.forwardAccelG,
     this.lateralAccelG,
-    this.linearAccelMagnitude,
     this.pitchDeg,
     this.rollDeg,
     this.headingCalibrated = false,
@@ -72,7 +70,14 @@ class RecordingEngine extends ChangeNotifier {
   StreamSubscription? _gyroSub;
   StreamSubscription? _gpsSub;
   StreamSubscription? _barometerSub;
+  StreamSubscription? _serviceLostSub;
   Timer? _calibrationTimer;
+
+  /// Set when recording is auto-stopped due to a transient failure (e.g. GPS
+  /// permission revoked mid-session). The UI reads this once and clears it
+  /// via [clearLastWarning].
+  String? _lastWarning;
+  String? get lastWarning => _lastWarning;
 
   // Latest raw values (for assembling combined samples)
   AccelerometerReading? _lastAccel;
@@ -241,6 +246,9 @@ class RecordingEngine extends ChangeNotifier {
       _onRecordingGps,
       onError: (_) {}, // GPS dropout is expected (tunnels, etc.)
     );
+    _serviceLostSub = _gpsService.serviceLost.listen((_) {
+      unawaited(_handleGpsServiceLost());
+    });
     _barometerSub = _sensorService.barometerStream.listen(
       _onRecordingBarometer,
       onError: (_) {},
@@ -292,9 +300,14 @@ class RecordingEngine extends ChangeNotifier {
 
     _lastGps = r;
 
-    // Update heading for decomposer if speed is sufficient
+    // Update heading for decomposer if speed is sufficient.
+    // Filter out sentinel headings (geolocator emits negative values when
+    // the device is stationary or has no compass fix) — feeding these into
+    // the decomposer / heading calibrator would corrupt the estimate.
+    final headingValid = r.heading >= 0 && r.heading <= 360;
     if (_decomposer != null &&
-        r.speed >= SensorConstants.gpsMinSpeedForHeading) {
+        r.speed >= SensorConstants.gpsMinSpeedForHeading &&
+        headingValid) {
       final headingRad = r.heading * (pi / 180.0);
       _decomposer!.gpsHeadingRad = headingRad;
 
@@ -307,6 +320,23 @@ class RecordingEngine extends ChangeNotifier {
 
   void _onRecordingBarometer(BarometerReading r) {
     _lastBaroPressure = r.pressure;
+  }
+
+  Future<void> _handleGpsServiceLost() async {
+    if (_state != RecordingState.recording &&
+        _state != RecordingState.calibrating) {
+      return;
+    }
+    _lastWarning = 'GPS permission lost — recording saved early.';
+    await stopRecording();
+    notifyListeners();
+  }
+
+  /// Consumed by the recording UI after surfacing the warning to the user.
+  void clearLastWarning() {
+    if (_lastWarning == null) return;
+    _lastWarning = null;
+    notifyListeners();
   }
 
   /// Compute initial bearing between two lat/lon points (Haversine forward azimuth).
@@ -406,14 +436,6 @@ class RecordingEngine extends ChangeNotifier {
       peakForwardG: _peakForwardG,
       peakBrakeG: _peakBrakeG,
       peakLateralG: _peakLateralG,
-      linearAccelMagnitude: _lastLinearAccel != null
-          ? sqrt(
-                  _lastLinearAccel!.x * _lastLinearAccel!.x +
-                      _lastLinearAccel!.y * _lastLinearAccel!.y +
-                      _lastLinearAccel!.z * _lastLinearAccel!.z,
-                ) /
-                9.81
-          : null,
       pitchDeg: pitchDeg,
       rollDeg: rollDeg,
       headingCalibrated: headingCalibrated,
@@ -492,6 +514,8 @@ class RecordingEngine extends ChangeNotifier {
     _gyroSub?.cancel();
     _gpsSub?.cancel();
     _barometerSub?.cancel();
+    _serviceLostSub?.cancel();
+    _serviceLostSub = null;
 
     _sensorService.stopListening();
     _gpsService.stopListening();

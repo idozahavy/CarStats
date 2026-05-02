@@ -269,7 +269,7 @@ class _SpeedAccelChart extends StatelessWidget {
         lineBarsData: [
           LineChartBarData(
             spots: displaySpots,
-            isCurved: true,
+            isCurved: false,
             color: theme.colorScheme.primary,
             barWidth: 2,
             dotData: const FlDotData(show: false),
@@ -300,6 +300,8 @@ class _AccelTimeChart extends StatelessWidget {
     final interval = _timeInterval(maxTime);
     return LineChart(
       LineChartData(
+        minY: -1.5,
+        maxY: 1.5,
         gridData: const FlGridData(show: true),
         titlesData: FlTitlesData(
           bottomTitles: AxisTitles(
@@ -340,7 +342,7 @@ class _AccelTimeChart extends StatelessWidget {
         lineBarsData: [
           LineChartBarData(
             spots: displaySpots,
-            isCurved: true,
+            isCurved: false,
             color: theme.colorScheme.tertiary,
             barWidth: 2,
             dotData: const FlDotData(show: false),
@@ -369,8 +371,17 @@ class _SpeedTimeChart extends StatelessWidget {
     final displaySpots = downsample(spots);
     final maxTime = spots.last.x;
     final interval = _timeInterval(maxTime);
+    double maxObservedSpeed = 0;
+    for (final spot in spots) {
+      if (spot.y > maxObservedSpeed) maxObservedSpeed = spot.y;
+    }
+    final maxY = ((maxObservedSpeed / 50).ceil() * 50)
+        .toDouble()
+        .clamp(50.0, 400.0);
     return LineChart(
       LineChartData(
+        minY: 0,
+        maxY: maxY,
         gridData: const FlGridData(show: true),
         titlesData: FlTitlesData(
           bottomTitles: AxisTitles(
@@ -408,7 +419,7 @@ class _SpeedTimeChart extends StatelessWidget {
         lineBarsData: [
           LineChartBarData(
             spots: displaySpots,
-            isCurved: true,
+            isCurved: false,
             color: theme.colorScheme.secondary,
             barWidth: 2,
             dotData: const FlDotData(show: false),

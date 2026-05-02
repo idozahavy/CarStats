@@ -3,7 +3,7 @@
 > How this codebase is organised and the rules that keep it consistent.
 
 **Scope:** [lib/](lib/), [test/](test/), [analysis_options.yaml](analysis_options.yaml)
-**Last verified:** 2026-04-21
+**Last verified:** 2026-05-02
 
 ---
 
@@ -69,11 +69,13 @@ lib/
 - Sensor and GPS stream errors are swallowed with `onError: (_) {}` — dropouts (tunnels, device quirks) are expected.
 - GPS permission is checked once at app start by `_PermissionGate` in [lib/main.dart](lib/main.dart).
 - Export/import failures surface as `SnackBar` messages, not thrown to the UI layer.
+- Import failures and mid-recording permission loss surface as SnackBar messages; recording always saves what was captured.
 
 ## Testing
 
 - Tests live in [test/](test/) and use `flutter_test`.
 - Engine tests set `flushInterval = Duration.zero` and `useCalibrationTimer = false` to avoid real timers.
+- `flutter test --reporter expanded` shows the same test name on multiple consecutive lines because the cumulative pass counter `+N` ticks each time *any* parallel test file completes; the displayed name is just the most-recently-active test. This is verbose runner output, not a `pumpAndSettle` retry loop. Use `--reporter compact` if it gets in the way.
 
 ## Related pages
 

@@ -26,6 +26,17 @@ class RecordingScreen extends StatelessWidget {
       },
       child: Consumer<RecordingEngine>(
         builder: (context, engine, _) {
+          final warning = engine.lastWarning;
+          if (warning != null) {
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              if (!context.mounted) return;
+              if (engine.lastWarning != warning) return;
+              ScaffoldMessenger.of(
+                context,
+              ).showSnackBar(SnackBar(content: Text(warning)));
+              engine.clearLastWarning();
+            });
+          }
           return Scaffold(
             appBar: AppBar(
               title: Text(_title(engine.state)),
@@ -315,6 +326,10 @@ class _LiveChart extends StatelessWidget {
 
     return LineChart(
       LineChartData(
+        minX: 0,
+        maxX: 300,
+        minY: -1.5,
+        maxY: 1.5,
         gridData: const FlGridData(show: true),
         titlesData: FlTitlesData(
           bottomTitles: AxisTitles(
@@ -356,7 +371,7 @@ class _LiveChart extends StatelessWidget {
         lineBarsData: [
           LineChartBarData(
             spots: displaySpots,
-            isCurved: true,
+            isCurved: false,
             color: theme.colorScheme.primary,
             barWidth: 2,
             dotData: const FlDotData(show: false),

@@ -25,8 +25,14 @@ class GpsReading {
 class GpsService {
   StreamSubscription<Position>? _positionSub;
   final _gpsController = StreamController<GpsReading>.broadcast();
+  final _serviceLostController = StreamController<void>.broadcast();
 
   Stream<GpsReading> get gpsStream => _gpsController.stream;
+
+  /// Fires when the underlying position stream errors mid-recording —
+  /// typically because location permission was revoked or the system
+  /// location service was disabled.
+  Stream<void> get serviceLost => _serviceLostController.stream;
 
   Future<bool> checkAndRequestPermission() async {
     bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
@@ -58,6 +64,17 @@ class GpsService {
           enableWakeLock: true,
         ),
       );
+    } else if (defaultTargetPlatform == TargetPlatform.iOS) {
+      // pauseLocationUpdatesAutomatically: false + otherNavigation prevents
+      // iOS from killing the GPS stream when the screen locks.
+      locationSettings = AppleSettings(
+        accuracy: LocationAccuracy.bestForNavigation,
+        activityType: ActivityType.otherNavigation,
+        distanceFilter: 0,
+        pauseLocationUpdatesAutomatically: false,
+        showBackgroundLocationIndicator: true,
+        allowBackgroundLocationUpdates: true,
+      );
     } else {
       locationSettings = const LocationSettings(
         accuracy: LocationAccuracy.bestForNavigation,
@@ -65,17 +82,26 @@ class GpsService {
       );
     }
 
-    _positionSub = Geolocator.getPositionStream(locationSettings: locationSettings).listen((position) {
-      _gpsController.add(GpsReading(
-        latitude: position.latitude,
-        longitude: position.longitude,
-        speed: position.speed < 0 ? 0 : position.speed,
-        heading: position.heading,
-        altitude: position.altitude,
-        accuracy: position.accuracy,
-        timestamp: position.timestamp,
-      ));
-    });
+    _positionSub = Geolocator.getPositionStream(
+      locationSettings: locationSettings,
+    ).listen(
+      (position) {
+        _gpsController.add(GpsReading(
+          latitude: position.latitude,
+          longitude: position.longitude,
+          speed: position.speed < 0 ? 0 : position.speed,
+          heading: position.heading,
+          altitude: position.altitude,
+          accuracy: position.accuracy,
+          timestamp: position.timestamp,
+        ));
+      },
+      onError: (Object _) {
+        if (!_serviceLostController.isClosed) {
+          _serviceLostController.add(null);
+        }
+      },
+    );
   }
 
   void stopListening() {
@@ -86,5 +112,6 @@ class GpsService {
   void dispose() {
     stopListening();
     _gpsController.close();
+    _serviceLostController.close();
   }
 }

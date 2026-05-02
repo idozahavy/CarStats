@@ -47,6 +47,10 @@
 	<string>AccelStats needs GPS access to measure your car's speed during acceleration tests.</string>
 	<key>NSMotionUsageDescription</key>
 	<string>AccelStats uses motion sensors to measure your car's acceleration.</string>
+	<key>UIBackgroundModes</key>
+	<array>
+		<string>location</string>
+	</array>
 	<key>CADisableMinimumFrameDurationOnPhone</key>
 	<true/>
 	<key>UIApplicationSupportsIndirectInputEvents</key>

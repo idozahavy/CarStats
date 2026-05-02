@@ -98,6 +98,41 @@ void main() {
       },
     );
 
+    test('GPS heading sentinel (negative) is ignored by the engine', () async {
+      final store = FakeRecordingStore();
+      final sensorService = FakeSensorService();
+      final gpsService = FakeGpsService();
+      final engine = RecordingEngine(
+        db: store,
+        sensorService: sensorService,
+        gpsService: gpsService,
+      );
+
+      final startTime = await _advanceToRecording(
+        engine,
+        store,
+        sensorService,
+      );
+
+      // Drive 8+ samples with heading = -1 (geolocator sentinel) at speeds
+      // above the heading threshold and significant horizontal accel; if the
+      // engine were feeding the heading calibrator, it would lock in a
+      // bogus offset.
+      var speed = 5.0;
+      for (var index = 0; index < 12; index++) {
+        final sampleTime = startTime.add(
+          Duration(milliseconds: 100 + (index * 100)),
+        );
+        sensorService.emitAccel(2.0, 0.0, 9.81, sampleTime);
+        speed += 1.0;
+        gpsService.emit(speed: speed, heading: -1.0, timestamp: sampleTime);
+      }
+
+      // Heading remains uncalibrated because no valid headings were fed in.
+      expect(engine.latestSnapshot, isNotNull);
+      expect(engine.latestSnapshot!.headingCalibrated, isFalse);
+    });
+
     test(
       'sample timing uses sensor timestamps and saved speed is clamped',
       () async {

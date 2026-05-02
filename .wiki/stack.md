@@ -3,7 +3,7 @@
 > Flutter (Dart SDK ^3.10.4) targeting Android + iOS. SQLite via Drift, Provider for state, fl_chart for plots.
 
 **Scope:** [pubspec.yaml](pubspec.yaml), [android/](android/), [ios/](ios/), [analysis_options.yaml](analysis_options.yaml)
-**Last verified:** 2026-04-21
+**Last verified:** 2026-05-02
 
 ---
 
@@ -28,8 +28,6 @@
 | `path` | ^1.9.1 | Path joining |
 | `intl` | ^0.20.2 | Date formatting in recordings list |
 | `shared_preferences` | ^2.5.3 | Theme mode + dev-mode flag persistence |
-| `permission_handler` | ^11.4.0 | Runtime permission plumbing (location is requested via geolocator, though) |
-| `uuid` | ^4.5.1 | Available but not currently used in app logic |
 | `file_picker` | ^8.3.7 | Save/pick files for export and import |
 | `cupertino_icons` | ^1.0.8 | iOS-style icons |
 

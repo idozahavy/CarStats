@@ -42,6 +42,7 @@ class _AccelStatsAppState extends State<AccelStatsApp> {
   void dispose() {
     _sensorService.dispose();
     _gpsService.dispose();
+    _db.close();
     super.dispose();
   }
 

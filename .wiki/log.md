@@ -47,3 +47,24 @@ Maintenance:
 - Removed the magnetometer carve-out from the 2026-04-18 build entry (feature was never implemented and does not merit a wiki footprint).
 
 No `[FLABBERGASTED]` markers outstanding. No broken cross-references found.
+
+## [2026-05-02] cleanup | Phase 01 — dead code & unused deps removed
+
+- Removed `linearAccelMagnitude` from RecordingSnapshot (computed but never rendered).
+- Removed unused dependencies `uuid`, `permission_handler` from pubspec.yaml.
+- `_AccelStatsAppState.dispose()` now closes the AppDatabase.
+
+## [2026-05-02] update | Phase 02 — robustness pass
+
+- Versioned JSON export: `ExportService` now writes `"exportVersion": 1` as the first key of the JSON root. Import rejects missing/wrong version with `FormatException` and validates the presence of `recording` + `samples` keys before casting. New `importRecordingFromJson(db, jsonString)` is the testable entry point; the picker-driven `importRecording` is a thin wrapper.
+- GPS heading sentinel filter: `RecordingEngine._onRecordingGps` now drops headings outside `[0, 360]` (geolocator emits `-1` when stationary / no compass fix) before they can corrupt the decomposer or heading auto-calibrator.
+- Mid-recording permission loss: `GpsService` exposes a `serviceLost` broadcast stream fed by the position stream's `onError`. `RecordingEngine` listens, calls `stopRecording()` (flushes buffered samples and writes `endedAt`/`durationMs`), and sets `lastWarning`. The recording screen surfaces `lastWarning` via SnackBar then calls `clearLastWarning`.
+- iOS background location: `GpsService.startListening` now uses `AppleSettings(activityType: otherNavigation, pauseLocationUpdatesAutomatically: false, allowBackgroundLocationUpdates: true, showBackgroundLocationIndicator: true)` so screen-lock does not kill the GPS stream. Added `UIBackgroundModes = [location]` to `ios/Runner/Info.plist`.
+- Tests: new `test/services/export_import_test.dart` covers round-trip + three rejection cases; `test/services/recording_engine_test.dart` extended with a heading-sentinel test.
+
+## [2026-05-02] update | Phase 03 — charts polish + flaky-test investigation
+
+- All four chart `LineChartBarData.isCurved` flags flipped from `true` to `false` (live chart in `recording_screen.dart`; `_SpeedAccelChart`, `_AccelTimeChart`, `_SpeedTimeChart` in `recording_detail_screen.dart`). Curve smoothing on noisy 50 Hz acceleration produced phantom oscillations between real samples.
+- Y-axis bounds added: `_LiveChart` (`minX: 0, maxX: 300, minY: -1.5, maxY: 1.5`), `_AccelTimeChart` (`minY: -1.5, maxY: 1.5`), `_SpeedTimeChart` (`minY: 0`, `maxY` snaps to the next 50 km/h, clamped to `[50, 400]`). `_SpeedAccelChart` remains unconstrained — data drives the shape.
+- Flaky-test investigation: the test runner showed the same test name on multiple consecutive `+N:` lines under `--reporter expanded`. Investigation confirmed it is benign — Flutter test runs files in parallel, the cumulative pass counter ticks for *any* file completing, and the reporter just refreshes the displayed name. `pumpAndSettle()` calls all complete fast and no test was modified. Documented under `conventions.md → Testing`.
+- `flutter analyze`: clean. `flutter test`: 78 tests passed.
