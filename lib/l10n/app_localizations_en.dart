@@ -170,6 +170,47 @@ class AppLocalizationsEn extends AppLocalizations {
   String get recordings_empty_cta => 'Start a recording';
 
   @override
+  String get recordings_menu_rename => 'Rename';
+
+  @override
+  String get recordings_menu_more_tooltip => 'More';
+
+  @override
+  String recordings_selection_title(int count) {
+    return '$count selected';
+  }
+
+  @override
+  String get recordings_selection_compare => 'Compare';
+
+  @override
+  String get recordings_selection_close_tooltip => 'Cancel selection';
+
+  @override
+  String get compare_title => 'Compare';
+
+  @override
+  String get compare_chart_speed_time => 'Speed over time';
+
+  @override
+  String get compare_chart_accel_time => 'Acceleration over time';
+
+  @override
+  String get compare_axis_time_since_movement =>
+      'Time since first movement (s)';
+
+  @override
+  String get compare_recording_a_label => 'A';
+
+  @override
+  String get compare_recording_b_label => 'B';
+
+  @override
+  String compare_no_movement(String name) {
+    return 'Recording $name has no movement above 1 km/h.';
+  }
+
+  @override
   String get detail_default_title => 'Recording';
 
   @override
@@ -453,4 +494,86 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get dialog_cancel => 'Cancel';
+
+  @override
+  String get detail_quality_title => 'Data quality';
+
+  @override
+  String get detail_quality_sample_rate => 'Sample rate';
+
+  @override
+  String get detail_quality_gps_coverage => 'GPS coverage';
+
+  @override
+  String get detail_quality_heading_lock => 'Heading lock';
+
+  @override
+  String get detail_quality_grade_green => 'Good';
+
+  @override
+  String get detail_quality_grade_amber => 'Fair';
+
+  @override
+  String get detail_quality_grade_red => 'Poor';
+
+  @override
+  String detail_quality_tooltip(String green, String amber) {
+    return 'Green ≥ $green, Amber ≥ $amber';
+  }
+
+  @override
+  String get detail_benchmarks_title => 'Benchmarks';
+
+  @override
+  String get detail_benchmarks_dev_banner =>
+      'Dev recording — benchmark results may be unreliable.';
+
+  @override
+  String get detail_benchmarks_standard_section => 'Standard';
+
+  @override
+  String get detail_benchmarks_max_accel_section => 'Max Accel at Speed';
+
+  @override
+  String get detail_benchmarks_sudden_section => 'Sudden Acceleration';
+
+  @override
+  String get detail_benchmarks_unavailable => '—';
+
+  @override
+  String detail_benchmarks_seconds(String seconds) {
+    return '$seconds s';
+  }
+
+  @override
+  String detail_benchmarks_quarter_mile_trap(String seconds, String trapKmh) {
+    return '$seconds s @ $trapKmh km/h';
+  }
+
+  @override
+  String detail_benchmarks_bucket_label(String kmh) {
+    return '$kmh km/h';
+  }
+
+  @override
+  String detail_benchmarks_bucket_g(String g) {
+    return '$g g';
+  }
+
+  @override
+  String get detail_benchmarks_no_max_accel =>
+      'No GPS-tagged samples to bucket.';
+
+  @override
+  String get detail_benchmarks_no_sudden =>
+      'No sudden-acceleration events detected.';
+
+  @override
+  String detail_benchmarks_sudden_event(
+    String cruiseKmh,
+    String peakG,
+    String responseMs,
+  ) {
+    return 'Cruise $cruiseKmh km/h → $peakG g (response $responseMs ms)';
+  }
 }

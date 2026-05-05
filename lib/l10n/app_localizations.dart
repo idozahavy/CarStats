@@ -404,6 +404,78 @@ abstract class AppLocalizations {
   /// **'Start a recording'**
   String get recordings_empty_cta;
 
+  /// No description provided for @recordings_menu_rename.
+  ///
+  /// In en, this message translates to:
+  /// **'Rename'**
+  String get recordings_menu_rename;
+
+  /// No description provided for @recordings_menu_more_tooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'More'**
+  String get recordings_menu_more_tooltip;
+
+  /// No description provided for @recordings_selection_title.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} selected'**
+  String recordings_selection_title(int count);
+
+  /// No description provided for @recordings_selection_compare.
+  ///
+  /// In en, this message translates to:
+  /// **'Compare'**
+  String get recordings_selection_compare;
+
+  /// No description provided for @recordings_selection_close_tooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel selection'**
+  String get recordings_selection_close_tooltip;
+
+  /// No description provided for @compare_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Compare'**
+  String get compare_title;
+
+  /// No description provided for @compare_chart_speed_time.
+  ///
+  /// In en, this message translates to:
+  /// **'Speed over time'**
+  String get compare_chart_speed_time;
+
+  /// No description provided for @compare_chart_accel_time.
+  ///
+  /// In en, this message translates to:
+  /// **'Acceleration over time'**
+  String get compare_chart_accel_time;
+
+  /// No description provided for @compare_axis_time_since_movement.
+  ///
+  /// In en, this message translates to:
+  /// **'Time since first movement (s)'**
+  String get compare_axis_time_since_movement;
+
+  /// No description provided for @compare_recording_a_label.
+  ///
+  /// In en, this message translates to:
+  /// **'A'**
+  String get compare_recording_a_label;
+
+  /// No description provided for @compare_recording_b_label.
+  ///
+  /// In en, this message translates to:
+  /// **'B'**
+  String get compare_recording_b_label;
+
+  /// No description provided for @compare_no_movement.
+  ///
+  /// In en, this message translates to:
+  /// **'Recording {name} has no movement above 1 km/h.'**
+  String compare_no_movement(String name);
+
   /// No description provided for @detail_default_title.
   ///
   /// In en, this message translates to:
@@ -955,6 +1027,136 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Cancel'**
   String get dialog_cancel;
+
+  /// No description provided for @detail_quality_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Data quality'**
+  String get detail_quality_title;
+
+  /// No description provided for @detail_quality_sample_rate.
+  ///
+  /// In en, this message translates to:
+  /// **'Sample rate'**
+  String get detail_quality_sample_rate;
+
+  /// No description provided for @detail_quality_gps_coverage.
+  ///
+  /// In en, this message translates to:
+  /// **'GPS coverage'**
+  String get detail_quality_gps_coverage;
+
+  /// No description provided for @detail_quality_heading_lock.
+  ///
+  /// In en, this message translates to:
+  /// **'Heading lock'**
+  String get detail_quality_heading_lock;
+
+  /// No description provided for @detail_quality_grade_green.
+  ///
+  /// In en, this message translates to:
+  /// **'Good'**
+  String get detail_quality_grade_green;
+
+  /// No description provided for @detail_quality_grade_amber.
+  ///
+  /// In en, this message translates to:
+  /// **'Fair'**
+  String get detail_quality_grade_amber;
+
+  /// No description provided for @detail_quality_grade_red.
+  ///
+  /// In en, this message translates to:
+  /// **'Poor'**
+  String get detail_quality_grade_red;
+
+  /// No description provided for @detail_quality_tooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'Green ≥ {green}, Amber ≥ {amber}'**
+  String detail_quality_tooltip(String green, String amber);
+
+  /// No description provided for @detail_benchmarks_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Benchmarks'**
+  String get detail_benchmarks_title;
+
+  /// No description provided for @detail_benchmarks_dev_banner.
+  ///
+  /// In en, this message translates to:
+  /// **'Dev recording — benchmark results may be unreliable.'**
+  String get detail_benchmarks_dev_banner;
+
+  /// No description provided for @detail_benchmarks_standard_section.
+  ///
+  /// In en, this message translates to:
+  /// **'Standard'**
+  String get detail_benchmarks_standard_section;
+
+  /// No description provided for @detail_benchmarks_max_accel_section.
+  ///
+  /// In en, this message translates to:
+  /// **'Max Accel at Speed'**
+  String get detail_benchmarks_max_accel_section;
+
+  /// No description provided for @detail_benchmarks_sudden_section.
+  ///
+  /// In en, this message translates to:
+  /// **'Sudden Acceleration'**
+  String get detail_benchmarks_sudden_section;
+
+  /// No description provided for @detail_benchmarks_unavailable.
+  ///
+  /// In en, this message translates to:
+  /// **'—'**
+  String get detail_benchmarks_unavailable;
+
+  /// No description provided for @detail_benchmarks_seconds.
+  ///
+  /// In en, this message translates to:
+  /// **'{seconds} s'**
+  String detail_benchmarks_seconds(String seconds);
+
+  /// No description provided for @detail_benchmarks_quarter_mile_trap.
+  ///
+  /// In en, this message translates to:
+  /// **'{seconds} s @ {trapKmh} km/h'**
+  String detail_benchmarks_quarter_mile_trap(String seconds, String trapKmh);
+
+  /// No description provided for @detail_benchmarks_bucket_label.
+  ///
+  /// In en, this message translates to:
+  /// **'{kmh} km/h'**
+  String detail_benchmarks_bucket_label(String kmh);
+
+  /// No description provided for @detail_benchmarks_bucket_g.
+  ///
+  /// In en, this message translates to:
+  /// **'{g} g'**
+  String detail_benchmarks_bucket_g(String g);
+
+  /// No description provided for @detail_benchmarks_no_max_accel.
+  ///
+  /// In en, this message translates to:
+  /// **'No GPS-tagged samples to bucket.'**
+  String get detail_benchmarks_no_max_accel;
+
+  /// No description provided for @detail_benchmarks_no_sudden.
+  ///
+  /// In en, this message translates to:
+  /// **'No sudden-acceleration events detected.'**
+  String get detail_benchmarks_no_sudden;
+
+  /// No description provided for @detail_benchmarks_sudden_event.
+  ///
+  /// In en, this message translates to:
+  /// **'Cruise {cruiseKmh} km/h → {peakG} g (response {responseMs} ms)'**
+  String detail_benchmarks_sudden_event(
+    String cruiseKmh,
+    String peakG,
+    String responseMs,
+  );
 }
 
 class _AppLocalizationsDelegate

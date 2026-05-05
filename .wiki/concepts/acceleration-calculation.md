@@ -2,8 +2,8 @@
 
 > The math pipeline that turns raw phone accelerometer + gyroscope + GPS into the car's forward / lateral / vertical acceleration in a world frame, independent of phone orientation.
 
-**Scope:** [lib/services/calibration_service.dart](lib/services/calibration_service.dart), [lib/services/recording_engine.dart](lib/services/recording_engine.dart)
-**Last verified:** 2026-04-21
+**Scope:** [lib/services/calibration_service.dart](lib/services/calibration_service.dart), [lib/services/recording_engine.dart](lib/services/recording_engine.dart), [lib/services/data_quality.dart](lib/services/data_quality.dart), [test/scenarios/](test/scenarios/)
+**Last verified:** 2026-05-02 (phase 07)
 
 ---
 
@@ -89,6 +89,32 @@ Each `SensorSamples` row carries the current gravity vector (`gravX/Y/Z`, the Z 
 - **No mount constraint** — the user can drop the phone anywhere. Calibration + GPS-heading correction make it work.
 - **Gyro + accel complementary filter** — robust against both short-term jitter (gravity-only would be noisy) and long-term drift (gyro-only integrates error).
 - **Heading EMA refinement** — lets the forward axis keep tracking if the initial lock was imperfect (calibrating while the car was slightly moving, for example).
+
+## Validation
+
+A synthetic-input harness in [test/scenarios/](test/scenarios/) drives a real `RecordingEngine` (with `FakeSensorService` + `FakeGpsService`) through five scenarios:
+
+1. **0 → 100 km/h, 5 s pull at 0.57 g** — GPS pass-through correct, heading locks, post-lock forward stays positive, lateral collapses to ~0.
+2. **Hard brake, 100 → 0 km/h in 4 s at 0.71 g** — minimum forward accel reaches ≤ -6.5 m/s², integrated forward tracks GPS speed loss within 15%.
+3. **Heading-lock convergence** — alternating 0.7 g accel/brake bursts; heading locks within ~8 qualifying GPS events; post-lock forward axis aligns within ±15° of true forward.
+4. **Sample-rate / monotonicity** — 60 s steady cruise produces 3000 samples (±5%), strictly monotonic timestamps, median delta 20 000 µs ± 2 ms.
+5. **GPS dropout resilience** — 5 s GPS warmup gap + 25 s of 1 Hz GPS yields ~83% coverage; samples during the gap have null `gpsSpeed` while accel keeps flowing.
+
+### Surfaced finding (phase 07)
+
+Scenario 1 surfaced a real engine behaviour: under sustained ~0.5 g constant input, the raw-accel magnitude (~11.3 m/s²) sits within `AccelerationDecomposer._gravityTolerance` (= 2.0 m/s²) of 9.81, so the complementary-filter gravity correction fires every sample. Over a 5 s pull at 50 Hz the gravity estimate drifts toward the accel direction, suppressing the decomposed forward axis from the expected ~5.6 m/s² down to <0.5 m/s² by end of run. Real recordings rarely sustain a constant 0.5 g for 5 s, so this hasn't bitten in production — but a future fix should either tighten the tolerance, gate it on `linearAccel` magnitude, or skip correction during qualifying heading-calibrator events. Tracked for a follow-up phase.
+
+## Data quality
+
+[data_quality.dart](lib/services/data_quality.dart) computes three metrics from a finished recording's `SensorSamples` and graded green/amber/red:
+
+| Metric | Green | Amber | Red |
+|---|---|---|---|
+| Sample rate | ≥ 45 Hz | ≥ 30 Hz | < 30 Hz |
+| GPS coverage | ≥ 95% | ≥ 80% | < 80% |
+| Heading-lock proxy | ≥ 80% | ≥ 50% | < 50% |
+
+The heading-lock metric uses a proxy: samples with non-null `forwardAccel` after the first non-null sample. A future iteration may persist the `headingCalibrated` bit per sample to make the proxy precise.
 
 ## Related pages
 

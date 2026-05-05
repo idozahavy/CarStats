@@ -64,6 +64,29 @@
   "recordings_empty_filtered": "No recordings match this filter.",
   "recordings_empty_hint": "Tap the button below to record your first run.",
   "recordings_empty_cta": "Start a recording",
+  "recordings_menu_rename": "Rename",
+  "recordings_menu_more_tooltip": "More",
+  "recordings_selection_title": "{count} selected",
+  "@recordings_selection_title": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "recordings_selection_compare": "Compare",
+  "recordings_selection_close_tooltip": "Cancel selection",
+
+  "compare_title": "Compare",
+  "compare_chart_speed_time": "Speed over time",
+  "compare_chart_accel_time": "Acceleration over time",
+  "compare_axis_time_since_movement": "Time since first movement (s)",
+  "compare_recording_a_label": "A",
+  "compare_recording_b_label": "B",
+  "compare_no_movement": "Recording {name} has no movement above 1 km/h.",
+  "@compare_no_movement": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
 
   "detail_default_title": "Recording",
   "detail_export_tooltip": "Export",
@@ -180,5 +203,62 @@
   "detail_metadata_cancel": "Cancel",
 
   "dialog_name_field_label": "Name",
-  "dialog_cancel": "Cancel"
+  "dialog_cancel": "Cancel",
+
+  "detail_quality_title": "Data quality",
+  "detail_quality_sample_rate": "Sample rate",
+  "detail_quality_gps_coverage": "GPS coverage",
+  "detail_quality_heading_lock": "Heading lock",
+  "detail_quality_grade_green": "Good",
+  "detail_quality_grade_amber": "Fair",
+  "detail_quality_grade_red": "Poor",
+  "detail_quality_tooltip": "Green ≥ {green}, Amber ≥ {amber}",
+  "@detail_quality_tooltip": {
+    "placeholders": {
+      "green": { "type": "String" },
+      "amber": { "type": "String" }
+    }
+  },
+
+  "detail_benchmarks_title": "Benchmarks",
+  "detail_benchmarks_dev_banner": "Dev recording — benchmark results may be unreliable.",
+  "detail_benchmarks_standard_section": "Standard",
+  "detail_benchmarks_max_accel_section": "Max Accel at Speed",
+  "detail_benchmarks_sudden_section": "Sudden Acceleration",
+  "detail_benchmarks_unavailable": "—",
+  "detail_benchmarks_seconds": "{seconds} s",
+  "@detail_benchmarks_seconds": {
+    "placeholders": {
+      "seconds": { "type": "String" }
+    }
+  },
+  "detail_benchmarks_quarter_mile_trap": "{seconds} s @ {trapKmh} km/h",
+  "@detail_benchmarks_quarter_mile_trap": {
+    "placeholders": {
+      "seconds": { "type": "String" },
+      "trapKmh": { "type": "String" }
+    }
+  },
+  "detail_benchmarks_bucket_label": "{kmh} km/h",
+  "@detail_benchmarks_bucket_label": {
+    "placeholders": {
+      "kmh": { "type": "String" }
+    }
+  },
+  "detail_benchmarks_bucket_g": "{g} g",
+  "@detail_benchmarks_bucket_g": {
+    "placeholders": {
+      "g": { "type": "String" }
+    }
+  },
+  "detail_benchmarks_no_max_accel": "No GPS-tagged samples to bucket.",
+  "detail_benchmarks_no_sudden": "No sudden-acceleration events detected.",
+  "detail_benchmarks_sudden_event": "Cruise {cruiseKmh} km/h → {peakG} g (response {responseMs} ms)",
+  "@detail_benchmarks_sudden_event": {
+    "placeholders": {
+      "cruiseKmh": { "type": "String" },
+      "peakG": { "type": "String" },
+      "responseMs": { "type": "String" }
+    }
+  }
 }

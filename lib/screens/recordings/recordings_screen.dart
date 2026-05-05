@@ -5,6 +5,7 @@ import '../../data/database/database.dart';
 import '../../l10n/app_localizations.dart';
 import '../../services/export_service.dart';
 import '../../widgets/name_dialog.dart';
+import '../comparison/comparison_screen.dart';
 import '../recording_detail/recording_detail_screen.dart';
 
 class RecordingsScreen extends StatefulWidget {
@@ -16,11 +17,16 @@ class RecordingsScreen extends StatefulWidget {
 
 enum _RecordingFilter { all, user, dev }
 
+enum _TileMenuAction { rename, delete }
+
 class _RecordingsScreenState extends State<RecordingsScreen> {
   late final RecordingStore _db;
   List<Recording> _recordings = [];
   bool _loading = true;
   _RecordingFilter _filter = _RecordingFilter.all;
+  final Set<int> _selectedIds = {};
+
+  bool get _selectionMode => _selectedIds.isNotEmpty;
 
   @override
   void initState() {
@@ -31,9 +37,13 @@ class _RecordingsScreenState extends State<RecordingsScreen> {
 
   Future<void> _load() async {
     final recordings = await _db.getAllRecordings();
+    if (!mounted) return;
     setState(() {
       _recordings = recordings;
       _loading = false;
+      _selectedIds.removeWhere(
+        (id) => !recordings.any((r) => r.id == id),
+      );
     });
   }
 
@@ -44,20 +54,69 @@ class _RecordingsScreenState extends State<RecordingsScreen> {
     _RecordingFilter.dev => _recordings.where((r) => r.isDevRecording).toList(),
   };
 
+  void _toggleSelection(int id) {
+    setState(() {
+      if (_selectedIds.contains(id)) {
+        _selectedIds.remove(id);
+      } else {
+        if (_selectedIds.length >= 2) return;
+        _selectedIds.add(id);
+      }
+    });
+  }
+
+  void _enterSelection(int id) {
+    setState(() {
+      _selectedIds.add(id);
+    });
+  }
+
+  void _clearSelection() {
+    setState(() => _selectedIds.clear());
+  }
+
+  Future<void> _openComparison() async {
+    if (_selectedIds.length != 2) return;
+    final ids = _selectedIds.toList();
+    _clearSelection();
+    await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => ComparisonScreen(idA: ids[0], idB: ids[1]),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final l = AppLocalizations.of(context)!;
     return Scaffold(
-      appBar: AppBar(
-        title: Text(l.recordings_title),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.file_upload),
-            tooltip: l.recordings_import_tooltip,
-            onPressed: () => _importRecording(context),
-          ),
-        ],
-      ),
+      appBar: _selectionMode
+          ? AppBar(
+              leading: IconButton(
+                icon: const Icon(Icons.close),
+                tooltip: l.recordings_selection_close_tooltip,
+                onPressed: _clearSelection,
+              ),
+              title: Text(l.recordings_selection_title(_selectedIds.length)),
+              actions: [
+                TextButton(
+                  onPressed:
+                      _selectedIds.length == 2 ? _openComparison : null,
+                  child: Text(l.recordings_selection_compare),
+                ),
+              ],
+            )
+          : AppBar(
+              title: Text(l.recordings_title),
+              actions: [
+                IconButton(
+                  icon: const Icon(Icons.file_upload),
+                  tooltip: l.recordings_import_tooltip,
+                  onPressed: () => _importRecording(context),
+                ),
+              ],
+            ),
       body: SafeArea(
         top: false,
         child: _loading
@@ -102,9 +161,16 @@ class _RecordingsScreenState extends State<RecordingsScreen> {
                             itemCount: _filteredRecordings.length,
                             itemBuilder: (context, index) {
                               final rec = _filteredRecordings[index];
+                              final selected = _selectedIds.contains(rec.id);
                               return _RecordingTile(
                                 recording: rec,
+                                selectionMode: _selectionMode,
+                                selected: selected,
                                 onTap: () async {
+                                  if (_selectionMode) {
+                                    _toggleSelection(rec.id);
+                                    return;
+                                  }
                                   await Navigator.push(
                                     context,
                                     MaterialPageRoute(
@@ -115,8 +181,20 @@ class _RecordingsScreenState extends State<RecordingsScreen> {
                                   );
                                   _load();
                                 },
-                                onLongPress: () => _renameRecording(rec),
-                                onDelete: () => _deleteRecording(rec),
+                                onLongPress: () {
+                                  if (_selectionMode) return;
+                                  _enterSelection(rec.id);
+                                },
+                                onMenuAction: (action) {
+                                  switch (action) {
+                                    case _TileMenuAction.rename:
+                                      _renameRecording(rec);
+                                      break;
+                                    case _TileMenuAction.delete:
+                                      _deleteRecording(rec);
+                                      break;
+                                  }
+                                },
                               );
                             },
                           ),
@@ -187,40 +265,76 @@ class _RecordingsScreenState extends State<RecordingsScreen> {
 
 class _RecordingTile extends StatelessWidget {
   final Recording recording;
+  final bool selectionMode;
+  final bool selected;
   final VoidCallback onTap;
   final VoidCallback onLongPress;
-  final VoidCallback onDelete;
+  final ValueChanged<_TileMenuAction> onMenuAction;
 
   const _RecordingTile({
     required this.recording,
+    required this.selectionMode,
+    required this.selected,
     required this.onTap,
     required this.onLongPress,
-    required this.onDelete,
+    required this.onMenuAction,
   });
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final l = AppLocalizations.of(context)!;
     final dateStr = DateFormat(
       'MMM d, yyyy  HH:mm',
     ).format(recording.startedAt);
     final duration = Duration(milliseconds: recording.durationMs);
     final durationStr = '${duration.inMinutes}m ${duration.inSeconds % 60}s';
 
+    final Widget leading;
+    if (selectionMode) {
+      leading = Icon(
+        selected ? Icons.check_circle : Icons.radio_button_unchecked,
+        color: selected
+            ? theme.colorScheme.primary
+            : theme.colorScheme.onSurfaceVariant,
+      );
+    } else {
+      leading = Icon(
+        recording.isDevRecording ? Icons.science : Icons.route,
+        color: theme.colorScheme.primary,
+      );
+    }
+
+    final Widget? trailing;
+    if (selectionMode) {
+      trailing = null;
+    } else {
+      trailing = PopupMenuButton<_TileMenuAction>(
+        tooltip: l.recordings_menu_more_tooltip,
+        icon: const Icon(Icons.more_vert),
+        onSelected: onMenuAction,
+        itemBuilder: (_) => [
+          PopupMenuItem(
+            value: _TileMenuAction.rename,
+            child: Text(l.recordings_menu_rename),
+          ),
+          PopupMenuItem(
+            value: _TileMenuAction.delete,
+            child: Text(l.recordings_delete_confirm),
+          ),
+        ],
+      );
+    }
+
     return Card(
       margin: const EdgeInsets.only(bottom: 8),
+      color: selected ? theme.colorScheme.primaryContainer : null,
       child: ListTile(
         contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-        leading: Icon(
-          recording.isDevRecording ? Icons.science : Icons.route,
-          color: theme.colorScheme.primary,
-        ),
+        leading: leading,
         title: Text(recording.name),
         subtitle: Text('$dateStr  •  $durationStr'),
-        trailing: IconButton(
-          icon: const Icon(Icons.delete_outline),
-          onPressed: onDelete,
-        ),
+        trailing: trailing,
         onTap: onTap,
         onLongPress: onLongPress,
       ),

@@ -2,8 +2,8 @@
 
 > Flutter (Dart SDK ^3.10.4) targeting Android + iOS. SQLite via Drift, Provider for state, fl_chart for plots.
 
-**Scope:** [pubspec.yaml](pubspec.yaml), [android/](android/), [ios/](ios/), [analysis_options.yaml](analysis_options.yaml)
-**Last verified:** 2026-05-02 (phase 05)
+**Scope:** [pubspec.yaml](pubspec.yaml), [android/](android/), [ios/](ios/), [analysis_options.yaml](analysis_options.yaml), [.github/workflows/](.github/workflows/), [assets/icon/](assets/icon/)
+**Last verified:** 2026-05-05 (phase 10)
 
 ---
 
@@ -40,6 +40,7 @@
 | `flutter_lints` ^6.0.0 | Lint rules |
 | `drift_dev` ^2.25.0 | Codegen for Drift tables |
 | `build_runner` ^2.4.15 | Runs the codegen |
+| `flutter_launcher_icons` ^0.14.1 | Generates Android + iOS launcher icons from `assets/icon/icon.png` |
 
 ## Commands
 
@@ -51,6 +52,18 @@
 | `flutter run` | Run on a connected device/emulator |
 | `flutter test` | Run the widget/unit test suite under [test/](test/) |
 | `flutter build apk` / `flutter build ios` | Platform builds |
+| `dart run flutter_launcher_icons` | Regenerate platform launcher icons after editing `assets/icon/icon.png` |
+
+## CI
+
+- [.github/workflows/ci.yml](.github/workflows/ci.yml) — runs on `pull_request` and `push` to `main`. Steps: `actions/checkout@v4` → `subosito/flutter-action@v2` (channel `stable`, cache enabled) → `flutter pub get` → `dart run build_runner build --delete-conflicting-outputs` → `flutter analyze` → `flutter test`.
+- Quality gate: a PR cannot be merged unless analyze + test both pass.
+
+## Release signing (Android)
+
+- Repository ships without a keystore. `flutter run` and debug builds work as-is; release builds default to debug-key signing until the operator opts in.
+- Template: [android/key.properties.template](android/key.properties.template). The real `key.properties` and any `*.jks` are gitignored via [android/.gitignore](android/.gitignore).
+- The signing block in [android/app/build.gradle.kts](android/app/build.gradle.kts) is commented out by default; uncomment after creating `key.properties` per the README's *Release signing (Android)* section.
 
 ## Platform setup
 

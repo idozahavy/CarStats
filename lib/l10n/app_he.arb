@@ -64,6 +64,29 @@
   "recordings_empty_filtered": "אין הקלטות התואמות לסינון זה.",
   "recordings_empty_hint": "הקישו על הכפתור למטה כדי להקליט נסיעה ראשונה.",
   "recordings_empty_cta": "התחל הקלטה",
+  "recordings_menu_rename": "שינוי שם",
+  "recordings_menu_more_tooltip": "עוד",
+  "recordings_selection_title": "{count} נבחרו",
+  "@recordings_selection_title": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "recordings_selection_compare": "השוואה",
+  "recordings_selection_close_tooltip": "בטל בחירה",
+
+  "compare_title": "השוואה",
+  "compare_chart_speed_time": "מהירות לאורך זמן",
+  "compare_chart_accel_time": "תאוצה לאורך זמן",
+  "compare_axis_time_since_movement": "זמן מתחילת התנועה (s)",
+  "compare_recording_a_label": "א'",
+  "compare_recording_b_label": "ב'",
+  "compare_no_movement": "להקלטה {name} אין תנועה מעל 1 קמ\"ש.",
+  "@compare_no_movement": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
 
   "detail_default_title": "הקלטה",
   "detail_export_tooltip": "ייצוא",
@@ -180,5 +203,62 @@
   "detail_metadata_cancel": "ביטול",
 
   "dialog_name_field_label": "שם",
-  "dialog_cancel": "ביטול"
+  "dialog_cancel": "ביטול",
+
+  "detail_quality_title": "איכות נתונים",
+  "detail_quality_sample_rate": "קצב דגימה",
+  "detail_quality_gps_coverage": "כיסוי GPS",
+  "detail_quality_heading_lock": "נעילת כיוון",
+  "detail_quality_grade_green": "טוב",
+  "detail_quality_grade_amber": "סביר",
+  "detail_quality_grade_red": "ירוד",
+  "detail_quality_tooltip": "ירוק ≥ {green}, כתום ≥ {amber}",
+  "@detail_quality_tooltip": {
+    "placeholders": {
+      "green": { "type": "String" },
+      "amber": { "type": "String" }
+    }
+  },
+
+  "detail_benchmarks_title": "מדדי ביצוע",
+  "detail_benchmarks_dev_banner": "הקלטת פיתוח — תוצאות המדדים עשויות להיות לא אמינות.",
+  "detail_benchmarks_standard_section": "סטנדרטי",
+  "detail_benchmarks_max_accel_section": "תאוצה מרבית לפי מהירות",
+  "detail_benchmarks_sudden_section": "תאוצה פתאומית",
+  "detail_benchmarks_unavailable": "—",
+  "detail_benchmarks_seconds": "{seconds} שנ׳",
+  "@detail_benchmarks_seconds": {
+    "placeholders": {
+      "seconds": { "type": "String" }
+    }
+  },
+  "detail_benchmarks_quarter_mile_trap": "{seconds} שנ׳ @ {trapKmh} קמ״ש",
+  "@detail_benchmarks_quarter_mile_trap": {
+    "placeholders": {
+      "seconds": { "type": "String" },
+      "trapKmh": { "type": "String" }
+    }
+  },
+  "detail_benchmarks_bucket_label": "{kmh} קמ״ש",
+  "@detail_benchmarks_bucket_label": {
+    "placeholders": {
+      "kmh": { "type": "String" }
+    }
+  },
+  "detail_benchmarks_bucket_g": "{g} g",
+  "@detail_benchmarks_bucket_g": {
+    "placeholders": {
+      "g": { "type": "String" }
+    }
+  },
+  "detail_benchmarks_no_max_accel": "אין דגימות עם נתוני GPS לחלוקה לדליים.",
+  "detail_benchmarks_no_sudden": "לא זוהו אירועי תאוצה פתאומית.",
+  "detail_benchmarks_sudden_event": "שיוט {cruiseKmh} קמ״ש ← {peakG} g (תגובה {responseMs} מ״ש)",
+  "@detail_benchmarks_sudden_event": {
+    "placeholders": {
+      "cruiseKmh": { "type": "String" },
+      "peakG": { "type": "String" },
+      "responseMs": { "type": "String" }
+    }
+  }
 }

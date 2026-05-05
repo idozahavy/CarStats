@@ -102,7 +102,8 @@ void main() {
       expect(find.text('Dev Run'), findsOneWidget);
     });
 
-    testWidgets('delete shows confirmation dialog', (tester) async {
+    testWidgets('delete via tile menu shows confirmation dialog',
+        (tester) async {
       final db = FakeDatabase();
       db.recordings = [
         fakeRecording(id: 1, name: 'To Delete'),
@@ -111,8 +112,9 @@ void main() {
       await pumpApp(tester, const RecordingsScreen(), db: db);
       await tester.pumpAndSettle();
 
-      // Tap the delete icon
-      await tester.tap(find.byIcon(Icons.delete_outline));
+      await tester.tap(find.byIcon(Icons.more_vert));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Delete').last);
       await tester.pumpAndSettle();
 
       expect(find.text('Delete Recording'), findsOneWidget);
@@ -131,7 +133,9 @@ void main() {
       await pumpApp(tester, const RecordingsScreen(), db: db);
       await tester.pumpAndSettle();
 
-      await tester.tap(find.byIcon(Icons.delete_outline));
+      await tester.tap(find.byIcon(Icons.more_vert));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Delete').last);
       await tester.pumpAndSettle();
 
       await tester.tap(find.text('Delete'));
@@ -150,7 +154,9 @@ void main() {
       await pumpApp(tester, const RecordingsScreen(), db: db);
       await tester.pumpAndSettle();
 
-      await tester.tap(find.byIcon(Icons.delete_outline));
+      await tester.tap(find.byIcon(Icons.more_vert));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Delete').last);
       await tester.pumpAndSettle();
 
       await tester.tap(find.text('Cancel'));
@@ -202,7 +208,7 @@ void main() {
       expect(find.byIcon(Icons.route), findsOneWidget);
     });
 
-    testWidgets('long-press opens rename dialog and renames recording',
+    testWidgets('rename via tile menu opens dialog and renames recording',
         (tester) async {
       final db = FakeDatabase();
       db.recordings = [
@@ -212,7 +218,9 @@ void main() {
       await pumpApp(tester, const RecordingsScreen(), db: db);
       await tester.pumpAndSettle();
 
-      await tester.longPress(find.text('Old Name'));
+      await tester.tap(find.byIcon(Icons.more_vert));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Rename'));
       await tester.pumpAndSettle();
 
       expect(find.text('Rename recording'), findsOneWidget);
@@ -238,7 +246,9 @@ void main() {
       await pumpApp(tester, const RecordingsScreen(), db: db);
       await tester.pumpAndSettle();
 
-      await tester.longPress(find.text('Untouched'));
+      await tester.tap(find.byIcon(Icons.more_vert));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Rename'));
       await tester.pumpAndSettle();
 
       await tester.tap(find.text('Cancel'));
@@ -246,6 +256,94 @@ void main() {
 
       expect(db.renamedRecordings, isEmpty);
       expect(find.text('Untouched'), findsOneWidget);
+    });
+
+    testWidgets('long-press enters selection mode with one selection',
+        (tester) async {
+      final db = FakeDatabase();
+      db.recordings = [
+        fakeRecording(id: 1, name: 'Run A'),
+        fakeRecording(id: 2, name: 'Run B'),
+      ];
+
+      await pumpApp(tester, const RecordingsScreen(), db: db);
+      await tester.pumpAndSettle();
+
+      await tester.longPress(find.text('Run A'));
+      await tester.pumpAndSettle();
+
+      expect(find.text('1 selected'), findsOneWidget);
+      expect(find.text('Compare'), findsOneWidget);
+      // Compare disabled when only 1 selected
+      final compareBtn = tester.widget<TextButton>(find.widgetWithText(
+        TextButton,
+        'Compare',
+      ));
+      expect(compareBtn.onPressed, isNull);
+    });
+
+    testWidgets('tapping a second tile enables Compare', (tester) async {
+      final db = FakeDatabase();
+      db.recordings = [
+        fakeRecording(id: 1, name: 'Run A'),
+        fakeRecording(id: 2, name: 'Run B'),
+        fakeRecording(id: 3, name: 'Run C'),
+      ];
+
+      await pumpApp(tester, const RecordingsScreen(), db: db);
+      await tester.pumpAndSettle();
+
+      await tester.longPress(find.text('Run A'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Run B'));
+      await tester.pumpAndSettle();
+
+      expect(find.text('2 selected'), findsOneWidget);
+      final compareBtn = tester.widget<TextButton>(find.widgetWithText(
+        TextButton,
+        'Compare',
+      ));
+      expect(compareBtn.onPressed, isNotNull);
+    });
+
+    testWidgets('tapping a third tile while two selected is ignored',
+        (tester) async {
+      final db = FakeDatabase();
+      db.recordings = [
+        fakeRecording(id: 1, name: 'Run A'),
+        fakeRecording(id: 2, name: 'Run B'),
+        fakeRecording(id: 3, name: 'Run C'),
+      ];
+
+      await pumpApp(tester, const RecordingsScreen(), db: db);
+      await tester.pumpAndSettle();
+
+      await tester.longPress(find.text('Run A'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Run B'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Run C'));
+      await tester.pumpAndSettle();
+
+      expect(find.text('2 selected'), findsOneWidget);
+    });
+
+    testWidgets('cancel button clears selection', (tester) async {
+      final db = FakeDatabase();
+      db.recordings = [fakeRecording(id: 1, name: 'Run A')];
+
+      await pumpApp(tester, const RecordingsScreen(), db: db);
+      await tester.pumpAndSettle();
+
+      await tester.longPress(find.text('Run A'));
+      await tester.pumpAndSettle();
+      expect(find.text('1 selected'), findsOneWidget);
+
+      await tester.tap(find.byIcon(Icons.close));
+      await tester.pumpAndSettle();
+
+      expect(find.text('1 selected'), findsNothing);
+      expect(find.text('Recordings'), findsOneWidget);
     });
 
     testWidgets('tapping a recording navigates to detail screen',

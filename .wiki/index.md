@@ -11,9 +11,9 @@
 - [conventions](conventions.md) — Folder layout, naming, layer responsibilities, state-management rules.
 
 ## Features
-- [benchmarks](features/benchmarks.md) — *(planned)* Derived view: max / sudden accel at speed, 0–100, ¼ mile.
+- [benchmarks](features/benchmarks.md) — Derived view over user recordings: standard speed-to-speed times, ¼ mile, max forward acceleration at speed buckets, and sudden-acceleration response from cruise.
 - [export-import](features/export-import.md) — CSV / JSON export of a recording; JSON import.
-- [overlay-comparison](features/overlay-comparison.md) — *(planned)* Plot two recordings on the same chart.
+- [overlay-comparison](features/overlay-comparison.md) — Pick two recordings via multi-select and view their speed/accel curves on shared time axes, aligned at first movement.
 - [recording](features/recording.md) — Captures a driving session with 5 s calibration then continuous sampling.
 - [recording-history](features/recording-history.md) — Browse, filter, delete recordings; detail view with summary + charts.
 - [session-metadata](features/session-metadata.md) — Per-recording car / drive-mode / passenger / fuel / tyre / weather context, with reusable car profiles.

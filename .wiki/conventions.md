@@ -2,8 +2,8 @@
 
 > How this codebase is organised and the rules that keep it consistent.
 
-**Scope:** [lib/](lib/), [test/](test/), [analysis_options.yaml](analysis_options.yaml)
-**Last verified:** 2026-05-02
+**Scope:** [lib/](lib/), [test/](test/), [analysis_options.yaml](analysis_options.yaml), [.github/workflows/](.github/workflows/)
+**Last verified:** 2026-05-05 (phase 10)
 
 ---
 
@@ -79,10 +79,16 @@ lib/
 - Export/import failures surface as `SnackBar` messages, not thrown to the UI layer.
 - Import failures and mid-recording permission loss surface as SnackBar messages; recording always saves what was captured.
 
+## CI
+
+- [.github/workflows/ci.yml](.github/workflows/ci.yml) runs on every `pull_request` and on every `push` to `main`. It installs Flutter via `subosito/flutter-action@v2` (channel `stable`, cache enabled), runs `flutter pub get`, then `dart run build_runner build --delete-conflicting-outputs`, then `flutter analyze`, then `flutter test`.
+- The quality gate is: analyze must report no issues and the full test suite must pass before a PR can merge.
+
 ## Testing
 
 - Tests live in [test/](test/) and use `flutter_test`.
 - Engine tests set `flushInterval = Duration.zero` and `useCalibrationTimer = false` to avoid real timers.
+- End-to-end pipeline tests live in [test/scenarios/](test/scenarios/) — they drive a real `RecordingEngine` with synthetic accel + GPS streams via `FakeSensorService` / `FakeGpsService` and assert against known driving inputs (acceleration, braking, heading-lock convergence, sample rate, GPS dropout).
 - `flutter test --reporter expanded` shows the same test name on multiple consecutive lines because the cumulative pass counter `+N` ticks each time *any* parallel test file completes; the displayed name is just the most-recently-active test. This is verbose runner output, not a `pumpAndSettle` retry loop. Use `--reporter compact` if it gets in the way.
 
 ## Related pages

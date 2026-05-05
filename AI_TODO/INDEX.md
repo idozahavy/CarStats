@@ -12,10 +12,10 @@
 | 04 | [phase_04_ux_polish.md](phase_04_ux_polish.md) | UX polish (name, rename, share, empty states) | Medium | [x] |
 | 05 | [phase_05_i18n.md](phase_05_i18n.md) | i18n scaffolding (English + Hebrew, RTL) | Medium | [x] |
 | 06 | [phase_06_session_metadata.md](phase_06_session_metadata.md) | Session metadata + car profiles (schema v5) | Large | [x] |
-| 07 | [phase_07_recording_validation.md](phase_07_recording_validation.md) | Recording-pipeline validation against synthetic inputs + data-quality badge | Medium-Large | [ ] |
-| 08 | [phase_08_benchmarks.md](phase_08_benchmarks.md) | Benchmarks (0–100, ¼ mile, max-accel-at-speed, sudden-accel) | Large | [ ] |
-| 09 | [phase_09_overlay_comparison.md](phase_09_overlay_comparison.md) | Overlay comparison of two recordings | Medium-Large | [ ] |
-| 10 | [phase_10_infrastructure.md](phase_10_infrastructure.md) | App icon, README, CHANGELOG, CI, signing docs | Medium | [ ] |
+| 07 | [phase_07_recording_validation.md](phase_07_recording_validation.md) | Recording-pipeline validation against synthetic inputs + data-quality badge | Medium-Large | [x] |
+| 08 | [phase_08_benchmarks.md](phase_08_benchmarks.md) | Benchmarks (0–100, ¼ mile, max-accel-at-speed, sudden-accel) | Large | [x] |
+| 09 | [phase_09_overlay_comparison.md](phase_09_overlay_comparison.md) | Overlay comparison of two recordings | Medium-Large | [x] |
+| 10 | [phase_10_infrastructure.md](phase_10_infrastructure.md) | App icon, README, CHANGELOG, CI, signing docs | Medium | [x] |
 
 ## Conventions for every phase
 

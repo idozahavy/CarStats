@@ -170,6 +170,46 @@ class AppLocalizationsHe extends AppLocalizations {
   String get recordings_empty_cta => 'התחל הקלטה';
 
   @override
+  String get recordings_menu_rename => 'שינוי שם';
+
+  @override
+  String get recordings_menu_more_tooltip => 'עוד';
+
+  @override
+  String recordings_selection_title(int count) {
+    return '$count נבחרו';
+  }
+
+  @override
+  String get recordings_selection_compare => 'השוואה';
+
+  @override
+  String get recordings_selection_close_tooltip => 'בטל בחירה';
+
+  @override
+  String get compare_title => 'השוואה';
+
+  @override
+  String get compare_chart_speed_time => 'מהירות לאורך זמן';
+
+  @override
+  String get compare_chart_accel_time => 'תאוצה לאורך זמן';
+
+  @override
+  String get compare_axis_time_since_movement => 'זמן מתחילת התנועה (s)';
+
+  @override
+  String get compare_recording_a_label => 'א\'';
+
+  @override
+  String get compare_recording_b_label => 'ב\'';
+
+  @override
+  String compare_no_movement(String name) {
+    return 'להקלטה $name אין תנועה מעל 1 קמ\"ש.';
+  }
+
+  @override
   String get detail_default_title => 'הקלטה';
 
   @override
@@ -452,4 +492,85 @@ class AppLocalizationsHe extends AppLocalizations {
 
   @override
   String get dialog_cancel => 'ביטול';
+
+  @override
+  String get detail_quality_title => 'איכות נתונים';
+
+  @override
+  String get detail_quality_sample_rate => 'קצב דגימה';
+
+  @override
+  String get detail_quality_gps_coverage => 'כיסוי GPS';
+
+  @override
+  String get detail_quality_heading_lock => 'נעילת כיוון';
+
+  @override
+  String get detail_quality_grade_green => 'טוב';
+
+  @override
+  String get detail_quality_grade_amber => 'סביר';
+
+  @override
+  String get detail_quality_grade_red => 'ירוד';
+
+  @override
+  String detail_quality_tooltip(String green, String amber) {
+    return 'ירוק ≥ $green, כתום ≥ $amber';
+  }
+
+  @override
+  String get detail_benchmarks_title => 'מדדי ביצוע';
+
+  @override
+  String get detail_benchmarks_dev_banner =>
+      'הקלטת פיתוח — תוצאות המדדים עשויות להיות לא אמינות.';
+
+  @override
+  String get detail_benchmarks_standard_section => 'סטנדרטי';
+
+  @override
+  String get detail_benchmarks_max_accel_section => 'תאוצה מרבית לפי מהירות';
+
+  @override
+  String get detail_benchmarks_sudden_section => 'תאוצה פתאומית';
+
+  @override
+  String get detail_benchmarks_unavailable => '—';
+
+  @override
+  String detail_benchmarks_seconds(String seconds) {
+    return '$seconds שנ׳';
+  }
+
+  @override
+  String detail_benchmarks_quarter_mile_trap(String seconds, String trapKmh) {
+    return '$seconds שנ׳ @ $trapKmh קמ״ש';
+  }
+
+  @override
+  String detail_benchmarks_bucket_label(String kmh) {
+    return '$kmh קמ״ש';
+  }
+
+  @override
+  String detail_benchmarks_bucket_g(String g) {
+    return '$g g';
+  }
+
+  @override
+  String get detail_benchmarks_no_max_accel =>
+      'אין דגימות עם נתוני GPS לחלוקה לדליים.';
+
+  @override
+  String get detail_benchmarks_no_sudden => 'לא זוהו אירועי תאוצה פתאומית.';
+
+  @override
+  String detail_benchmarks_sudden_event(
+    String cruiseKmh,
+    String peakG,
+    String responseMs,
+  ) {
+    return 'שיוט $cruiseKmh קמ״ש ← $peakG g (תגובה $responseMs מ״ש)';
+  }
 }
